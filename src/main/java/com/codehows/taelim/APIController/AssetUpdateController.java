@@ -2,14 +2,14 @@ package com.codehows.taelim.APIController;
 
 
 import com.codehows.taelim.dto.UpdateDto;
+import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.service.UpdateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -25,5 +25,12 @@ public class AssetUpdateController {
         updateService.update(updateDto);
 
         return new ResponseEntity<>("success", HttpStatus.CREATED);
+    }
+
+    // 전체 자산 목록 조회
+    @GetMapping("/assets")
+    public ResponseEntity<List<CommonAsset>> getAllAssets() {
+        List<CommonAsset> assets = updateService.findAll();
+        return ResponseEntity.ok(assets);
     }
 }

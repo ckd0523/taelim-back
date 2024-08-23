@@ -6,6 +6,9 @@ import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class UpdateService {
@@ -63,5 +66,12 @@ public class UpdateService {
                 .build();
 
         commonAssetRepository.save(commonAsset);
+    }
+
+    public Optional<CommonAsset> findById(Long id) {
+        return commonAssetRepository.findById(id);
+    }
+    public List<CommonAsset> findAll() {
+        return commonAssetRepository.findAll();
     }
 }
