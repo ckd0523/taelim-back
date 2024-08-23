@@ -27,8 +27,13 @@ public class Car {
 
     private Long displacement;
     private Long doorsCount;
+
+    @Enumerated(EnumType.STRING)
     private EngineType engineType;
+
+    @Enumerated(EnumType.STRING)
     private CarType carType;
+
     private String identificationNo;
     private String carColor;
     private Long modelYear;

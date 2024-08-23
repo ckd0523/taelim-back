@@ -32,10 +32,19 @@ public class PatentsAndTrademarks {
     private LocalDate applicationDate;
     private LocalDate registrationDate;
     private LocalDate expirationDate;
+
+    @Enumerated(EnumType.STRING)
     private PatentTrademarkStatus patentTrademarkStatus;
+
+    @Enumerated(EnumType.STRING)
     private CountryApplication countryApplication;
+
+    @Enumerated(EnumType.STRING)
     private PatentClassification patentClassification;
+
+    @Enumerated(EnumType.STRING)
     private PatentItem patentItem;
+
     private String applicationNo;
     private String inventor;
     private String assignee;
