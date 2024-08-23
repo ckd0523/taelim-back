@@ -59,7 +59,7 @@ public class CommonAsset {
     private String contactInformation;
     private String QRInformation;
     private Boolean disposalStatus;
-    private Boolean requestStatus;
+    private Boolean demandStatus; // requestStatus 아님
     private Approval approval;
     private Boolean demandCheck;
     private LocalDate createDate;

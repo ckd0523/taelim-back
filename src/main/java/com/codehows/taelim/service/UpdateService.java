@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class updateService {
+public class UpdateService {
     private final CommonAssetRepository commonAssetRepository;
     private final InformationProtectionSystemRepository informationProtectionSystemRepository;
     private final ApplicationProgramRepository applicationProgramRepository;
@@ -41,6 +41,25 @@ public class updateService {
                 .assetLocation(updateDto.getAssetLocation())
                 .operationStatus(updateDto.getOperationStatus())
                 .introducedDate(updateDto.getIntroducedDate())
+                .confidentiality(updateDto.getConfidentiality())
+                .integrity(updateDto.getIntegrity())
+                .availability(updateDto.getAvailability())
+                .note(updateDto.getNote())
+                .manufacturingCompany(updateDto.getManufacturingCompany())
+                .ownership(updateDto.getOwnership())
+                .purchaseCost(updateDto.getPurchaseCost())
+                .purchaseDate(updateDto.getPurchaseDate())
+                .usefulLife(updateDto.getUsefulLife())
+                .depreciationMethod(updateDto.getDepreciationMethod())
+                .warrantyDetails(updateDto.getWarrantyDetails())
+                .attachment(updateDto.getAttachment())
+                .purchaseSource(updateDto.getPurchaseSource())
+                .contactInformation(updateDto.getContactInformation())
+                .QRInformation(updateDto.getQRInformation())
+                .disposalStatus(updateDto.getDisposalStatus())
+                .demandStatus(updateDto.getDemandStatus())
+                .approval(updateDto.getApproval())
+                .createDate(updateDto.getCreateDate())
                 .build();
 
         commonAssetRepository.save(commonAsset);

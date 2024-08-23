@@ -33,7 +33,7 @@ public class UpdateDto {
     private Integer availability;
     private String note;
     private String manufacturingCompany;
-    private String ownership;
+    private Ownership ownership;
     private Long purchaseCost;
     private LocalDate purchaseDate;
     private Long usefulLife;
