@@ -27,7 +27,10 @@ public class AssetSurveyHistory {
     private Member assetSurveyBy;
 
     private Long round;
+
+    @Enumerated(EnumType.STRING)
     private AssetLocation assetSurveyLocation;
+
     private LocalDate assetSurveyStartDate;
     private LocalDate assetSurveyEndDate;
     private Boolean surveyStatus;

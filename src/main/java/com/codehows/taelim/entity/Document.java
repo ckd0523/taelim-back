@@ -25,8 +25,12 @@ public class Document {
     @JoinColumn(name = "assetNo")
     private CommonAsset assetNo;
 
+    @Enumerated(EnumType.STRING)
     private DocumentGrade documentGrade;
+
+    @Enumerated(EnumType.STRING)
     private DocumentType documentType;
+
     private String documentLink;
 
 }
