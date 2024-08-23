@@ -1,10 +1,17 @@
 package com.codehows.taelim.dto;
 
 import com.codehows.taelim.constant.*;
+import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Member;
+import lombok.*;
 
 import java.time.LocalDate;
 
+@Data
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class AssetDto {
     private Long assetNo;
 
@@ -115,5 +122,46 @@ public class AssetDto {
 
     private String otherDescription;
     private String usageFrequency;
+
+    public CommonAsset toEntity() {
+        return CommonAsset.builder()
+                .assetNo(assetNo)
+                .assetClassification(assetClassification)
+                .assetBasis(assetBasis)
+                .assetCode(assetCode)
+                .assetName(assetName)
+                .purpose(purpose)
+                .quantity(quantity)
+                .department(department)
+                .assetLocation(assetLocation)
+                .assetUser(assetUser)
+                .assetOwner(assetOwner)
+                .assetSecurityManager(assetSecurityManager)
+                .operationStatus(operationStatus)
+                .introducedDate(introducedDate)
+                .confidentiality(confidentiality)
+                .integrity(integrity)
+                .availability(availability)
+                .note(note)
+                .manufacturingCompany(manufacturingCompany)
+                .ownership(ownership)
+                .purchaseDate(purchaseDate)
+                .usefulLife(usefulLife)
+                .depreciationMethod(depreciationMethod)
+                .warrantyDetails(warrantyDetails)
+                .attachment(attachment)
+                .purchaseSource(purchaseSource)
+                .contactInformation(contactInformation)
+                .QRInformation(QRInformation)
+                .disposalStatus(disposalStatus)
+                .requestStatus(requestStatus)
+                .approval(approval)
+                .demandCheck(demandCheck)
+                .createDate(createDate)
+                .useState(useState)
+                .acquisitionRoute(acquisitionRoute)
+                .maintenancePeriod(maintenancePeriod)
+                .build();
+    }
 
 }
