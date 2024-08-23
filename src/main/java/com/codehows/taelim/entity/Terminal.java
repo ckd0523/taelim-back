@@ -28,7 +28,10 @@ public class Terminal {
     private String IP;
     private String productSerialNumber;
     private String OS;
+
+    @Enumerated(EnumType.STRING)
     private SecurityControl securityControl;
+
     private LocalDate kaitsKeeper;
     private LocalDate V3OfficeSecurity;
     private LocalDate appCheckPro;

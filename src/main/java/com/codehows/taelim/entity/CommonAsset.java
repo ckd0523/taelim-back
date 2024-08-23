@@ -22,13 +22,17 @@ public class CommonAsset {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long assetNo;
 
+    @Enumerated(EnumType.STRING)
     private AssetClassification assetClassification;
+    @Enumerated(EnumType.STRING)
     private AssetBasis assetBasis;
     private String assetCode;
     private String assetName;
     private String purpose;
     private Long quantity;
+    @Enumerated(EnumType.STRING)
     private Department department;
+    @Enumerated(EnumType.STRING)
     private AssetLocation assetLocation;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,18 +47,26 @@ public class CommonAsset {
     @JoinColumn(name = "assetSecurityManager")
     private Member assetSecurityManager;
 
+    @Enumerated(EnumType.STRING)
     private OperationStatus operationStatus;
+
     private LocalDate introducedDate;
     private int confidentiality;
     private int integrity;
     private int availability;
     private String note;
     private String manufacturingCompany;
+
+    @Enumerated(EnumType.STRING)
     private Ownership ownership;
+
     private Long purchaseCost;
     private LocalDate purchaseDate;
     private Long usefulLife;
+
+    @Enumerated(EnumType.STRING)
     private DepreciationMethod depreciationMethod;
+
     private String warrantyDetails;
     private String attachment;
     private String purchaseSource;
@@ -62,10 +74,16 @@ public class CommonAsset {
     private String QRInformation;
     private Boolean disposalStatus;
     private Boolean requestStatus;
+
+    @Enumerated(EnumType.STRING)
     private Approval approval;
+
     private Boolean demandCheck;
     private LocalDate createDate;
+
+    @Enumerated(EnumType.STRING)
     private UseState useState;
+
     private String acquisitionRoute;
     private LocalDate maintenancePeriod;
 

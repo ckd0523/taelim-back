@@ -26,6 +26,8 @@ public class RepairFile {
     private String oriFileName;
     private String fileName;
     private String fileURL;
+
+    @Enumerated(EnumType.STRING)
     private RepairType repairType;
 
 }

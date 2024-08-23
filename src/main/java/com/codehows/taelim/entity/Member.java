@@ -20,5 +20,7 @@ public class Member {
 
     private String password;
     private String uName;
+
+    @Enumerated(EnumType.STRING)
     private Role role;
 }

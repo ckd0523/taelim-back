@@ -23,5 +23,7 @@ public class BackUpHistory {
     private Long backUpNo;
 
     private LocalDate backUpDate;
+
+    @Enumerated(EnumType.STRING)
     private BackUpScope backUpScope;
 }

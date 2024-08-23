@@ -28,5 +28,7 @@ public class File {
     private String fileSize;
     private String fileExt;
     private String fileURL;
+
+    @Enumerated(EnumType.STRING)
     private FileType fileType;
 }

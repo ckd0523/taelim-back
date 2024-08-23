@@ -41,6 +41,9 @@ dependencies {
     // zxing 라이브러리
     implementation 'com.google.zxing:core:3.5.3'
     implementation 'com.google.zxing:javase:3.5.3'
+    // querydsl
+    implementation 'com.querydsl:querydsl-jpa:5.0.0'
+
 }
 
 tasks.named('test') {
