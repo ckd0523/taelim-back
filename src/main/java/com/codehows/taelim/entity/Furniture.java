@@ -22,5 +22,5 @@ public class Furniture {
     @JoinColumn(name = "assetNo")
     private CommonAsset assetNo;
 
-    private String funitureSize;
+    private String furnitureSize;
 }
