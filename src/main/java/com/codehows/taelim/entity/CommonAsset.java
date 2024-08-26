@@ -1,6 +1,7 @@
 package com.codehows.taelim.entity;
 
 import com.codehows.taelim.constant.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,27 +25,34 @@ public class CommonAsset {
 
     @Enumerated(EnumType.STRING)
     private AssetClassification assetClassification;
+
     @Enumerated(EnumType.STRING)
     private AssetBasis assetBasis;
+
     private String assetCode;
     private String assetName;
     private String purpose;
     private Long quantity;
+
     @Enumerated(EnumType.STRING)
     private Department department;
+
     @Enumerated(EnumType.STRING)
     private AssetLocation assetLocation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetUser")
+    @JsonIgnore
     private Member assetUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetOwner")
+    @JsonIgnore
     private Member assetOwner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetSecurityManager")
+    @JsonIgnore
     private Member assetSecurityManager;
 
     @Enumerated(EnumType.STRING)
@@ -86,5 +94,6 @@ public class CommonAsset {
 
     private String acquisitionRoute;
     private LocalDate maintenancePeriod;
+
 
 }

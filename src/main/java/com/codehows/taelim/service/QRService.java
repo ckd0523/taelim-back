@@ -38,4 +38,6 @@ public class QRService {
         // 이 바이트 배열은 PNG 형식의 QR 코드 이미지 데이터를 포함합니다.
         return pngOutputStream.toByteArray();
     }
+
+
 }
