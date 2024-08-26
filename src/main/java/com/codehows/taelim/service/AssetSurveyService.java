@@ -1,7 +1,6 @@
 package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.AssetLocation;
-import com.codehows.taelim.constant.SurveyStatus;
 import com.codehows.taelim.entity.AssetSurveyDetail;
 import com.codehows.taelim.entity.AssetSurveyHistory;
 import com.codehows.taelim.entity.CommonAsset;
@@ -28,6 +27,11 @@ public class AssetSurveyService {
     //자산 조사 등록
     public String assetSurveyRegister(AssetLocation assetLocation, Long round, String email) {
         //등록할 때 프론트에서 유저의 email을 가져와서 DB에 조회 후 Member를 가져와서 자산 조사자에 넣어준다.
+        //optional을 사용하여 orElseThrow로 예외 처리 가능, 원래는
+        //Optional<Member> member = memberRepository.findByEmail("test@example.com");
+        //Member foundMember = member.get();
+        //이렇게 해줘야하는데 orElseThrow를 쓰면 값이 있으면 optional을 Member로 자동 변환해줌.
+        //없으면 예외 처리
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
@@ -70,13 +74,22 @@ public class AssetSurveyService {
     }
 
     //자산 조사 삭제
-    public String deleteAssetSurveyHistory(Long assetSurveyHistoryNo) {
-        //자산 조사 상세를 먼저 삭제해야함
-        assetSurveyDetailRepository.deleteById(assetSurveyHistoryNo);
+    //자산 조사를 삭제하려면 조사 중인 조사만 삭제 가능
+    //자산 조사 삭제는 등록한 사람만 가능하다는 조건이나 동작 필요, 시큐리티에서 하는건가?
+    public String deleteAssetSurveyHistory(Long assetSurveyHistoryNo, Boolean surveyStatus) {
+        //조사 상태가 미완료(false)인 것만 삭제 가능
+        if(surveyStatus){
+            System.out.println("자산 조사 상태가 미완료인 것만 삭제 가능");
+            return "완료된 자산 조사는 삭제 불가";
+        }
+        else {
+            //자산 조사 상세를 먼저 삭제해야함
+            assetSurveyDetailRepository.deleteById(assetSurveyHistoryNo);
 
-        //자산 조사 삭제
-        assetSurveyHistoryRepository.deleteById(assetSurveyHistoryNo);
+            //자산 조사 삭제
+            assetSurveyHistoryRepository.deleteById(assetSurveyHistoryNo);
 
-        return "자산 조사 삭제 성공";
+            return "자산 조사 삭제 성공";
+        }
     }
 }
