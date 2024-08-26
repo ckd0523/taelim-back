@@ -44,7 +44,7 @@ public class AssetDto {
     private String contactInformation;
     private String QRInformation;
     private Boolean disposalStatus;
-    private Boolean requestStatus;
+    private Boolean demandStatus;
     private Approval approval;
     private Boolean demandCheck;
     private LocalDate createDate;
@@ -131,36 +131,36 @@ public class AssetDto {
                 .assetCode(assetCode)
                 .assetName(assetName)
                 .purpose(purpose)
-                .quantity(quantity)
+                //.quantity(quantity)
                 .department(department)
                 .assetLocation(assetLocation)
-                .assetUser(assetUser)
-                .assetOwner(assetOwner)
-                .assetSecurityManager(assetSecurityManager)
+                //.assetUser(assetUser)
+                //.assetOwner(assetOwner)
+                //.assetSecurityManager(assetSecurityManager)
                 .operationStatus(operationStatus)
-                .introducedDate(introducedDate)
-                .confidentiality(confidentiality)
-                .integrity(integrity)
-                .availability(availability)
-                .note(note)
+                //.introducedDate(introducedDate)
+                //.confidentiality(confidentiality)
+                //.integrity(integrity)
+                //.availability(availability)
+                //.note(note)
                 .manufacturingCompany(manufacturingCompany)
-                .ownership(ownership)
+                //.ownership(ownership)
                 .purchaseDate(purchaseDate)
-                .usefulLife(usefulLife)
-                .depreciationMethod(depreciationMethod)
+                //.usefulLife(usefulLife)
+                //.depreciationMethod(depreciationMethod)
                 .warrantyDetails(warrantyDetails)
                 .attachment(attachment)
-                .purchaseSource(purchaseSource)
-                .contactInformation(contactInformation)
-                .QRInformation(QRInformation)
-                .disposalStatus(disposalStatus)
-                .requestStatus(requestStatus)
+                //.purchaseSource(purchaseSource)
+                //.contactInformation(contactInformation)
+                //.QRInformation(QRInformation)
+                //.disposalStatus(disposalStatus)
+                //.demandStatus(demandStatus)
                 .approval(approval)
-                .demandCheck(demandCheck)
-                .createDate(createDate)
-                .useState(useState)
-                .acquisitionRoute(acquisitionRoute)
-                .maintenancePeriod(maintenancePeriod)
+                //.demandCheck(demandCheck)
+                //.createDate(createDate)
+                //.useState(useState)
+                //.acquisitionRoute(acquisitionRoute)
+                //.maintenancePeriod(maintenancePeriod)
                 .build();
     }
 
