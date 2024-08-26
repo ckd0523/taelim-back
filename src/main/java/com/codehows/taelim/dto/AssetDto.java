@@ -2,9 +2,15 @@ package com.codehows.taelim.dto;
 
 import com.codehows.taelim.constant.*;
 import com.codehows.taelim.entity.Member;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class AssetDto {
     private Long assetNo;
 
