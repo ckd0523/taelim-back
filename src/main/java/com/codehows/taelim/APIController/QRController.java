@@ -1,5 +1,6 @@
 package com.codehows.taelim.APIController;
 
+import com.codehows.taelim.dto.AssetDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.service.AssetService;
 import com.codehows.taelim.service.QRService;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -53,6 +55,16 @@ public class QRController {
     @GetMapping("/assets/approved-not-disposed")
     public List<CommonAsset> getApprovedAndNotDisposedAssets() {
         return assetService.getApprovedAndNotDisposedAssets();
+    }
+
+    @GetMapping("/assets/{assetCode}")
+    public Optional<CommonAsset> getCommonAsset(@PathVariable("assetCode") String assetCode) {
+        return assetService.getCommonAsset(assetCode);
+    }
+
+    @GetMapping("/asset/{assetCode}")
+    public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
+        return assetService.getAssetDetail(assetCode);
     }
 
 }

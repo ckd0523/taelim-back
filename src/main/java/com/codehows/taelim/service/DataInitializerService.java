@@ -49,7 +49,11 @@ public class DataInitializerService {
             member.setRole(Role.USER);
 
             CommonAsset asset = new CommonAsset();
-            asset.setAssetClassification(AssetClassification.FURNITURE);
+            if (i <= 5) {
+                asset.setAssetClassification(AssetClassification.SOFTWARE);
+            }else {
+                asset.setAssetClassification(AssetClassification.FURNITURE);
+            }
             asset.setAssetBasis(AssetBasis.COMMON);
             asset.setAssetCode(String.format("ASSET%03d", i));
             asset.setAssetName("Asset " + i);
@@ -87,6 +91,20 @@ public class DataInitializerService {
             asset.setMaintenancePeriod(LocalDate.now());
             // 기타 필드 설정
             commonAssetRepository.save(asset);
+            if(i<=5) {
+                Software software = new Software();
+                software.setAssetNo(asset);
+                software.setIP("192.168.1." + i);
+                software.setServerId("server" + String.format("%02d", i));
+                software.setServerPassword("pass" + i);
+                software.setCompanyManager("Manager " + i);
+                software.setOS("Windows Server 2022");
+                softwareRepository.save(software);
+            } else {
+                Furniture furniture = new Furniture();
+                furniture.setAssetNo(asset);
+                furniture.setFurnitureSize("500");
+            }
         }
 
         //수정
@@ -143,6 +161,20 @@ public class DataInitializerService {
                 asset.setMaintenancePeriod(LocalDate.now());
                 // 기타 필드 설정
                 commonAssetRepository.save(asset);
+                if(i<=5) {
+                    Software software = new Software();
+                        software.setAssetNo(asset);
+                        software.setIP("192.168.1." + i);
+                        software.setServerId("server" + String.format("%02d", i));
+                        software.setServerPassword("pass" + i);
+                        software.setCompanyManager("Manager " + i);
+                        software.setOS("Windows Server 2022");
+                        softwareRepository.save(software);
+                    } else {
+                    Furniture furniture = new Furniture();
+                        furniture.setAssetNo(asset);
+                        furniture.setFurnitureSize("500");
+                }
             }
         }
 
