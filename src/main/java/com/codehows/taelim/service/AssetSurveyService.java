@@ -1,6 +1,7 @@
 package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.AssetLocation;
+import com.codehows.taelim.dto.AssetSurveyHistoryDto;
 import com.codehows.taelim.entity.AssetSurveyDetail;
 import com.codehows.taelim.entity.AssetSurveyHistory;
 import com.codehows.taelim.entity.CommonAsset;
@@ -56,7 +57,7 @@ public class AssetSurveyService {
         //자산 번호(최신 자산)를 가져와서 넣어서 save 해야함
         //그런데 공통 자산 테이블에는 최신 정보만 있는 것이 아니라서 쿼리DSL 써서
         //최신 정보만 가져오는 select문 검증 필요, 더미 데이터가 좀 잇어야할 듯
-        List<CommonAsset> commonAssets = commonAssetRepository.findByAssetLocation(assetLocation);
+        List<CommonAsset> commonAssets = commonAssetRepository.findAssetNoByAssetLocation(assetLocation);
 
         for(CommonAsset commonAsset : commonAssets){
             AssetSurveyDetail assetSurveyDetail = new AssetSurveyDetail();
@@ -69,8 +70,8 @@ public class AssetSurveyService {
     }
 
     //자산 조사 이력 조회
-    public List<AssetSurveyHistory> getAssetSurveyHistory() {
-        return assetSurveyHistoryRepository.findAll();
+    public List<AssetSurveyHistoryDto> getAssetSurveyHistory() {
+        return assetSurveyHistoryRepository.findAssetSurveyHistoryAndMemberName();
     }
 
     //자산 조사 삭제

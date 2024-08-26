@@ -1,6 +1,7 @@
 package com.codehows.taelim.repository;
 
 import com.codehows.taelim.constant.Approval;
+import com.codehows.taelim.constant.AssetLocation;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.QCommonAsset;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -46,6 +47,31 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .from(subCa)
                 .where(subCa.approval.eq(Approval.valueOf("APPROVE"))
                         .and(subCa.disposalStatus.isFalse()))
+                .groupBy(subCa.assetCode);
+
+        // 메인 쿼리: 최신 자산 정보 조회
+        JPAQuery<CommonAsset> query = new JPAQuery<CommonAsset>(entityManager);
+
+        return query.select(ca)
+                .from(ca)
+                .where(ca.assetNo.in(subQuery))
+                .fetch();
+    }
+
+    @Override
+    public List<CommonAsset> findAssetNoByAssetLocation(AssetLocation location) {
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 서브쿼리: 각 자산 코드별 최대 자산 번호 찾기
+        JPAQuery<Long> subQuery = new JPAQuery<Long>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset;
+
+        subQuery.select(subCa.assetNo.max())
+                .from(subCa)
+                .where(subCa.approval.eq(Approval.valueOf("APPROVE"))
+                        .and(subCa.disposalStatus.isFalse())
+                        .and(subCa.assetLocation.eq(location))
+                )
                 .groupBy(subCa.assetCode);
 
         // 메인 쿼리: 최신 자산 정보 조회
