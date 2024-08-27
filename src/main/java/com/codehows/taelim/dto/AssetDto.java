@@ -52,7 +52,7 @@ public class AssetDto {
     private Boolean requestStatus;
     private Approval approval;
     private Boolean demandCheck;
-    private Boolean demandStatus;
+    //private Boolean demandStatus;
     private LocalDate createDate;
     private UseState useState;
     private String acquisitionRoute;
