@@ -13,9 +13,9 @@ import lombok.*;
 public class InformationProtectionSystem {
 
     @Id
-    @Column(name = "InfoNo")
+    @Column(name = "infoNo")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long InfoNo;
+    private Long infoNo;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetNo")

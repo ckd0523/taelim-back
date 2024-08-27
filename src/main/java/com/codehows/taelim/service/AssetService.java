@@ -111,7 +111,6 @@ public class AssetService {
         assetDto.setMaintenancePeriod(commonAsset.getMaintenancePeriod());
         assetDto.setWarrantyDetails(commonAsset.getWarrantyDetails());
         assetDto.setAttachment(commonAsset.getAttachment());
-        assetDto.setQRInformation(commonAsset.getQRInformation());
         assetDto.setDisposalStatus(commonAsset.getDisposalStatus());
         assetDto.setDemandStatus(commonAsset.getDemandStatus());
         assetDto.setApproval(commonAsset.getApproval());
@@ -122,8 +121,8 @@ public class AssetService {
             case SOFTWARE -> {
                 Software software = softwareRepository.findByAssetNo(commonAsset);
                 assetDto.setCompanyManager(software.getCompanyManager());
-                assetDto.setIP(software.getIP());
-                assetDto.setOS(software.getOS());
+                assetDto.setIp(software.getIp());
+                assetDto.setOs(software.getOs());
                 assetDto.setServerId(software.getServerId());
                 assetDto.setServerPassword(software.getServerPassword());
             }
@@ -155,9 +154,9 @@ public class AssetService {
             }
             case TERMINAL -> {
                 Terminal terminal = terminalRepository.findByAssetNo(commonAsset);
-                assetDto.setIP(terminal.getIP());
+                assetDto.setIp(terminal.getIp());
                 assetDto.setProductSerialNumber(terminal.getProductSerialNumber());
-                assetDto.setOS(terminal.getOS());
+                assetDto.setOs(terminal.getOs());
                 assetDto.setSecurityControl(terminal.getSecurityControl());
                 assetDto.setKaitsKeeper(terminal.getKaitsKeeper());
                 assetDto.setV3OfficeSecurity(terminal.getV3OfficeSecurity());
@@ -192,9 +191,9 @@ public class AssetService {
             case APPLICATION_PROGRAM -> {
                 ApplicationProgram applicationProgram = applicationProgramRepository.findByAssetNo(commonAsset);
                 assetDto.setServiceScope(applicationProgram.getServiceScope());
-                assetDto.setOS(applicationProgram.getOS());
+                assetDto.setOs(applicationProgram.getOs());
                 assetDto.setRelatedDB(applicationProgram.getRelatedDB());
-                assetDto.setIP(applicationProgram.getIP());
+                assetDto.setIp(applicationProgram.getIp());
                 assetDto.setScreenNumber(applicationProgram.getScreenNumber());
             }
             case ITNETWORK_EQUIPMENT -> {
@@ -208,7 +207,7 @@ public class AssetService {
             }
             case ELECTRONIC_INFORMATION -> {
                 ElectronicInformation electronicInformation = electronicInformationRepository.findByAssetNo(commonAsset);
-                assetDto.setOS(electronicInformation.getOS());
+                assetDto.setOs(electronicInformation.getOs());
                 assetDto.setSystem(electronicInformation.getSystem());
                 assetDto.setDBType(electronicInformation.getDBType());
             }

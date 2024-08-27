@@ -23,7 +23,7 @@ public class ElectronicInformation {
     @JoinColumn(name = "assetNo")
     private CommonAsset assetNo;
 
-    private String OS;
+    private String os;
     private String system;
     private String DBType;
 }

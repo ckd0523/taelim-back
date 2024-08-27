@@ -16,9 +16,9 @@ import lombok.Setter;
 public class AssetSurveyDetail {
 
     @Id
-    @Column(name = "InfoNo")
+    @Column(name = "infoNo")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long InfoNo;
+    private Long infoNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetNo")
