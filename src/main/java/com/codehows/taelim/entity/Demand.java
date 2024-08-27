@@ -17,9 +17,9 @@ import java.time.LocalDate;
 public class Demand {
 
     @Id
-    @Column(name = "InfoNo")
+    @Column(name = "infoNo")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long InfoNo;
+    private Long infoNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "demandBy")

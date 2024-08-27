@@ -58,7 +58,6 @@ public class UpdateService {
                 .attachment(updateDto.getAttachment())
                 .purchaseSource(updateDto.getPurchaseSource())
                 .contactInformation(updateDto.getContactInformation())
-                .QRInformation(updateDto.getQRInformation())
                 .disposalStatus(updateDto.getDisposalStatus())
                 .demandStatus(updateDto.getDemandStatus())
                 .approval(updateDto.getApproval())

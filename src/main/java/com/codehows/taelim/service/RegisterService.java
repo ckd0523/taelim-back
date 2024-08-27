@@ -2,9 +2,11 @@ package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.dto.AssetDto;
+import com.codehows.taelim.entity.ApplicationProgram;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.InformationProtectionSystem;
 import com.codehows.taelim.entity.Member;
+import com.codehows.taelim.repository.ApplicationProgramRepository;
 import com.codehows.taelim.repository.CommonAssetRepository;
 import com.codehows.taelim.repository.InformationProtectionSystemRepository;
 import com.codehows.taelim.repository.MemberRepository;
@@ -22,7 +24,7 @@ public class RegisterService {
 
     private final CommonAssetRepository commonAssetRepository;
     private final InformationProtectionSystemRepository informationProtectionSystemRepository;
-
+    private final ApplicationProgramRepository applicationProgramRepository;
     private final MemberRepository memberRepository;
     public void assetRegister(AssetDto assetDto){
 
@@ -30,16 +32,31 @@ public class RegisterService {
         Member assetOwner = memberRepository.findByEmail(assetDto.getAssetOwner());
         Member assetSecurityManager = memberRepository.findByEmail(assetDto.getAssetSecurityManager());
         CommonAsset commonAsset = assetDto.toEntity();
-        InformationProtectionSystem informationProtectionSystem = assetDto.toEntity2();
         commonAsset.setAssetUser(assetUser);
         commonAsset.setAssetOwner(assetOwner);
         commonAsset.setAssetSecurityManager(assetSecurityManager);
         commonAsset.setApproval(Approval.APPROVE);
         commonAsset.setDisposalStatus(Boolean.FALSE);
-
         commonAssetRepository.save(commonAsset);
-        informationProtectionSystem.setAssetNo(commonAsset);
-        informationProtectionSystemRepository.save(informationProtectionSystem);
+
+        CommonAsset commonAsset1 = commonAssetRepository.findTopByOrderByAssetNoDesc();
+
+
+
+        switch (commonAsset.getAssetClassification()){
+            case INFORMATION_PROTECTION_SYSTEM -> {
+                InformationProtectionSystem informationProtectionSystem = assetDto.toInformationProtectionSystem();
+                informationProtectionSystem.setAssetNo(commonAsset1);
+                informationProtectionSystemRepository.save(informationProtectionSystem);
+            }
+            case APPLICATION_PROGRAM -> {
+                ApplicationProgram applicationProgram = assetDto.toApplication();
+                applicationProgram.setAssetNo(commonAsset1);
+                applicationProgramRepository.save(applicationProgram);
+            }
+        }
+
+
 
 
     }
