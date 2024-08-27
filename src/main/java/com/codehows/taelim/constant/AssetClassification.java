@@ -1,6 +1,8 @@
 package com.codehows.taelim.constant;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -8,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 //자산분류
 public enum AssetClassification {
-
     INFORMATION_PROTECTION_SYSTEM("정보보호시스템"),
     APPLICATION_PROGRAM("응용프로그램"),
     SOFTWARE("소프트웨어"),

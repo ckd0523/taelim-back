@@ -17,15 +17,19 @@ public class AssetController {
 
     private final RegisterService registerService;
 
-    @PostMapping("/register")
-    public void registerAsset(@RequestBody AssetDto assetDto){
 
-        registerService.assetRegister(assetDto);
-
-    }
     @GetMapping("/get")
     public ResponseEntity<List<AssetDto>> getAllAssets() {
         List<AssetDto> assets = registerService.findAll();
         return ResponseEntity.ok(assets);
+
+    @PostMapping(value = "/register")
+    public ResponseEntity<String> registerAsset(@RequestBody AssetDto assetDto){
+
+        System.out.println(assetDto.getAssetClassification()+"여기");
+        registerService.assetRegister(assetDto);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 }
