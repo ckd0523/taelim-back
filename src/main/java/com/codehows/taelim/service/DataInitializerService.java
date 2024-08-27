@@ -78,7 +78,7 @@ public class DataInitializerService {
             asset.setContactInformation("010-0000-0000");
             asset.setQRInformation("Test QR Information");
             asset.setDisposalStatus(Boolean.FALSE);
-            asset.setRequestStatus(Boolean.FALSE);
+            asset.setDemandStatus(Boolean.FALSE);
             asset.setApproval(Approval.APPROVE);
             asset.setDemandCheck(Boolean.FALSE);
             asset.setCreateDate(LocalDate.now());
@@ -143,7 +143,7 @@ public class DataInitializerService {
                 asset.setQRInformation("Test QR Information");
                 asset.setDisposalStatus(Boolean.FALSE);
 
-                asset.setRequestStatus(Boolean.TRUE);
+                asset.setDemandStatus(Boolean.TRUE);
                 if (i < 5) {
                     asset.setApproval(Approval.APPROVE);
                 } else {
