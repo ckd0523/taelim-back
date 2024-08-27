@@ -43,9 +43,11 @@ public class AssetDto {
     private String contactInformation;
     private String QRInformation;
     private Boolean disposalStatus;
+
     private Boolean requestStatus;
     private Approval approval;
     private Boolean demandCheck;
+    private Boolean demandStatus;
     private LocalDate createDate;
     private UseState useState;
     private String acquisitionRoute;
@@ -121,5 +123,6 @@ public class AssetDto {
 
     private String otherDescription;
     private String usageFrequency;
+
 
 }
