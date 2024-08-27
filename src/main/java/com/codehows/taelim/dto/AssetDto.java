@@ -1,6 +1,7 @@
 package com.codehows.taelim.dto;
 
 import com.codehows.taelim.constant.*;
+import com.codehows.taelim.entity.ApplicationProgram;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.InformationProtectionSystem;
 import com.codehows.taelim.entity.Member;
@@ -57,9 +58,9 @@ public class AssetDto {
     private LocalDate maintenancePeriod;
 
     private String serviceScope;
-    private String OS;
+    private String os;
     private String relatedDB;
-    private String IP;
+    private String ip;
     private Long screenNumber;
 
     private String serverId;
@@ -153,7 +154,6 @@ public class AssetDto {
                 .attachment(attachment)
                 .purchaseSource(purchaseSource)
                 .contactInformation(contactInformation)
-                .QRInformation(QRInformation)
                 .disposalStatus(disposalStatus)
                 .demandStatus(demandStatus)
                 .approval(approval)
@@ -165,10 +165,21 @@ public class AssetDto {
                 .build();
     }
 
-    public InformationProtectionSystem toEntity2() {
+    public InformationProtectionSystem toInformationProtectionSystem() {
         return InformationProtectionSystem.builder()
                 .serviceScope(serviceScope)
                 .build();
+    }
+
+    public ApplicationProgram toApplication() {
+        return ApplicationProgram.builder()
+                .serviceScope(serviceScope)
+                .os(os)
+                .relatedDB(relatedDB)
+                .ip(ip)
+                .screenNumber(screenNumber)
+                .build();
+
     }
 
 }

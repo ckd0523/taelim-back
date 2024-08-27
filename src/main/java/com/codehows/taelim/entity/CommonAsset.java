@@ -74,7 +74,6 @@ public class CommonAsset {
     private String attachment;
     private String purchaseSource;
     private String contactInformation;
-    private String QRInformation;
     private Boolean disposalStatus;
     private Boolean demandStatus; // requestStatus 아님
 
