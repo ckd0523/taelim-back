@@ -20,11 +20,7 @@ import java.time.LocalDate;
 public class DataInitializerService {
 
     private final MemberRepository memberRepository;
-
-
     private final CommonAssetRepository commonAssetRepository;
-
-
     private final SoftwareRepository softwareRepository;
 
     @Transactional
