@@ -1,18 +1,21 @@
 package com.codehows.taelim.APIController;
 
+import com.codehows.taelim.dto.AssetDto;
+import com.codehows.taelim.entity.CommonAsset;
+import com.codehows.taelim.service.AssetService;
 import com.codehows.taelim.service.QRService;
 import com.google.zxing.WriterException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import org.springframework.http.HttpHeaders;
 
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -25,7 +28,7 @@ public class QRController {
     public ResponseEntity<byte[]> generateQRCode(@RequestParam String assetCode) {
         try {
             // 자산 코드에 기반하여 QR 코드를 생성합니다.
-            String url = "http://localhost:8080/" + assetCode;
+            String url = "http://localhost:8080/asset/" + assetCode;
             // String code = assetCode; // QR 코드에 포함할 텍스트를 설정합니다.
             byte[] qrCode = qrCodeService.generateQRCode(url, 200, 200); // QR 코드 생성
 
@@ -39,6 +42,38 @@ public class QRController {
             // QR 코드 생성 중 오류가 발생한 경우, 500 Internal Server Error 응답을 반환합니다.
             return ResponseEntity.status(500).build();
         }
+    }
+
+//    //QR 조회
+//    @GetMapping("/{assetCode}")
+//    public ResponseEntity<String> getQRCode(@PathVariable("assetCode") String assetCode) {
+//
+//    }
+
+    private final AssetService assetService;
+
+    //목록 조회
+    @GetMapping("/assets/approved-not-disposed")
+    public List<CommonAsset> getApprovedAndNotDisposedAssets() {
+        return assetService.getApprovedAndNotDisposedAssets();
+    }
+
+    //상세조회 (공통 칼럼)
+    @GetMapping("/assets/{assetCode}")
+    public Optional<CommonAsset> getCommonAsset(@PathVariable("assetCode") String assetCode) {
+        return assetService.getCommonAsset(assetCode);
+    }
+
+    //상세조회 (공통 및 서브 칼럼)
+    @GetMapping("/asset/{assetCode}")
+    public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
+        return assetService.getAssetDetail(assetCode);
+    }
+
+    @PostMapping("/dispose/{assetCode}")
+    public ResponseEntity<CommonAsset> disposeAsset(@PathVariable("assetCode") String assetCode) {
+        assetService.DisposeApprove(assetCode);
+        return ResponseEntity.ok().build();
     }
 
 }

@@ -23,14 +23,18 @@ public class CommonAsset {
 
     @Enumerated(EnumType.STRING)
     private AssetClassification assetClassification;
+
     @Enumerated(EnumType.STRING)
     private AssetBasis assetBasis;
+
     private String assetCode;
     private String assetName;
     private String purpose;
     private Long quantity;
+
     @Enumerated(EnumType.STRING)
     private Department department;
+
     @Enumerated(EnumType.STRING)
     private AssetLocation assetLocation;
 
@@ -85,5 +89,6 @@ public class CommonAsset {
 
     private String acquisitionRoute;
     private LocalDate maintenancePeriod;
+
 
 }
