@@ -23,10 +23,10 @@ public class Software {
     @JoinColumn(name = "assetNo")
     private CommonAsset assetNo;
 
-    private String IP;
+    private String ip;
     private String serverId;
     private String serverPassword;
     private String companyManager;
-    private String OS;
+    private String os;
 
 }

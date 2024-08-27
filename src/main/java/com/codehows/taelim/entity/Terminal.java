@@ -25,9 +25,9 @@ public class Terminal {
     @JoinColumn(name = "assetNo")
     private CommonAsset assetNo;
 
-    private String IP;
+    private String ip;
     private String productSerialNumber;
-    private String OS;
+    private String os;
 
     @Enumerated(EnumType.STRING)
     private SecurityControl securityControl;

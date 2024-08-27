@@ -52,9 +52,9 @@ public class UpdateDto {
     //private String serviceScope; application Program겹침
     // Application Program
     private String serviceScope;
-    private String OS;
+    private String os;
     private String relatedDB;
-    private String IP;
+    private String ip;
     private Long screenNumber;
     // software
     //private String IP; application Program겹침
