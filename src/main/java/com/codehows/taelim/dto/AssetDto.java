@@ -49,7 +49,6 @@ public class AssetDto {
     private Boolean disposalStatus;
     private Boolean demandStatus;
 
-    private Boolean requestStatus;
     private Approval approval;
     private Boolean demandCheck;
     //private Boolean demandStatus;
