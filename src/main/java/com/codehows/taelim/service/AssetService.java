@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -36,8 +37,28 @@ public class AssetService {
     }
 
     // 자산목록 (자산 공통정보)
-    public List<CommonAsset> getApprovedAndNotDisposedAssets() {
-        return commonAssetRepository.findApprovedAndNotDisposedAssets();
+    public List<AssetDto> getApprovedAndNotDisposedAssets() {
+        List<CommonAsset> assets = commonAssetRepository.findApprovedAndNotDisposedAssets();
+        return assets.stream()
+                .map(asset -> {
+                    AssetDto dto = new AssetDto();
+                    dto.setAssetNo(asset.getAssetNo());
+                    dto.setAssetClassification(asset.getAssetClassification());
+                    dto.setAssetBasis(asset.getAssetBasis());
+                    dto.setAssetCode(asset.getAssetCode());
+                    dto.setAssetName(asset.getAssetName());
+                    dto.setPurpose(asset.getPurpose());
+                    dto.setDepartment(asset.getDepartment());
+                    dto.setAssetLocation(asset.getAssetLocation());
+                    dto.setOperationStatus(asset.getOperationStatus());
+                    dto.setPurchaseDate(asset.getPurchaseDate());
+                    dto.setManufacturingCompany(asset.getManufacturingCompany());
+                    dto.setWarrantyDetails(asset.getWarrantyDetails());
+                    dto.setApproval(asset.getApproval());
+                    dto.setAttachment(asset.getAttachment());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     // 자산 상세 조회
@@ -76,7 +97,7 @@ public class AssetService {
         assetDto.setAttachment(commonAsset.getAttachment());
         assetDto.setQRInformation(commonAsset.getQRInformation());
         assetDto.setDisposalStatus(commonAsset.getDisposalStatus());
-        //assetDto.setDemandStatus(commonAsset.getDemandStatus);
+        assetDto.setDemandStatus(commonAsset.getDemandStatus());
         assetDto.setApproval(commonAsset.getApproval());
         assetDto.setDemandCheck(commonAsset.getDemandCheck());
         assetDto.setCreateDate(commonAsset.getCreateDate());

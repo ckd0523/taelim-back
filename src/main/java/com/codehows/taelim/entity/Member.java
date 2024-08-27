@@ -1,6 +1,9 @@
 package com.codehows.taelim.entity;
 
 import com.codehows.taelim.constant.Role;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +13,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "member")
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 public class Member {
@@ -24,4 +26,6 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+
 }

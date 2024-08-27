@@ -1,23 +1,23 @@
 package com.codehows.taelim.dto;
 
+
 import com.codehows.taelim.constant.*;
-import com.codehows.taelim.entity.CommonAsset;
-import com.codehows.taelim.entity.InformationProtectionSystem;
 import com.codehows.taelim.entity.Member;
-import com.codehows.taelim.repository.MemberRepository;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
+@NoArgsConstructor
 @Getter
 @Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class AssetDto {
-    private Long assetNo;
+public class UpdateDto {
 
+    private Long assetNo;
+    private Member assetUser;
+    private Member assetOwner;
+    private Member assetSecurityManager;
     private AssetClassification assetClassification;
     private AssetBasis assetBasis;
     private String assetCode;
@@ -26,14 +26,11 @@ public class AssetDto {
     private Long quantity;
     private Department department;
     private AssetLocation assetLocation;
-    private String assetUser;
-    private String assetOwner;
-    private String assetSecurityManager;
     private OperationStatus operationStatus;
     private LocalDate introducedDate;
-    private int confidentiality;
-    private int integrity;
-    private int availability;
+    private Integer confidentiality;
+    private Integer integrity;
+    private Integer availability;
     private String note;
     private String manufacturingCompany;
     private Ownership ownership;
@@ -48,33 +45,32 @@ public class AssetDto {
     private String QRInformation;
     private Boolean disposalStatus;
     private Boolean demandStatus;
-
-    private Boolean requestStatus;
     private Approval approval;
-    private Boolean demandCheck;
-    //private Boolean demandStatus;
     private LocalDate createDate;
-    private UseState useState;
-    private String acquisitionRoute;
-    private LocalDate maintenancePeriod;
 
+    // 정보 보호 시스템
+    //private String serviceScope; application Program겹침
+    // Application Program
     private String serviceScope;
     private String OS;
     private String relatedDB;
     private String IP;
     private Long screenNumber;
-
+    // software
+    //private String IP; application Program겹침
     private String serverId;
     private String serverPassword;
     private String companyManager;
-
+    //private String OS; application Program겹침
+    // 전자정보
+    //private String OS; application Program겹침
     private String system;
     private String DBType;
-
+    // 문서
     private DocumentGrade documentGrade;
     private DocumentType documentType;
     private String documentLink;
-
+    // 특허 및 상표
     private LocalDate applicationDate;
     private LocalDate registrationDate;
     private LocalDate expirationDate;
@@ -86,7 +82,7 @@ public class AssetDto {
     private String inventor;
     private String assignee;
     private String relatedDocuments;
-
+    // it 장비(시스템)
     private String equipmentType;
     private Long rackUnit;
     private String powerSupply;
@@ -97,24 +93,28 @@ public class AssetDto {
     private String graphicsCard;
     private String portConfiguration;
     private Boolean monitorIncluded;
-
+    // it 장비 네트워크
+    //rivate String equipmentType; it 장비 (시스템) 겹침
     private Long numberOfPorts;
     private String supportedProtocols;
     private String firmwareVersion;
     private Long networkSpeed;
-
+    //private String serviceScope;application Program겹침
+    // 단말기
+    //private String IP; application Program겹침
     private String productSerialNumber;
+    //private String OS; application Program겹침
     private SecurityControl securityControl;
     private LocalDate kaitsKeeper;
     private LocalDate V3OfficeSecurity;
     private LocalDate appCheckPro;
     private LocalDate tgate;
-
+    // 기기
     private String deviceType;
     private String modelNumber;
     private String connectionType;
     private String powerSpecifications;
-
+    // 차량
     private Long displacement;
     private Long doorsCount;
     private EngineType engineType;
@@ -122,55 +122,10 @@ public class AssetDto {
     private String identificationNo;
     private String carColor;
     private Long modelYear;
-
-    private String furnitureSize;
-
+    // 가구
+    private String funitureSize;
+    // 기타
     private String otherDescription;
     private String usageFrequency;
-
-    public CommonAsset toEntity() {
-
-        return CommonAsset.builder()
-                .assetNo(assetNo)
-                .assetClassification(assetClassification)
-                .assetBasis(assetBasis)
-                .assetCode(assetCode)
-                .assetName(assetName)
-                .purpose(purpose)
-                .quantity(quantity)
-                .department(department)
-                .assetLocation(assetLocation)
-                .operationStatus(operationStatus)
-                .introducedDate(introducedDate)
-                .confidentiality(confidentiality)
-                .integrity(integrity)
-                .availability(availability)
-                .note(note)
-                .manufacturingCompany(manufacturingCompany)
-                .ownership(ownership)
-                .purchaseDate(purchaseDate)
-                .usefulLife(usefulLife)
-                .depreciationMethod(depreciationMethod)
-                .warrantyDetails(warrantyDetails)
-                .attachment(attachment)
-                .purchaseSource(purchaseSource)
-                .contactInformation(contactInformation)
-                .QRInformation(QRInformation)
-                .disposalStatus(disposalStatus)
-                .demandStatus(demandStatus)
-                .approval(approval)
-                .demandCheck(demandCheck)
-                .createDate(createDate)
-                .useState(useState)
-                .acquisitionRoute(acquisitionRoute)
-                .maintenancePeriod(maintenancePeriod)
-                .build();
-    }
-
-    public InformationProtectionSystem toEntity2() {
-        return InformationProtectionSystem.builder()
-                .serviceScope(serviceScope)
-                .build();
-    }
 
 }

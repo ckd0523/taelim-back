@@ -3,10 +3,7 @@ package com.codehows.taelim.entity;
 import com.codehows.taelim.constant.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -16,6 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class CommonAsset {
 
     @Id
@@ -50,8 +48,8 @@ public class CommonAsset {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetSecurityManager")
-    private Member assetSecurityManager;
 
+    private Member assetSecurityManager;
     @Enumerated(EnumType.STRING)
     private OperationStatus operationStatus;
 
@@ -78,7 +76,7 @@ public class CommonAsset {
     private String contactInformation;
     private String QRInformation;
     private Boolean disposalStatus;
-    private Boolean requestStatus;
+    private Boolean demandStatus; // requestStatus 아님
 
     @Enumerated(EnumType.STRING)
     private Approval approval;
