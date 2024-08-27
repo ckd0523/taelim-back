@@ -1,5 +1,7 @@
 package com.codehows.taelim.constant;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +22,8 @@ public enum AssetLocation {
     MDCG("MDCG"),
     FACTORY_BUILDING("공장동");
     private final String description;
+
+
 
 
 }

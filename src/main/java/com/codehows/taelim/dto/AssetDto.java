@@ -2,12 +2,15 @@ package com.codehows.taelim.dto;
 
 import com.codehows.taelim.constant.*;
 import com.codehows.taelim.entity.CommonAsset;
+import com.codehows.taelim.entity.InformationProtectionSystem;
 import com.codehows.taelim.entity.Member;
+import com.codehows.taelim.repository.MemberRepository;
 import lombok.*;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,9 +26,9 @@ public class AssetDto {
     private Long quantity;
     private Department department;
     private AssetLocation assetLocation;
-    private Member assetUser;
-    private Member assetOwner;
-    private Member assetSecurityManager;
+    private String assetUser;
+    private String assetOwner;
+    private String assetSecurityManager;
     private OperationStatus operationStatus;
     private LocalDate introducedDate;
     private int confidentiality;
@@ -104,7 +107,6 @@ public class AssetDto {
     private LocalDate appCheckPro;
     private LocalDate tgate;
 
-    //여기부터 확인
     private String deviceType;
     private String modelNumber;
     private String connectionType;
@@ -124,6 +126,7 @@ public class AssetDto {
     private String usageFrequency;
 
     public CommonAsset toEntity() {
+
         return CommonAsset.builder()
                 .assetNo(assetNo)
                 .assetClassification(assetClassification)
@@ -134,9 +137,6 @@ public class AssetDto {
                 .quantity(quantity)
                 .department(department)
                 .assetLocation(assetLocation)
-                .assetUser(assetUser)
-                .assetOwner(assetOwner)
-                .assetSecurityManager(assetSecurityManager)
                 .operationStatus(operationStatus)
                 .introducedDate(introducedDate)
                 .confidentiality(confidentiality)
@@ -161,6 +161,12 @@ public class AssetDto {
                 .useState(useState)
                 .acquisitionRoute(acquisitionRoute)
                 .maintenancePeriod(maintenancePeriod)
+                .build();
+    }
+
+    public InformationProtectionSystem toEntity2() {
+        return InformationProtectionSystem.builder()
+                .serviceScope(serviceScope)
                 .build();
     }
 
