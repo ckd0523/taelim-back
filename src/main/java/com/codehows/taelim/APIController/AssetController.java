@@ -23,7 +23,9 @@ public class AssetController {
         List<AssetDto> assets = registerService.findAll();
         return ResponseEntity.ok(assets);
 
-    @PostMapping(value = "/register")
+    }
+
+    @PostMapping("/register")
     public ResponseEntity<String> registerAsset(@RequestBody AssetDto assetDto){
 
         System.out.println(assetDto.getAssetClassification()+"여기");
