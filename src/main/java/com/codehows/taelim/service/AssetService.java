@@ -51,9 +51,29 @@ public class AssetService {
                     dto.setPurpose(asset.getPurpose());
                     dto.setDepartment(asset.getDepartment());
                     dto.setAssetLocation(asset.getAssetLocation());
-                    dto.setAssetUser(asset.getAssetUser().getUName());
-                    dto.setAssetOwner(asset.getAssetOwner().getUName());
-                    dto.setAssetSecurityManager(asset.getAssetSecurityManager().getUName());
+
+                            // Null 체크를 추가한 부분
+                            if (asset.getAssetUser() != null) {
+                                dto.setAssetUser(asset.getAssetUser().getUName());
+                            } else {
+                                dto.setAssetUser("N/A"); // 또는 null일 경우의 기본 값 설정
+                            }
+
+                            if (asset.getAssetOwner() != null) {
+                                dto.setAssetOwner(asset.getAssetOwner().getUName());
+                            } else {
+                                dto.setAssetOwner("N/A"); // 또는 null일 경우의 기본 값 설정
+                            }
+
+                            if (asset.getAssetSecurityManager() != null) {
+                                dto.setAssetSecurityManager(asset.getAssetSecurityManager().getUName());
+                            } else {
+                                dto.setAssetSecurityManager("N/A"); // 또는 null일 경우의 기본 값 설정
+                            }
+
+//                    dto.setAssetUser(asset.getAssetUser().getUName());
+//                    dto.setAssetOwner(asset.getAssetOwner().getUName());
+//                    dto.setAssetSecurityManager(asset.getAssetSecurityManager().getUName());
                     dto.setUseState(asset.getUseState());
                     dto.setOperationStatus(asset.getOperationStatus());
                     dto.setIntroducedDate(asset.getIntroducedDate());
