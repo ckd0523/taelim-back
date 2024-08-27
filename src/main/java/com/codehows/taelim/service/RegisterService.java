@@ -1,5 +1,6 @@
 package com.codehows.taelim.service;
 
+import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.dto.AssetDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.InformationProtectionSystem;
@@ -33,6 +34,8 @@ public class RegisterService {
         commonAsset.setAssetUser(assetUser);
         commonAsset.setAssetOwner(assetOwner);
         commonAsset.setAssetSecurityManager(assetSecurityManager);
+        commonAsset.setApproval(Approval.APPROVE);
+        commonAsset.setDisposalStatus(Boolean.FALSE);
 
         commonAssetRepository.save(commonAsset);
         informationProtectionSystem.setAssetNo(commonAsset);

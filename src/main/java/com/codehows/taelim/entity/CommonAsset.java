@@ -48,8 +48,8 @@ public class CommonAsset {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetSecurityManager")
-    private Member assetSecurityManager;
 
+    private Member assetSecurityManager;
     @Enumerated(EnumType.STRING)
     private OperationStatus operationStatus;
 

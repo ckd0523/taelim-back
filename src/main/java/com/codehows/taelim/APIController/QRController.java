@@ -54,7 +54,7 @@ public class QRController {
 
     //목록 조회
     @GetMapping("/assets/approved-not-disposed")
-    public List<CommonAsset> getApprovedAndNotDisposedAssets() {
+    public List<AssetDto> getApprovedAndNotDisposedAssets() {
         return assetService.getApprovedAndNotDisposedAssets();
     }
 

@@ -48,8 +48,7 @@ public class AssetDto {
     private String QRInformation;
     private Boolean disposalStatus;
     private Boolean demandStatus;
-
-    private Boolean requestStatus;
+    
     private Approval approval;
     private Boolean demandCheck;
     private LocalDate createDate;
