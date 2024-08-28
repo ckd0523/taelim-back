@@ -31,6 +31,17 @@ public class RegisterService {
     private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
     private final InformationProtectionSystemRepository informationProtectionSystemRepository;
     private final MemberRepository memberRepository;
+    private final SoftwareRepository softwareRepository;
+    private final ElectronicInformationRepository electronicInformationRepository;
+    private final DocumentRepository documentRepository;
+    private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
+    private final ItSystemEquipmentRepository itSystemEquipmentRepository;
+    private final ItNetworkEquipmentRepository itNetworkEquipmentRepository;
+    private final TerminalRepository terminalRepository;
+    private final FurnitureRepository furnitureRepository;
+    private final DevicesRepository devicesRepository;
+    private final CarRepository carRepository;
+    private final OtherAssetsRepository otherAssetsRepository;
     public void assetRegister(AssetDto assetDto){
 
         Member assetUser = memberRepository.findByEmail(assetDto.getAssetUser());
@@ -70,7 +81,7 @@ public class RegisterService {
                 electronicInformationRepository.save(electronicInformation);
             }
             case DOCUMENT -> {
-                Document document = assetDto.toDocument();
+                Document document = assetDto.toDocumnet();
                 document.setAssetNo(commonAsset1);
                 documentRepository.save(document);
             }
@@ -84,11 +95,37 @@ public class RegisterService {
                 itSystemEquipment.setAssetNo(commonAsset1);
                 itSystemEquipmentRepository.save(itSystemEquipment);
             }
+            case ITNETWORK_EQUIPMENT -> {
+                ItNetworkEquipment itNetworkEquipment = assetDto.toItNetworkEquipment();
+                itNetworkEquipment.setAssetNo(commonAsset1);
+                itNetworkEquipmentRepository.save(itNetworkEquipment);
+            }
+            case TERMINAL -> {
+                Terminal terminal = assetDto.toTerminal();
+                terminal.setAssetNo(commonAsset1);
+                terminalRepository.save(terminal);
+            }
+            case FURNITURE -> {
+                Furniture furniture = assetDto.toFurniture();
+                furniture.setAssetNo(commonAsset1);
+                furnitureRepository.save(furniture);
+            }
+            case DEVICES -> {
+                Devices devices = assetDto.toDevices();
+                devices.setAssetNo(commonAsset1);
+                devicesRepository.save(devices);
+            }
+            case CAR -> {
+                Car car = assetDto.toCar();
+                car.setAssetNo(commonAsset1);
+                carRepository.save(car);
+            }
+            case OTHERASSETS -> {
+                OtherAssets otherAssets = assetDto.toOtherAssets();
+                otherAssets.setAssetNo(commonAsset1);
+                otherAssetsRepository.save(otherAssets);
+            }
         }
-
-
-
-
     }
 
     public Optional<CommonAsset> findById(Long id) {
@@ -117,4 +154,6 @@ public class RegisterService {
                 })
                 .collect(Collectors.toList());
     }
+
+    // 자산 코드 생성
 }

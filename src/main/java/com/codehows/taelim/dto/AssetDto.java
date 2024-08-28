@@ -65,7 +65,7 @@ public class AssetDto {
     private String companyManager;
 
     private String system;
-    private String DBType;
+    private String dbtype;
 
     private DocumentGrade documentGrade;
     private DocumentType documentType;
@@ -144,6 +144,7 @@ public class AssetDto {
                 .note(note)
                 .manufacturingCompany(manufacturingCompany)
                 .ownership(ownership)
+                .purchaseCost(purchaseCost)
                 .purchaseDate(purchaseDate)
                 .usefulLife(usefulLife)
                 .depreciationMethod(depreciationMethod)
@@ -193,11 +194,11 @@ public class AssetDto {
         return ElectronicInformation.builder()
                 .os(os)
                 .system(system)
-                .DBType(DBType)
+                .dbtype(dbtype)
                 .build();
     }
 
-    public Document toDocument() {
+    public Document toDocumnet() {
         return Document.builder()
                 .documentGrade(documentGrade)
                 .documentType(documentType)
@@ -205,7 +206,8 @@ public class AssetDto {
                 .build();
     }
 
-    public PatentsAndTrademarks toPatentsAndTrademarks() {
+
+    public PatentsAndTrademarks toPatentsAndTrademarks(){
         return PatentsAndTrademarks.builder()
                 .applicationDate(applicationDate)
                 .registrationDate(registrationDate)
@@ -221,7 +223,8 @@ public class AssetDto {
                 .build();
     }
 
-    public ItSystemEquipment toItSystemEquipment() {
+
+    public ItSystemEquipment toItSystemEquipment(){
         return ItSystemEquipment.builder()
                 .equipmentType(equipmentType)
                 .rackUnit(rackUnit)
@@ -234,9 +237,68 @@ public class AssetDto {
                 .portConfiguration(portConfiguration)
                 .monitorIncluded(monitorIncluded)
                 .build();
+
     }
 
+    public ItNetworkEquipment toItNetworkEquipment() {
+        return ItNetworkEquipment.builder()
+                .equipmentType(equipmentType)
+                .numberOfPorts(numberOfPorts)
+                .supportedProtocols(supportedProtocols)
+                .firmwareVersion(firmwareVersion)
+                .networkSpeed(networkSpeed)
+                .serviceScope(serviceScope)
+                .build();
 
+    }
 
+    public Terminal toTerminal() {
+        return Terminal.builder()
+                .ip(ip)
+                .productSerialNumber(productSerialNumber)
+                .os(os)
+                .securityControl(securityControl)
+                .kaitsKeeper(kaitsKeeper)
+                .V3OfficeSecurity(V3OfficeSecurity)
+                .appCheckPro(appCheckPro)
+                .tgate(tgate)
+                .build();
+    }
 
+    public Furniture toFurniture() {
+        return Furniture.builder()
+                .furnitureSize(furnitureSize)
+                .build();
+
+    }
+
+    public Devices toDevices() {
+        return Devices.builder()
+                .deviceType(deviceType)
+                .modelNumber(modelNumber)
+                .connectionType(connectionType)
+                .powerSpecifications(powerSpecifications)
+                .build();
+
+    }
+
+    public Car toCar() {
+        return Car.builder()
+                .displacement(displacement)
+                .doorsCount(doorsCount)
+                .engineType(engineType)
+                .carType(carType)
+                .identificationNo(identificationNo)
+                .carColor(carColor)
+                .modelYear(modelYear)
+                .build();
+
+    }
+
+    public OtherAssets toOtherAssets() {
+        return OtherAssets.builder()
+                .otherDescription(otherDescription)
+                .usageFrequency(usageFrequency)
+                .build();
+    }
 }
