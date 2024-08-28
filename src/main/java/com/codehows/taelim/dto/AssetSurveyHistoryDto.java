@@ -11,16 +11,16 @@ import java.time.LocalDate;
 //뷰에 자산 조사 이력 보여줄 때 담아 줄 것들
 public class AssetSurveyHistoryDto {
     private Long assetSurveyNo;
-    private String uName;
+    private String assetSurveyBy;
     private AssetLocation assetSurveyLocation;
     private Long round;
     private Boolean surveyStatus;
     private LocalDate assetSurveyStartDate;
     private LocalDate assetSurveyEndDate;
 
-    public AssetSurveyHistoryDto(Long assetSurveyNo, String uName, AssetLocation assetSurveyLocation, Long round, Boolean surveyStatus, LocalDate assetSurveyStartDate, LocalDate assetSurveyEndDate) {
+    public AssetSurveyHistoryDto(Long assetSurveyNo, String assetSurveyBy, AssetLocation assetSurveyLocation, Long round, Boolean surveyStatus, LocalDate assetSurveyStartDate, LocalDate assetSurveyEndDate) {
         this.assetSurveyNo = assetSurveyNo;
-        this.uName = uName;
+        this.assetSurveyBy = assetSurveyBy;
         this.assetSurveyLocation = assetSurveyLocation;
         this.round = round;
         this.surveyStatus = surveyStatus;

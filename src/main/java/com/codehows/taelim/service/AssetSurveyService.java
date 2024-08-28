@@ -2,6 +2,7 @@ package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.AssetLocation;
 import com.codehows.taelim.dto.AssetSurveyHistoryDto;
+import com.codehows.taelim.dto.DeleteRequest;
 import com.codehows.taelim.entity.AssetSurveyDetail;
 import com.codehows.taelim.entity.AssetSurveyHistory;
 import com.codehows.taelim.entity.CommonAsset;
@@ -77,20 +78,21 @@ public class AssetSurveyService {
     //자산 조사 삭제
     //자산 조사를 삭제하려면 조사 중인 조사만 삭제 가능
     //자산 조사 삭제는 등록한 사람만 가능하다는 조건이나 동작 필요, 시큐리티에서 하는건가?
-    public String deleteAssetSurveyHistory(Long assetSurveyHistoryNo, Boolean surveyStatus) {
+    public String deleteAssetSurveyHistory(List<Long> assetSurveyNo) {
         //조사 상태가 미완료(false)인 것만 삭제 가능
+        //프론트에서 처리 완료
+        /*
         if(surveyStatus){
             System.out.println("자산 조사 상태가 미완료인 것만 삭제 가능");
             return "완료된 자산 조사는 삭제 불가";
         }
-        else {
-            //자산 조사 상세를 먼저 삭제해야함
-            assetSurveyDetailRepository.deleteById(assetSurveyHistoryNo);
+        */
+        //자산 조사 상세를 먼저 삭제해야함
+        assetSurveyDetailRepository.deleteByAssetSurveyNoIn(assetSurveyNo);
 
-            //자산 조사 삭제
-            assetSurveyHistoryRepository.deleteById(assetSurveyHistoryNo);
+        //자산 조사 삭제
+        assetSurveyHistoryRepository.deleteByAssetSurveyNoIn(assetSurveyNo);
 
-            return "자산 조사 삭제 성공";
-        }
+        return "자산 조사 삭제 성공";
     }
 }

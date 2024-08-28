@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface AssetSurveyHistoryRepository extends JpaRepository<AssetSurveyHistory, Long>, AssetSurveyHistoryRepositoryCustom {
     /*@Query(value = "select * from asset_Survey_History", nativeQuery = true)
     Optional<List<AssetSurveyHistory>> findAssetSurveyHistory();*/
+    void deleteByAssetSurveyNoIn(List<Long> assetSurveyNo);
 }
