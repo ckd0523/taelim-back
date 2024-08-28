@@ -49,6 +49,7 @@ public class AssetService {
                     dto.setAssetName(asset.getAssetName());
                     dto.setManufacturingCompany(asset.getManufacturingCompany());
                     dto.setPurpose(asset.getPurpose());
+                    dto.setQuantity(asset.getQuantity());
                     dto.setDepartment(asset.getDepartment());
                     dto.setAssetLocation(asset.getAssetLocation());
 
@@ -81,6 +82,7 @@ public class AssetService {
                     dto.setIntegrity(asset.getIntegrity());
                     dto.setAvailability(asset.getAvailability());
                     dto.setNote(asset.getNote());
+                    dto.setOwnership(asset.getOwnership());
                     dto.setPurchaseCost(asset.getPurchaseCost());
                     dto.setPurchaseDate(asset.getPurchaseDate());
                     dto.setUsefulLife(asset.getUsefulLife());
@@ -90,8 +92,15 @@ public class AssetService {
                     dto.setAcquisitionRoute(asset.getAcquisitionRoute());
                     dto.setMaintenancePeriod(asset.getMaintenancePeriod());
                     dto.setWarrantyDetails(asset.getWarrantyDetails());
-                    dto.setApproval(asset.getApproval());
                     dto.setAttachment(asset.getAttachment());
+                    dto.setDisposalStatus(asset.getDisposalStatus());
+                    dto.setDemandStatus(asset.getDemandStatus());
+                    dto.setApproval(asset.getApproval());
+                    dto.setDemandCheck(asset.getDemandCheck());
+                    dto.setCreateDate(asset.getCreateDate());
+                    dto.setUseState(asset.getUseState());
+                    dto.setAcquisitionRoute(asset.getAcquisitionRoute());
+                    dto.setMaintenancePeriod(asset.getMaintenancePeriod());
                     return dto;
                 })
                 .collect(Collectors.toList());

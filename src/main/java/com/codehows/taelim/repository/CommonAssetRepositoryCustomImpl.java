@@ -1,6 +1,7 @@
 package com.codehows.taelim.repository;
 
 import com.codehows.taelim.constant.Approval;
+import com.codehows.taelim.constant.AssetClassification;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.QCommonAsset;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -57,5 +58,21 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .from(ca)
                 .where(ca.assetNo.in(subQuery))
                 .fetch();
+    }
+
+    // 자산 분류에 따른 최신 자산 코드 가져오기
+    @Override
+    public Optional<String> findLastAssetCodeByClassification(AssetClassification classification) {
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 최신 자산 코드 가져오기
+        String assetCode = queryFactory
+                .select(ca.assetCode)
+                .from(ca)
+                .where(ca.assetClassification.eq(classification))
+                .orderBy(ca.assetNo.desc())  // 최신 자산을 먼저 정렬
+                .fetchFirst();
+
+        return Optional.ofNullable(assetCode);
     }
 }
