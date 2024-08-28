@@ -1,10 +1,7 @@
 package com.codehows.taelim.dto;
 
 import com.codehows.taelim.constant.*;
-import com.codehows.taelim.entity.ApplicationProgram;
-import com.codehows.taelim.entity.CommonAsset;
-import com.codehows.taelim.entity.InformationProtectionSystem;
-import com.codehows.taelim.entity.Member;
+import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.MemberRepository;
 import lombok.*;
 
@@ -181,5 +178,65 @@ public class AssetDto {
                 .build();
 
     }
+
+    public Software toSoftware() {
+        return Software.builder()
+                .ip(ip)
+                .serverId(serverId)
+                .serverPassword(serverPassword)
+                .companyManager(companyManager)
+                .os(os)
+                .build();
+    }
+
+    public ElectronicInformation toElectronicInformation() {
+        return ElectronicInformation.builder()
+                .os(os)
+                .system(system)
+                .DBType(DBType)
+                .build();
+    }
+
+    public Document toDocument() {
+        return Document.builder()
+                .documentGrade(documentGrade)
+                .documentType(documentType)
+                .documentLink(documentLink)
+                .build();
+    }
+
+    public PatentsAndTrademarks toPatentsAndTrademarks() {
+        return PatentsAndTrademarks.builder()
+                .applicationDate(applicationDate)
+                .registrationDate(registrationDate)
+                .expirationDate(expirationDate)
+                .patentTrademarkStatus(patentTrademarkStatus)
+                .countryApplication(countryApplication)
+                .patentClassification(patentClassification)
+                .patentItem(patentItem)
+                .applicationNo(applicationNo)
+                .inventor(inventor)
+                .assignee(assignee)
+                .relatedDocuments(relatedDocuments)
+                .build();
+    }
+
+    public ItSystemEquipment toItSystemEquipment() {
+        return ItSystemEquipment.builder()
+                .equipmentType(equipmentType)
+                .rackUnit(rackUnit)
+                .powerSupply(powerSupply)
+                .coolingSystem(coolingSystem)
+                .interfacePorts(interfacePorts)
+                .formFactor(formFactor)
+                .expansionSlots(expansionSlots)
+                .graphicsCard(graphicsCard)
+                .portConfiguration(portConfiguration)
+                .monitorIncluded(monitorIncluded)
+                .build();
+    }
+
+
+
 
 }

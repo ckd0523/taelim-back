@@ -2,14 +2,8 @@ package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.dto.AssetDto;
-import com.codehows.taelim.entity.ApplicationProgram;
-import com.codehows.taelim.entity.CommonAsset;
-import com.codehows.taelim.entity.InformationProtectionSystem;
-import com.codehows.taelim.entity.Member;
-import com.codehows.taelim.repository.ApplicationProgramRepository;
-import com.codehows.taelim.repository.CommonAssetRepository;
-import com.codehows.taelim.repository.InformationProtectionSystemRepository;
-import com.codehows.taelim.repository.MemberRepository;
+import com.codehows.taelim.entity.*;
+import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,8 +17,19 @@ import java.util.stream.Collectors;
 public class RegisterService {
 
     private final CommonAssetRepository commonAssetRepository;
-    private final InformationProtectionSystemRepository informationProtectionSystemRepository;
+    private final SoftwareRepository softwareRepository;
+    private final CarRepository carRepository;
+    private final DevicesRepository devicesRepository;
+    private final DocumentRepository documentRepository;
+    private final TerminalRepository terminalRepository;
+    private final FurnitureRepository furnitureRepository;
+    private final OtherAssetsRepository otherAssetsRepository;
+    private final ItSystemEquipmentRepository itSystemEquipmentRepository;
     private final ApplicationProgramRepository applicationProgramRepository;
+    private final ItNetworkEquipmentRepository itNetworkEquipmentRepository;
+    private final ElectronicInformationRepository electronicInformationRepository;
+    private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
+    private final InformationProtectionSystemRepository informationProtectionSystemRepository;
     private final MemberRepository memberRepository;
     public void assetRegister(AssetDto assetDto){
 
@@ -53,6 +58,31 @@ public class RegisterService {
                 ApplicationProgram applicationProgram = assetDto.toApplication();
                 applicationProgram.setAssetNo(commonAsset1);
                 applicationProgramRepository.save(applicationProgram);
+            }
+            case SOFTWARE -> {
+                Software software = assetDto.toSoftware();
+                software.setAssetNo(commonAsset1);
+                softwareRepository.save(software);
+            }
+            case ELECTRONIC_INFORMATION -> {
+                ElectronicInformation electronicInformation = assetDto.toElectronicInformation();
+                electronicInformation.setAssetNo(commonAsset1);
+                electronicInformationRepository.save(electronicInformation);
+            }
+            case DOCUMENT -> {
+                Document document = assetDto.toDocument();
+                document.setAssetNo(commonAsset1);
+                documentRepository.save(document);
+            }
+            case PATENTS_AND_TRADEMARKS -> {
+                PatentsAndTrademarks patentsAndTrademarks = assetDto.toPatentsAndTrademarks();
+                patentsAndTrademarks.setAssetNo(commonAsset1);
+                patentsAndTrademarksRepository.save(patentsAndTrademarks);
+            }
+            case ITSYSTEM_EQUIPMENT -> {
+                ItSystemEquipment itSystemEquipment = assetDto.toItSystemEquipment();
+                itSystemEquipment.setAssetNo(commonAsset1);
+                itSystemEquipmentRepository.save(itSystemEquipment);
             }
         }
 
