@@ -1,10 +1,7 @@
 package com.codehows.taelim.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "software")
@@ -12,6 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Software {
 
     @Id
@@ -23,10 +21,10 @@ public class Software {
     @JoinColumn(name = "assetNo")
     private CommonAsset assetNo;
 
-    private String IP;
+    private String ip;
     private String serverId;
     private String serverPassword;
     private String companyManager;
-    private String OS;
+    private String os;
 
 }

@@ -22,6 +22,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
     @PersistenceContext
     private EntityManager entityManager;
 
+    //자산코드로 하나의 자산 공통정보 가져오기
     @Override
     public Optional<CommonAsset> findLatestApprovedAsset(String assetCode) {
         CommonAsset result = queryFactory
@@ -35,6 +36,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         return Optional.ofNullable(result);
     }
 
+    // 자산목록 (자산 공통정보)
     @Override
     public List<CommonAsset> findApprovedAndNotDisposedAssets() {
         QCommonAsset ca = QCommonAsset.commonAsset;

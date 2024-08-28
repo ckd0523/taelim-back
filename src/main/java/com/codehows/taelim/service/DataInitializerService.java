@@ -20,11 +20,7 @@ import java.time.LocalDate;
 public class DataInitializerService {
 
     private final MemberRepository memberRepository;
-
-
     private final CommonAssetRepository commonAssetRepository;
-
-
     private final SoftwareRepository softwareRepository;
 
     @Transactional
@@ -49,7 +45,11 @@ public class DataInitializerService {
             member.setRole(Role.USER);
 
             CommonAsset asset = new CommonAsset();
-            asset.setAssetClassification(AssetClassification.FURNITURE);
+            if (i <= 5) {
+                asset.setAssetClassification(AssetClassification.SOFTWARE);
+            }else {
+                asset.setAssetClassification(AssetClassification.FURNITURE);
+            }
             asset.setAssetBasis(AssetBasis.COMMON);
             asset.setAssetCode(String.format("ASSET%03d", i));
             asset.setAssetName("Asset " + i);
@@ -76,9 +76,8 @@ public class DataInitializerService {
             asset.setAttachment("Test Attachment");
             asset.setPurchaseSource("Test Purchase Source");
             asset.setContactInformation("010-0000-0000");
-            asset.setQRInformation("Test QR Information");
             asset.setDisposalStatus(Boolean.FALSE);
-            asset.setRequestStatus(Boolean.FALSE);
+            asset.setDemandStatus(Boolean.FALSE);
             asset.setApproval(Approval.APPROVE);
             asset.setDemandCheck(Boolean.FALSE);
             asset.setCreateDate(LocalDate.now());
@@ -87,6 +86,20 @@ public class DataInitializerService {
             asset.setMaintenancePeriod(LocalDate.now());
             // 기타 필드 설정
             commonAssetRepository.save(asset);
+            if(i<=5) {
+                Software software = new Software();
+                software.setAssetNo(asset);
+                software.setIp("192.168.1." + i);
+                software.setServerId("server" + String.format("%02d", i));
+                software.setServerPassword("pass" + i);
+                software.setCompanyManager("Manager " + i);
+                software.setOs("Windows Server 2022");
+                softwareRepository.save(software);
+            } else {
+                Furniture furniture = new Furniture();
+                furniture.setAssetNo(asset);
+                furniture.setFurnitureSize("500");
+            }
         }
 
         //수정
@@ -126,10 +139,9 @@ public class DataInitializerService {
                 asset.setAttachment("Test Attachment");
                 asset.setPurchaseSource("Test Purchase Source");
                 asset.setContactInformation("010-0000-0000");
-                asset.setQRInformation("Test QR Information");
                 asset.setDisposalStatus(Boolean.FALSE);
 
-                asset.setRequestStatus(Boolean.TRUE);
+                asset.setDemandStatus(Boolean.TRUE);
                 if (i < 5) {
                     asset.setApproval(Approval.APPROVE);
                 } else {
@@ -143,6 +155,20 @@ public class DataInitializerService {
                 asset.setMaintenancePeriod(LocalDate.now());
                 // 기타 필드 설정
                 commonAssetRepository.save(asset);
+                if(i<=5) {
+                    Software software = new Software();
+                        software.setAssetNo(asset);
+                        software.setIp("192.168.1." + i);
+                        software.setServerId("server" + String.format("%02d", i));
+                        software.setServerPassword("pass" + i);
+                        software.setCompanyManager("Manager " + i);
+                        software.setOs("Windows Server 2022");
+                        softwareRepository.save(software);
+                    } else {
+                    Furniture furniture = new Furniture();
+                        furniture.setAssetNo(asset);
+                        furniture.setFurnitureSize("500");
+                }
             }
         }
 
