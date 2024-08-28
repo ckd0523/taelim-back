@@ -115,10 +115,6 @@ public class RegisterService {
                 otherAssetsRepository.save(otherAssets);
             }
         }
-
-
-
-
     }
 
     public Optional<CommonAsset> findById(Long id) {
@@ -147,4 +143,6 @@ public class RegisterService {
                 })
                 .collect(Collectors.toList());
     }
+
+    // 자산 코드 생성
 }

@@ -65,7 +65,7 @@ public class AssetDto {
     private String companyManager;
 
     private String system;
-    private String DBType;
+    private String dbtype;
 
     private DocumentGrade documentGrade;
     private DocumentType documentType;
@@ -144,6 +144,7 @@ public class AssetDto {
                 .note(note)
                 .manufacturingCompany(manufacturingCompany)
                 .ownership(ownership)
+                .purchaseCost(purchaseCost)
                 .purchaseDate(purchaseDate)
                 .usefulLife(usefulLife)
                 .depreciationMethod(depreciationMethod)
@@ -193,7 +194,7 @@ public class AssetDto {
         return ElectronicInformation.builder()
                 .os(os)
                 .system(system)
-                .DBType(DBType)
+                .dbtype(dbtype)
                 .build();
     }
 

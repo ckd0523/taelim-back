@@ -23,5 +23,5 @@ public class ElectronicInformation {
 
     private String os;
     private String system;
-    private String DBType;
+    private String dbtype;
 }

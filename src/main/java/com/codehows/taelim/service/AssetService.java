@@ -229,7 +229,7 @@ public class AssetService {
                 ElectronicInformation electronicInformation = electronicInformationRepository.findByAssetNo(commonAsset);
                 assetDto.setOs(electronicInformation.getOs());
                 assetDto.setSystem(electronicInformation.getSystem());
-                assetDto.setDBType(electronicInformation.getDBType());
+                assetDto.setDbtype(electronicInformation.getDbtype());
             }
             case PATENTS_AND_TRADEMARKS -> {
                 PatentsAndTrademarks patentsAndTrademarks = patentsAndTrademarksRepository.findByAssetNo(commonAsset);
