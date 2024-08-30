@@ -10,4 +10,7 @@ public interface CommonAssetRepositoryCustom {
     Optional<CommonAsset> findLatestApprovedAsset(String assetCode);
 
     List<CommonAsset> findApprovedAndNotDisposedAssets();
+
+    // 수정 이력
+    List<CommonAsset> findApprovedAssetsByCodeExceptLatest(String assetCode);
 }

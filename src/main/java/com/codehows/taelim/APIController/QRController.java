@@ -6,16 +6,15 @@ import com.codehows.taelim.service.AssetService;
 import com.codehows.taelim.service.QRService;
 import com.google.zxing.WriterException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.http.HttpHeaders;
 
-
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @RequiredArgsConstructor
 @RestController
@@ -44,6 +43,57 @@ public class QRController {
         }
     }
 
+    @PostMapping("/generateQRCodeBatch")
+    public ResponseEntity<Map<String, String>> generateQRCodeBatch(@RequestBody List<String> assetCodes) {
+        try {
+            Map<String, String> qrCodeMap = new HashMap<>();
+
+            for (String assetCode : assetCodes) {
+                String url = "http://localhost:8080/asset/" + assetCode;
+                byte[] qrCode = qrCodeService.generateQRCode(url, 200, 200);
+                String base64Image = Base64.getEncoder().encodeToString(qrCode);
+                qrCodeMap.put(assetCode, "data:image/png;base64," + base64Image);
+            }
+
+            return ResponseEntity.ok(qrCodeMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+//    @PostMapping("/generateQRCodePDF")
+//    public ResponseEntity<byte[]> generateQRCodePDF(@RequestBody List<String> assetCodes) {
+//        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//             PDDocument document = new PDDocument()) {
+//
+//            PDPage page = new PDPage();
+//            document.addPage(page);
+//
+//            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+//            for (String assetCode : assetCodes) {
+//                String url = "http://localhost:8080/asset/" + assetCode;
+//                byte[] qrCode = qrCodeService.generateQRCode(url, 200, 200);
+//
+//                PDImageXObject pdImage = PDImageXObject.createFromByteArray(document, qrCode, assetCode);
+//                contentStream.drawImage(pdImage, 100, 700 - (assetCodes.indexOf(assetCode) * 220), 200, 200);
+//            }
+//            contentStream.close();
+//            document.save(byteArrayOutputStream);
+//
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_PDF);
+//            headers.setContentDisposition(ContentDisposition.inline().filename("qrcodes.pdf"));
+//
+//            return ResponseEntity.ok().headers(headers).body(byteArrayOutputStream.toByteArray());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).build();
+//        }
+//    }
+
+
+
 //    //QR 조회
 //    @GetMapping("/{assetCode}")
 //    public ResponseEntity<String> getQRCode(@PathVariable("assetCode") String assetCode) {
@@ -66,7 +116,7 @@ public class QRController {
 
     //상세조회 (공통 및 서브 칼럼)
     @GetMapping("/asset/{assetCode}")
-    public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
+    public Map<String, Object> getAssetDetail(@PathVariable("assetCode") String assetCode) {
         return assetService.getAssetDetail(assetCode);
     }
 

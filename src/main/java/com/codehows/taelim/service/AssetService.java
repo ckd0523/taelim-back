@@ -3,13 +3,13 @@ package com.codehows.taelim.service;
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
 import com.codehows.taelim.dto.AssetDto;
+import com.codehows.taelim.dto.AssetSurvey;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -30,6 +30,9 @@ public class AssetService {
     private final ElectronicInformationRepository electronicInformationRepository;
     private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
     private final InformationProtectionSystemRepository informationProtectionSystemRepository;
+    private final FileRepository fileRepository;
+    private final RepairHistoryRepository repairHistoryRepository;
+    private final AssetSurveyService assetSurveyService;
 
     //자산코드로 하나의 자산 공통정보 가져오기
     public Optional<CommonAsset> getCommonAsset(String assetCode) {
@@ -62,7 +65,7 @@ public class AssetService {
     }
 
     // 자산 상세 조회
-    public AssetDto getAssetDetail(String assetCode) {
+    public Map<String, Object> getAssetDetail(String assetCode) {
 
         AssetDto assetDto = new AssetDto();
         Optional<CommonAsset> commonAssetObj = commonAssetRepository.findLatestApprovedAsset(assetCode);
@@ -215,7 +218,24 @@ public class AssetService {
             }
 
         }
-        return assetDto;
+
+        //파일
+        List<File> fileList = fileRepository.findByAssetNo(commonAsset);
+        //유지보수
+        List<RepairHistory> repairList = repairHistoryRepository.findByAssetNo(commonAsset);
+        //수정이력
+        List<CommonAsset> updateList = commonAssetRepository.findApprovedAssetsByCodeExceptLatest(assetCode);
+        //자산조사이력
+        List<AssetSurvey> assetSurveyList = assetSurveyService.getAssetSurveysByAssetNo(commonAsset);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("fileList", fileList != null ? fileList : Collections.emptyList());
+        result.put("repairList", repairList != null ? repairList : Collections.emptyList());
+        result.put("commonAssetList", updateList != null ? repairList : Collections.emptyList());
+        result.put("assetSurveyList", assetSurveyList != null ? repairList : Collections.emptyList());
+        result.put("assetDto", assetDto);
+
+        return result;
     }
 
     //폐기 승인 처리
