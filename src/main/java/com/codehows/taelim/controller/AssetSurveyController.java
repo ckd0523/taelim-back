@@ -4,6 +4,7 @@ import com.codehows.taelim.constant.AssetLocation;
 import com.codehows.taelim.dto.AssetSurveyHistoryDto;
 import com.codehows.taelim.dto.AssetSurveyHistoryRegisterDto;
 import com.codehows.taelim.dto.DeleteRequest;
+import com.codehows.taelim.entity.AssetSurveyDetail;
 import com.codehows.taelim.entity.AssetSurveyHistory;
 import com.codehows.taelim.service.AssetSurveyService;
 import lombok.Getter;
@@ -58,5 +59,10 @@ public class AssetSurveyController {
         System.out.println(result);
 
         return new ResponseEntity<>(HttpStatus.CREATED); // 201 Created 상태 코드 반환
+    }
+
+    @GetMapping("/assetSurveyDetail")
+    public List<AssetSurveyDetail> getAssetSurveyDetail(@RequestParam Integer assetSurveyNo) {
+        return assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo);
     }
 }

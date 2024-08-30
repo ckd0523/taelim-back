@@ -1,6 +1,7 @@
 package com.codehows.taelim.repository;
 
 import com.codehows.taelim.entity.AssetSurveyDetail;
+import com.codehows.taelim.entity.AssetSurveyHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +25,7 @@ public interface AssetSurveyDetailRepository extends JpaRepository<AssetSurveyDe
     @Modifying
     @Query(value = "delete from asset_survey_detail where asset_survey_no in :asset_Survey_No", nativeQuery = true)
     void deleteByAssetSurveyNoIn(@Param("asset_Survey_No") List<Long> asset_Survey_No);
+
+    //자산 조사를 위한 자산 조사 상세 이력
+    List<AssetSurveyDetail> findAllByAssetSurveyNo(AssetSurveyHistory assetSurveyHistory);
 }

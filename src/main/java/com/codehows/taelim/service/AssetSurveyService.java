@@ -108,13 +108,17 @@ public class AssetSurveyService {
         return "자산 조사 삭제 성공";
     }
 
-    //자산 조사 상세 이력
-    //한 위치에 대해 여러 번 자산 조사가 이루어질 경우 자산 조사 번호만으로 상세 이력을 가져올 수 없음
-    public List<AssetSurveyDetail> getAssetSurveyDetail(Long assetSurveyNo, Long round) {
-        return assetSurveyDetailRepository.findAllByAssetSurveyNo(assetSurveyNo, round);
-
+    //자산 조사를 위한 자산 조사 상세 이력
+    public List<AssetSurveyDetail> getAssetSurveyDetail(Long assetSurveyNo) {
+        //assetSurveyDetailRepository에서 findAllByAssetSurveyNo 메서드가
+        //받을 매개변수의 예상이 assetSurveyHistory라고 해서
+        //프론트에서 넘어온 assetSurveyNo로 assetSurveyHistory를 찾아서
+        //고대로 넣어줌, 연관 매핑이 되어있어서 가능한듯
+        AssetSurveyHistory assetSurveyHistory = assetSurveyHistoryRepository.findByAssetSurveyNo(assetSurveyNo);
+        return assetSurveyDetailRepository.findAllByAssetSurveyNo(assetSurveyHistory);
     }
 
     //자산 조사 상세 수정
+    //자산 조사를 진행할 때 각 자산에 대한 정위치 유무, 파손 유무 등을 실시간으로 처리
     //public String updateAssetSurveyDetail() {}
 }
