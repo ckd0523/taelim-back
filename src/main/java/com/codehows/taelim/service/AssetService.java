@@ -31,6 +31,7 @@ public class AssetService {
     private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
     private final InformationProtectionSystemRepository informationProtectionSystemRepository;
 
+
     //자산코드로 하나의 자산 공통정보 가져오기
     public Optional<CommonAsset> getCommonAsset(String assetCode) {
       return commonAssetRepository.findLatestApprovedAsset(assetCode);

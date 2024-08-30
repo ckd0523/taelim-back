@@ -31,18 +31,9 @@ public class RegisterService {
     private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
     private final InformationProtectionSystemRepository informationProtectionSystemRepository;
     private final MemberRepository memberRepository;
-    private final SoftwareRepository softwareRepository;
-    private final ElectronicInformationRepository electronicInformationRepository;
-    private final DocumentRepository documentRepository;
-    private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
-    private final ItSystemEquipmentRepository itSystemEquipmentRepository;
-    private final ItNetworkEquipmentRepository itNetworkEquipmentRepository;
-    private final TerminalRepository terminalRepository;
-    private final FurnitureRepository furnitureRepository;
-    private final DevicesRepository devicesRepository;
-    private final CarRepository carRepository;
-    private final OtherAssetsRepository otherAssetsRepository;
-    public void assetRegister(AssetDto assetDto){
+    private final FileRepository fileRepository;
+
+    public Long assetRegister(AssetDto assetDto){
 
         Member assetUser = memberRepository.findByEmail(assetDto.getAssetUser());
         Member assetOwner = memberRepository.findByEmail(assetDto.getAssetOwner());
@@ -53,8 +44,10 @@ public class RegisterService {
         commonAsset.setAssetSecurityManager(assetSecurityManager);
         commonAsset.setApproval(Approval.APPROVE);
         commonAsset.setDisposalStatus(Boolean.FALSE);
+
         commonAssetRepository.save(commonAsset);
 
+        Long assetId = commonAsset.getAssetNo();
         CommonAsset commonAsset1 = commonAssetRepository.findTopByOrderByAssetNoDesc();
 
 
@@ -126,6 +119,8 @@ public class RegisterService {
                 otherAssetsRepository.save(otherAssets);
             }
         }
+        return assetId;
+
     }
 
     public Optional<CommonAsset> findById(Long id) {
