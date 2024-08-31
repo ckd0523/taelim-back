@@ -6,10 +6,18 @@ import com.codehows.taelim.service.AssetService;
 import com.codehows.taelim.service.QRService;
 import com.google.zxing.WriterException;
 import lombok.RequiredArgsConstructor;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -63,34 +71,45 @@ public class QRController {
     }
 
 
-//    @PostMapping("/generateQRCodePDF")
-//    public ResponseEntity<byte[]> generateQRCodePDF(@RequestBody List<String> assetCodes) {
-//        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//             PDDocument document = new PDDocument()) {
-//
-//            PDPage page = new PDPage();
-//            document.addPage(page);
-//
-//            PDPageContentStream contentStream = new PDPageContentStream(document, page);
-//            for (String assetCode : assetCodes) {
-//                String url = "http://localhost:8080/asset/" + assetCode;
-//                byte[] qrCode = qrCodeService.generateQRCode(url, 200, 200);
-//
-//                PDImageXObject pdImage = PDImageXObject.createFromByteArray(document, qrCode, assetCode);
-//                contentStream.drawImage(pdImage, 100, 700 - (assetCodes.indexOf(assetCode) * 220), 200, 200);
-//            }
-//            contentStream.close();
-//            document.save(byteArrayOutputStream);
-//
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_PDF);
-//            headers.setContentDisposition(ContentDisposition.inline().filename("qrcodes.pdf"));
-//
-//            return ResponseEntity.ok().headers(headers).body(byteArrayOutputStream.toByteArray());
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).build();
-//        }
-//    }
+    @PostMapping("/generateQRCodePDF")
+    public ResponseEntity<byte[]> generateQRCodePDF(@RequestBody List<String> assetCodes) {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             PDDocument document = new PDDocument()) {
+
+            PDPage page = new PDPage();
+            document.addPage(page);
+
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+            int yPosition = 700;
+
+            for (String assetCode : assetCodes) {
+                String url = "http://localhost:8080/asset/" + assetCode;
+                byte[] qrCode = qrCodeService.generateQRCode(url, 200, 200);
+
+                // 바이트 배열을 BufferedImage로 변환
+                BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(qrCode));
+
+                // BufferedImage를 PDFBox의 PDImageXObject로 변환
+                PDImageXObject pdImage = LosslessFactory.createFromImage(document, bufferedImage);
+                contentStream.drawImage(pdImage, 100, yPosition, 200, 200);
+
+                yPosition -= 220; // 다음 QR 코드의 Y 위치를 조정합니다.
+            }
+
+            contentStream.close();
+            document.save(byteArrayOutputStream);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDisposition(ContentDisposition.inline().filename("qrcodes.pdf").build());
+
+            return ResponseEntity.ok().headers(headers).body(byteArrayOutputStream.toByteArray());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
 
 
 
