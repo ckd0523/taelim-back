@@ -19,21 +19,23 @@ import java.util.stream.Collectors;
 public class RegisterService {
 
     private final CommonAssetRepository commonAssetRepository;
-    private final InformationProtectionSystemRepository informationProtectionSystemRepository;
-    private final ApplicationProgramRepository applicationProgramRepository;
-    private final MemberRepository memberRepository;
     private final SoftwareRepository softwareRepository;
-    private final ElectronicInformationRepository electronicInformationRepository;
+    private final CarRepository carRepository;
+    private final DevicesRepository devicesRepository;
     private final DocumentRepository documentRepository;
-    private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
-    private final ItSystemEquipmentRepository itSystemEquipmentRepository;
-    private final ItNetworkEquipmentRepository itNetworkEquipmentRepository;
     private final TerminalRepository terminalRepository;
     private final FurnitureRepository furnitureRepository;
-    private final DevicesRepository devicesRepository;
-    private final CarRepository carRepository;
     private final OtherAssetsRepository otherAssetsRepository;
-    public void assetRegister(AssetDto assetDto){
+    private final ItSystemEquipmentRepository itSystemEquipmentRepository;
+    private final ApplicationProgramRepository applicationProgramRepository;
+    private final ItNetworkEquipmentRepository itNetworkEquipmentRepository;
+    private final ElectronicInformationRepository electronicInformationRepository;
+    private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
+    private final InformationProtectionSystemRepository informationProtectionSystemRepository;
+    private final MemberRepository memberRepository;
+    private final FileRepository fileRepository;
+
+    public Long assetRegister(AssetDto assetDto){
 
         Member assetUser = memberRepository.findByEmail(assetDto.getAssetUser());
         Member assetOwner = memberRepository.findByEmail(assetDto.getAssetOwner());
@@ -54,6 +56,7 @@ public class RegisterService {
 
         commonAssetRepository.save(commonAsset);
 
+        Long assetId = commonAsset.getAssetNo();
         CommonAsset commonAsset1 = commonAssetRepository.findTopByOrderByAssetNoDesc();
 
         switch (commonAsset.getAssetClassification()){
@@ -123,6 +126,8 @@ public class RegisterService {
                 otherAssetsRepository.save(otherAssets);
             }
         }
+        return assetId;
+
     }
 
     public Optional<CommonAsset> findById(Long id) {

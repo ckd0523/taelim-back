@@ -2,10 +2,7 @@ package com.codehows.taelim.entity;
 
 import com.codehows.taelim.constant.FileType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "file")
@@ -13,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class File {
     @Id
     @Column(name = "fileNo")
@@ -25,10 +23,11 @@ public class File {
 
     private String oriFileName;
     private String fileName;
-    private String fileSize;
+    private Long fileSize;
     private String fileExt;
     private String fileURL;
 
     @Enumerated(EnumType.STRING)
     private FileType fileType;
+
 }
