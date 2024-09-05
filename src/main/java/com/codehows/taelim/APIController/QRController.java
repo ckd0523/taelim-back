@@ -1,6 +1,7 @@
 package com.codehows.taelim.APIController;
 
 import com.codehows.taelim.dto.AssetDto;
+import com.codehows.taelim.dto.CommonAssetDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.service.AssetService;
 import com.codehows.taelim.service.QRService;
@@ -129,14 +130,27 @@ public class QRController {
 
     //상세조회 (공통 칼럼)
     @GetMapping("/assets/{assetCode}")
-    public Optional<CommonAsset> getCommonAsset(@PathVariable("assetCode") String assetCode) {
-        return assetService.getCommonAsset(assetCode);
+    public CommonAssetDto getCommonAsset(@PathVariable("assetCode") String assetCode) {
+        CommonAsset commonAsset = assetService.getCommonAsset(assetCode).orElse(null);
+        CommonAssetDto commonAssetDto = new CommonAssetDto();
+        commonAssetDto.setAssetCode(assetCode);
+        commonAssetDto.setAssetName(commonAsset.getAssetName());
+        commonAssetDto.setAssetBasis(commonAsset.getAssetBasis());
+        commonAssetDto.setAssetClassification(commonAsset.getAssetClassification());
+        commonAssetDto.setAssetNo(commonAsset.getAssetNo());
+        return commonAssetDto;
     }
 
     //상세조회 (공통 및 서브 칼럼)
+//    @GetMapping("/asset/{assetCode}")
+//    public Map<String, Object> getAssetDetail(@PathVariable("assetCode") String assetCode) {
+//        return assetService.getAssetDetail(assetCode);
+//    }
+
+    //상세조회 (공통 및 서브 칼럼)
     @GetMapping("/asset/{assetCode}")
-    public Map<String, Object> getAssetDetail(@PathVariable("assetCode") String assetCode) {
-        return assetService.getAssetDetail(assetCode);
+    public Map<String, Object> getAssetDetail2(@PathVariable("assetCode") String assetCode) {
+        return assetService.getAssetDetail2(assetCode);
     }
 
     @PostMapping("/dispose/{assetCode}")

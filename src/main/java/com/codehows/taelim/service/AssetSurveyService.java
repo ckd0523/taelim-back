@@ -7,6 +7,7 @@ import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.repository.AssetSurveyDetailRepository;
 import com.codehows.taelim.repository.AssetSurveyHistoryRepository;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,11 +15,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class AssetSurveyService {
 
-    private AssetSurveyDetailRepository assetSurveyDetailRepository;
-    private AssetSurveyHistoryRepository assetSurveyHistoryRepository;
+    private final AssetSurveyDetailRepository assetSurveyDetailRepository;
+    private final AssetSurveyHistoryRepository assetSurveyHistoryRepository;
 
     public List<AssetSurvey> getAssetSurveysByAssetNo(CommonAsset assetNo) {
         // AssetSurveyDetail 엔티티 리스트를 가져옴

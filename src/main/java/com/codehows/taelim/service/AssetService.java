@@ -2,8 +2,7 @@ package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
-import com.codehows.taelim.dto.AssetDto;
-import com.codehows.taelim.dto.AssetSurvey;
+import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -233,6 +232,207 @@ public class AssetService {
         result.put("repairList", repairList != null ? repairList : Collections.emptyList());
         result.put("commonAssetList", updateList != null ? repairList : Collections.emptyList());
         result.put("assetSurveyList", assetSurveyList != null ? repairList : Collections.emptyList());
+        result.put("assetDto", assetDto);
+
+        return result;
+    }
+
+    // 자산 상세 조회2
+    public Map<String, Object> getAssetDetail2(String assetCode) {
+
+        Map<String, Object> result = new HashMap<>();
+        CommonAssetDto assetDto = new CommonAssetDto();
+        Optional<CommonAsset> commonAssetObj = commonAssetRepository.findLatestApprovedAsset(assetCode);
+        CommonAsset commonAsset = commonAssetObj.get();
+        assetDto.setAssetNo(commonAsset.getAssetNo());
+        assetDto.setAssetBasis(commonAsset.getAssetBasis());
+        assetDto.setAssetCode(commonAsset.getAssetCode());
+        assetDto.setAssetClassification(commonAsset.getAssetClassification());
+        assetDto.setAssetName(commonAsset.getAssetName());
+        assetDto.setManufacturingCompany(commonAsset.getManufacturingCompany());
+        assetDto.setPurpose(commonAsset.getPurpose());
+        assetDto.setDepartment(commonAsset.getDepartment());
+        assetDto.setAssetLocation(commonAsset.getAssetLocation());
+        assetDto.setUseState(commonAsset.getUseState());
+        assetDto.setOperationStatus(commonAsset.getOperationStatus());
+        assetDto.setIntroducedDate(commonAsset.getIntroducedDate());
+        assetDto.setQuantity(commonAsset.getQuantity());
+        assetDto.setOwnership(commonAsset.getOwnership());
+        assetDto.setConfidentiality(commonAsset.getConfidentiality());
+        assetDto.setIntegrity(commonAsset.getIntegrity());
+        assetDto.setAvailability(commonAsset.getAvailability());
+        assetDto.setNote(commonAsset.getNote());
+        assetDto.setPurchaseCost(commonAsset.getPurchaseCost());
+        assetDto.setPurchaseDate(commonAsset.getPurchaseDate());
+        assetDto.setUsefulLife(commonAsset.getUsefulLife());
+        assetDto.setDepreciationMethod(commonAsset.getDepreciationMethod());
+        assetDto.setPurchaseSource(commonAsset.getPurchaseSource());
+        assetDto.setContactInformation(commonAsset.getContactInformation());
+        assetDto.setAcquisitionRoute(commonAsset.getAcquisitionRoute());
+        assetDto.setMaintenancePeriod(commonAsset.getMaintenancePeriod());
+        assetDto.setWarrantyDetails(commonAsset.getWarrantyDetails());
+        assetDto.setAttachment(commonAsset.getAttachment());
+        assetDto.setDisposalStatus(commonAsset.getDisposalStatus());
+        assetDto.setDemandStatus(commonAsset.getDemandStatus());
+        assetDto.setApproval(commonAsset.getApproval());
+        assetDto.setDemandCheck(commonAsset.getDemandCheck());
+        assetDto.setCreateDate(commonAsset.getCreateDate());
+        AssetClassification AssetClassification = commonAsset.getAssetClassification();
+        switch (AssetClassification) {
+            case SOFTWARE -> {
+                Software software = softwareRepository.findByAssetNo(commonAsset);
+                SoftwareDto softwareDto = new SoftwareDto();
+                softwareDto.setCompanyManager(software.getCompanyManager());
+                softwareDto.setIp(software.getIp());
+                softwareDto.setOs(software.getOs());
+                softwareDto.setServerId(software.getServerId());
+                softwareDto.setServerPassword(software.getServerPassword());
+                result.put("softwareDto", softwareDto);
+            }
+            case CAR -> {
+                Car car = carRepository.findByAssetNo(commonAsset);
+                CarDto carDto = new CarDto();
+                carDto.setDisplacement(car.getDisplacement());
+                carDto.setDoorsCount(car.getDoorsCount());
+                carDto.setEngineType(car.getEngineType());
+                carDto.setCarType(car.getCarType());
+                carDto.setIdentificationNo(car.getIdentificationNo());
+                carDto.setCarColor(car.getCarColor());
+                carDto.setModelYear(car.getModelYear());
+                result.put("carDto", carDto);
+            }
+            case DEVICES -> {
+
+                Devices devices = devicesRepository.findByAssetNo(commonAsset);
+                DevicesDto devicesDto = new DevicesDto();
+                devicesDto.setDeviceType(devices.getDeviceType());
+                devicesDto.setModelNumber(devices.getModelNumber());
+                devicesDto.setConnectionType(devices.getConnectionType());
+                devicesDto.setPowerSpecifications(devices.getPowerSpecifications());
+                result.put("devicesDto", devicesDto);
+
+            }
+            case DOCUMENT -> {
+
+                Document document = documentRepository.findByAssetNo(commonAsset);
+                DocumentDto documentDto = new DocumentDto();
+                documentDto.setDocumentGrade(document.getDocumentGrade());
+                documentDto.setDocumentType(document.getDocumentType());
+                documentDto.setDocumentLink(document.getDocumentLink());
+                result.put("documentDto", documentDto);
+            }
+            case TERMINAL -> {
+                Terminal terminal = terminalRepository.findByAssetNo(commonAsset);
+                TerminalDto terminalDto = new TerminalDto();
+                terminalDto.setIp(terminal.getIp());
+                terminalDto.setProductSerialNumber(terminal.getProductSerialNumber());
+                terminalDto.setOs(terminal.getOs());
+                terminalDto.setSecurityControl(terminal.getSecurityControl());
+                terminalDto.setKaitsKeeper(terminal.getKaitsKeeper());
+                terminalDto.setV3OfficeSecurity(terminal.getV3OfficeSecurity());
+                terminalDto.setAppCheckPro(terminal.getAppCheckPro());
+                terminalDto.setTgate(terminal.getTgate());
+                result.put("terminalDto", terminalDto);
+
+            }
+            case FURNITURE -> {
+                Furniture furniture = furnitureRepository.findByAssetNo(commonAsset);
+                FurnitureDto furnitureDto = new FurnitureDto();
+                furnitureDto.setFurnitureSize(furniture.getFurnitureSize());
+                result.put("furnitureDto", furnitureDto);
+
+            }
+            case OTHERASSETS -> {
+                OtherAssets otherAssets = otherAssetsRepository.findByAssetNo(commonAsset);
+                OtherAssetsDto otherAssetsDto = new OtherAssetsDto();
+                otherAssetsDto.setOtherDescription(otherAssets.getOtherDescription());
+                otherAssetsDto.setUsageFrequency(otherAssets.getUsageFrequency());
+                result.put("otherAssetsDto", otherAssetsDto);
+            }
+            case ITSYSTEM_EQUIPMENT -> {
+                ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(commonAsset);
+                ItSystemEquipmentDto itSystemEquipmentDto = new ItSystemEquipmentDto();
+                itSystemEquipmentDto.setEquipmentType(itSystemEquipment.getEquipmentType());
+                itSystemEquipmentDto.setRackUnit(itSystemEquipment.getRackUnit());
+                itSystemEquipmentDto.setPowerSupply(itSystemEquipment.getPowerSupply());
+                itSystemEquipmentDto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
+                itSystemEquipmentDto.setInterfacePorts(itSystemEquipment.getInterfacePorts());
+                itSystemEquipmentDto.setFormFactor(itSystemEquipment.getFormFactor());
+                itSystemEquipmentDto.setExpansionSlots(itSystemEquipment.getExpansionSlots());
+                itSystemEquipmentDto.setGraphicsCard(itSystemEquipment.getGraphicsCard());
+                itSystemEquipmentDto.setPortConfiguration(itSystemEquipment.getPortConfiguration());
+                itSystemEquipmentDto.setMonitorIncluded(itSystemEquipment.getMonitorIncluded());
+                result.put("itSystemEquipmentDto", itSystemEquipmentDto);
+
+            }
+            case APPLICATION_PROGRAM -> {
+                ApplicationProgram applicationProgram = applicationProgramRepository.findByAssetNo(commonAsset);
+                ApplicationProgramDto applicationProgramDto = new ApplicationProgramDto();
+                applicationProgramDto.setServiceScope(applicationProgram.getServiceScope());
+                applicationProgramDto.setOs(applicationProgram.getOs());
+                applicationProgramDto.setRelatedDB(applicationProgram.getRelatedDB());
+                applicationProgramDto.setIp(applicationProgram.getIp());
+                applicationProgramDto.setScreenNumber(applicationProgram.getScreenNumber());
+                result.put("applicationProgramDto", applicationProgramDto);
+            }
+            case ITNETWORK_EQUIPMENT -> {
+                ItNetworkEquipment itNetworkEquipment = itNetworkEquipmentRepository.findByAssetNo(commonAsset);
+                ItNetworkEquipmentDto itNetworkEquipmentDto = new ItNetworkEquipmentDto();
+                itNetworkEquipmentDto.setEquipmentType(itNetworkEquipment.getEquipmentType());
+                itNetworkEquipmentDto.setNumberOfPorts(itNetworkEquipment.getNumberOfPorts());
+                itNetworkEquipmentDto.setSupportedProtocols(itNetworkEquipment.getSupportedProtocols());
+                itNetworkEquipmentDto.setFirmwareVersion(itNetworkEquipment.getFirmwareVersion());
+                itNetworkEquipmentDto.setNetworkSpeed(itNetworkEquipment.getNetworkSpeed());
+                itNetworkEquipmentDto.setServiceScope(itNetworkEquipment.getServiceScope());
+                result.put("itNetworkEquipmentDto", itNetworkEquipmentDto);
+            }
+            case ELECTRONIC_INFORMATION -> {
+                ElectronicInformation electronicInformation = electronicInformationRepository.findByAssetNo(commonAsset);
+                ElectronicInformationDto electronicInformationDto = new ElectronicInformationDto();
+                electronicInformationDto.setOs(electronicInformation.getOs());
+                electronicInformationDto.setSystem(electronicInformation.getSystem());
+                electronicInformationDto.setDBType(electronicInformation.getDBType());
+                result.put("electronicInformationDto", electronicInformationDto);
+            }
+            case PATENTS_AND_TRADEMARKS -> {
+                PatentsAndTrademarks patentsAndTrademarks = patentsAndTrademarksRepository.findByAssetNo(commonAsset);
+                PatentsAndTrademarksDto patentsAndTrademarksDto = new PatentsAndTrademarksDto();
+                patentsAndTrademarksDto.setApplicationDate(patentsAndTrademarks.getApplicationDate());
+                patentsAndTrademarksDto.setRegistrationDate(patentsAndTrademarks.getRegistrationDate());
+                patentsAndTrademarksDto.setExpirationDate(patentsAndTrademarks.getExpirationDate());
+                patentsAndTrademarksDto.setPatentTrademarkStatus(patentsAndTrademarks.getPatentTrademarkStatus());
+                patentsAndTrademarksDto.setCountryApplication(patentsAndTrademarks.getCountryApplication());
+                patentsAndTrademarksDto.setPatentClassification(patentsAndTrademarks.getPatentClassification());
+                patentsAndTrademarksDto.setPatentItem(patentsAndTrademarks.getPatentItem());
+                patentsAndTrademarksDto.setApplicationNo(patentsAndTrademarks.getApplicationNo());
+                patentsAndTrademarksDto.setInventor(patentsAndTrademarks.getInventor());
+                patentsAndTrademarksDto.setAssignee(patentsAndTrademarks.getAssignee());
+                patentsAndTrademarksDto.setRelatedDocuments(patentsAndTrademarks.getRelatedDocuments());
+                result.put("patentsAndTrademarks", patentsAndTrademarksDto);
+            }
+            case INFORMATION_PROTECTION_SYSTEM -> {
+                InformationProtectionSystem informationProtectionSystem = informationProtectionSystemRepository.findByAssetNo(commonAsset);
+                InformationProtectionSystemDto informationProtectionSystemDto = new InformationProtectionSystemDto();
+                informationProtectionSystemDto.setServiceScope(informationProtectionSystem.getServiceScope());
+                result.put("informationProtectionSystemDto", informationProtectionSystemDto);
+            }
+
+        }
+
+        //파일
+        List<File> fileList = fileRepository.findByAssetNo(commonAsset);
+        //유지보수
+        List<RepairHistory> repairList = repairHistoryRepository.findByAssetNo(commonAsset);
+        //수정이력
+        List<CommonAsset> updateList = commonAssetRepository.findApprovedAssetsByCodeExceptLatest(assetCode);
+        //자산조사이력
+        List<AssetSurvey> assetSurveyList = assetSurveyService.getAssetSurveysByAssetNo(commonAsset);
+
+
+        result.put("fileList", fileList != null ? fileList : Collections.emptyList());
+        result.put("repairList", repairList != null ? repairList : Collections.emptyList());
+        result.put("commonAssetList", updateList != null ? updateList : Collections.emptyList());
+        result.put("assetSurveyList", assetSurveyList != null ? assetSurveyList : Collections.emptyList());
         result.put("assetDto", assetDto);
 
         return result;
