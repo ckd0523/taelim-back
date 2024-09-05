@@ -3,6 +3,7 @@ package com.codehows.taelim.service;
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
 import com.codehows.taelim.dto.AssetDto;
+import com.codehows.taelim.dto.FileDto;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class AssetService {
     private final ElectronicInformationRepository electronicInformationRepository;
     private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
     private final InformationProtectionSystemRepository informationProtectionSystemRepository;
-
+    private final FileRepository fileRepository;
 
     //자산코드로 하나의 자산 공통정보 가져오기
     public Optional<CommonAsset> getCommonAsset(String assetCode) {
@@ -261,6 +262,22 @@ public class AssetService {
             }
 
         }
+
+        List<File> files = fileRepository.findByAssetNo(commonAsset);
+
+        List<FileDto> fileDtos = files.stream().map(file -> {
+            FileDto fileDto = new FileDto();
+            fileDto.setOriFileName(file.getOriFileName());
+            fileDto.setFileName(file.getFileName());
+            fileDto.setFileSize(file.getFileSize());
+            fileDto.setFileURL(file.getFileURL());
+            fileDto.setFileExt(file.getFileExt());
+            fileDto.setFileType(file.getFileType());
+            return fileDto;
+        }).collect(Collectors.toList());
+
+        assetDto.setFiles(fileDtos);
+
         return assetDto;
     }
 

@@ -308,4 +308,6 @@ public class AssetDto {
                 .usageFrequency(usageFrequency)
                 .build();
     }
+
+    private List<FileDto> files;
 }
