@@ -201,4 +201,96 @@ public class RegisterService {
         // 자산 코드 포맷 : 예) TLIA-IPS-00001
         return String.format("%s%s-%05d", prefix, classificationCode, newAssetNumber);
     }
+
+//    public Long updateAssetCode(String assetCode) {
+//
+//        // 기존 입력되어있는 assetCode 조회
+//        CommonAsset existAsset = commonAssetRepository.findByAssetCode(assetCode)
+//                .orElseThrow(() -> new RuntimeException("자산코드를 찾을수 없음 " + assetCode));
+//
+//        // 기존 자산 정보에 새로운 자산 생성
+//        CommonAsset updateAsset = new CommonAsset();
+//        updateAsset.setAssetCode(existAsset.getAssetCode()); // 코드 동일하게 유지하고
+//        updateAsset.setAssetUser(existAsset.getAssetUser());
+//        updateAsset.setAssetOwner(existAsset.getAssetOwner());
+//        updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
+//
+//        //자산정보에 따른 세부 변경사항
+//        updateAsset.setApproval(Approval.APPROVE);
+//        updateAsset.setDisposalStatus(Boolean.FALSE);
+//        updateAsset.setDemandStatus(Boolean.FALSE);
+//        updateAsset.setDemandCheck(Boolean.FALSE);
+//        updateAsset.setCreateDate(LocalDate.now());  // 등록일 갱신
+//
+//        commonAssetRepository.save(updateAsset);
+//
+//        Long newAssetNo = updateAsset.getAssetNo();
+//
+//        switch (updateAsset.getAssetClassification()){
+//            case INFORMATION_PROTECTION_SYSTEM -> {
+//                InformationProtectionSystem informationProtectionSystem = assetDto.toInformationProtectionSystem();
+//                informationProtectionSystem.setAssetNo(commonAsset1);
+//                informationProtectionSystemRepository.save(informationProtectionSystem);
+//            }
+//            case APPLICATION_PROGRAM -> {
+//                ApplicationProgram applicationProgram = assetDto.toApplication();
+//                applicationProgram.setAssetNo(commonAsset1);
+//                applicationProgramRepository.save(applicationProgram);
+//            }
+//            case SOFTWARE -> {
+//                Software software = assetDto.toSoftware();
+//                software.setAssetNo(commonAsset1);
+//                softwareRepository.save(software);
+//            }
+//            case ELECTRONIC_INFORMATION -> {
+//                ElectronicInformation electronicInformation = assetDto.toElectronicInformation();
+//                electronicInformation.setAssetNo(commonAsset1);
+//                electronicInformationRepository.save(electronicInformation);
+//            }
+//            case DOCUMENT -> {
+//                Document document = assetDto.toDocumnet();
+//                document.setAssetNo(commonAsset1);
+//                documentRepository.save(document);
+//            }
+//            case PATENTS_AND_TRADEMARKS -> {
+//                PatentsAndTrademarks patentsAndTrademarks = assetDto.toPatentsAndTrademarks();
+//                patentsAndTrademarks.setAssetNo(commonAsset1);
+//                patentsAndTrademarksRepository.save(patentsAndTrademarks);
+//            }
+//            case ITSYSTEM_EQUIPMENT -> {
+//                ItSystemEquipment itSystemEquipment = assetDto.toItSystemEquipment();
+//                itSystemEquipment.setAssetNo(commonAsset1);
+//                itSystemEquipmentRepository.save(itSystemEquipment);
+//            }
+//            case ITNETWORK_EQUIPMENT -> {
+//                ItNetworkEquipment itNetworkEquipment = assetDto.toItNetworkEquipment();
+//                itNetworkEquipment.setAssetNo(commonAsset1);
+//                itNetworkEquipmentRepository.save(itNetworkEquipment);
+//            }
+//            case TERMINAL -> {
+//                Terminal terminal = assetDto.toTerminal();
+//                terminal.setAssetNo(commonAsset1);
+//                terminalRepository.save(terminal);
+//            }
+//            case FURNITURE -> {
+//                Furniture furniture = assetDto.toFurniture();
+//                furniture.setAssetNo(commonAsset1);
+//                furnitureRepository.save(furniture);
+//            }
+//            case DEVICES -> {
+//                Devices devices = assetDto.toDevices();
+//                devices.setAssetNo(commonAsset1);
+//                devicesRepository.save(devices);
+//            }
+//            case CAR -> {
+//                Car car = assetDto.toCar();
+//                car.setAssetNo(commonAsset1);
+//                carRepository.save(car);
+//            }
+//            case OTHERASSETS -> {
+//                OtherAssets otherAssets = assetDto.toOtherAssets();
+//                otherAssets.setAssetNo(commonAsset1);
+//                otherAssetsRepository.save(otherAssets);
+//            }
+//    }
 }
