@@ -202,30 +202,30 @@ public class RegisterService {
         return String.format("%s%s-%05d", prefix, classificationCode, newAssetNumber);
     }
 
-//    public Long updateAssetCode(String assetCode) {
-//
-//        // 기존 입력되어있는 assetCode 조회
-//        CommonAsset existAsset = commonAssetRepository.findByAssetCode(assetCode)
-//                .orElseThrow(() -> new RuntimeException("자산코드를 찾을수 없음 " + assetCode));
-//
-//        // 기존 자산 정보에 새로운 자산 생성
-//        CommonAsset updateAsset = new CommonAsset();
-//        updateAsset.setAssetCode(existAsset.getAssetCode()); // 코드 동일하게 유지하고
-//        updateAsset.setAssetUser(existAsset.getAssetUser());
-//        updateAsset.setAssetOwner(existAsset.getAssetOwner());
-//        updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
-//
-//        //자산정보에 따른 세부 변경사항
-//        updateAsset.setApproval(Approval.APPROVE);
-//        updateAsset.setDisposalStatus(Boolean.FALSE);
-//        updateAsset.setDemandStatus(Boolean.FALSE);
-//        updateAsset.setDemandCheck(Boolean.FALSE);
-//        updateAsset.setCreateDate(LocalDate.now());  // 등록일 갱신
-//
-//        commonAssetRepository.save(updateAsset);
-//
-//        Long newAssetNo = updateAsset.getAssetNo();
-//
+    public Long updateAssetCode(String assetCode, AssetDto assetDto) {
+
+        // 기존 입력되어있는 assetCode 조회
+        CommonAsset existAsset = commonAssetRepository.findByAssetCode(assetCode)
+                .orElseThrow(() -> new RuntimeException("자산코드를 찾을수 없음 " + assetCode));
+
+        // 기존 자산 정보에 새로운 자산 생성
+        CommonAsset updateAsset = new CommonAsset();
+        updateAsset.setAssetCode(existAsset.getAssetCode()); // 코드 동일하게 유지하고
+        updateAsset.setAssetUser(existAsset.getAssetUser());
+        updateAsset.setAssetOwner(existAsset.getAssetOwner());
+        updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
+
+        //자산정보에 따른 세부 변경사항
+        updateAsset.setApproval(Approval.APPROVE);
+        updateAsset.setDisposalStatus(Boolean.FALSE);
+        updateAsset.setDemandStatus(Boolean.FALSE);
+        updateAsset.setDemandCheck(Boolean.FALSE);
+        updateAsset.setCreateDate(LocalDate.now());  // 등록일 갱신
+
+        commonAssetRepository.save(updateAsset);
+
+        Long newAssetNo = updateAsset.getAssetNo();
+        return newAssetNo;
 //        switch (updateAsset.getAssetClassification()){
 //            case INFORMATION_PROTECTION_SYSTEM -> {
 //                InformationProtectionSystem informationProtectionSystem = assetDto.toInformationProtectionSystem();
@@ -292,5 +292,5 @@ public class RegisterService {
 //                otherAssets.setAssetNo(commonAsset1);
 //                otherAssetsRepository.save(otherAssets);
 //            }
-//    }
+    }
 }

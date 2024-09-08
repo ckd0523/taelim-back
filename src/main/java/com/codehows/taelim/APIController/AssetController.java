@@ -4,6 +4,7 @@ import com.codehows.taelim.constant.FileType;
 import com.codehows.taelim.dto.AssetDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.File;
+import com.codehows.taelim.service.AssetService;
 import com.codehows.taelim.service.FileService;
 import com.codehows.taelim.service.RegisterService;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,17 @@ public class AssetController {
 //        System.out.println("File uploaded successfully : "  + url );
         return new ResponseEntity<>(assetNo, HttpStatus.OK);
 
+    }
+
+    // 자산 수정등록
+    @PostMapping("/update/{assetCode}")
+    public ResponseEntity<String> updateAsset(
+            @PathVariable String assetCode,
+            @RequestBody AssetDto updatedAssetDto) {
+
+        Long newAssetNo = registerService.updateAssetCode(assetCode, updatedAssetDto);
+
+        return ResponseEntity.ok("New asset registered with assetNo: " + newAssetNo);
     }
 
     @PostMapping("/file/upload")
