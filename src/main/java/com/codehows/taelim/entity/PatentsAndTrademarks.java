@@ -5,10 +5,7 @@ import com.codehows.taelim.constant.PatentClassification;
 import com.codehows.taelim.constant.PatentItem;
 import com.codehows.taelim.constant.PatentTrademarkStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -18,6 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class PatentsAndTrademarks {
 
     @Id

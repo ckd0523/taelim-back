@@ -2,18 +2,14 @@ package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.dto.AssetDto;
-import com.codehows.taelim.entity.ApplicationProgram;
-import com.codehows.taelim.entity.CommonAsset;
-import com.codehows.taelim.entity.InformationProtectionSystem;
-import com.codehows.taelim.entity.Member;
-import com.codehows.taelim.repository.ApplicationProgramRepository;
-import com.codehows.taelim.repository.CommonAssetRepository;
-import com.codehows.taelim.repository.InformationProtectionSystemRepository;
-import com.codehows.taelim.repository.MemberRepository;
+import com.codehows.taelim.dto.ExcelDto;
+import com.codehows.taelim.entity.*;
+import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,10 +19,23 @@ import java.util.stream.Collectors;
 public class RegisterService {
 
     private final CommonAssetRepository commonAssetRepository;
-    private final InformationProtectionSystemRepository informationProtectionSystemRepository;
+    private final SoftwareRepository softwareRepository;
+    private final CarRepository carRepository;
+    private final DevicesRepository devicesRepository;
+    private final DocumentRepository documentRepository;
+    private final TerminalRepository terminalRepository;
+    private final FurnitureRepository furnitureRepository;
+    private final OtherAssetsRepository otherAssetsRepository;
+    private final ItSystemEquipmentRepository itSystemEquipmentRepository;
     private final ApplicationProgramRepository applicationProgramRepository;
+    private final ItNetworkEquipmentRepository itNetworkEquipmentRepository;
+    private final ElectronicInformationRepository electronicInformationRepository;
+    private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
+    private final InformationProtectionSystemRepository informationProtectionSystemRepository;
     private final MemberRepository memberRepository;
-    public void assetRegister(AssetDto assetDto){
+
+    //자산 등록
+    public Long assetRegister(AssetDto assetDto){
 
         Member assetUser = memberRepository.findByEmail(assetDto.getAssetUser());
         Member assetOwner = memberRepository.findByEmail(assetDto.getAssetOwner());
@@ -37,8 +46,10 @@ public class RegisterService {
         commonAsset.setAssetSecurityManager(assetSecurityManager);
         commonAsset.setApproval(Approval.APPROVE);
         commonAsset.setDisposalStatus(Boolean.FALSE);
+
         commonAssetRepository.save(commonAsset);
 
+        Long assetId = commonAsset.getAssetNo();
         CommonAsset commonAsset1 = commonAssetRepository.findTopByOrderByAssetNoDesc();
 
 
@@ -54,13 +65,97 @@ public class RegisterService {
                 applicationProgram.setAssetNo(commonAsset1);
                 applicationProgramRepository.save(applicationProgram);
             }
+            case SOFTWARE -> {
+                Software software = assetDto.toSoftware();
+                software.setAssetNo(commonAsset1);
+                softwareRepository.save(software);
+            }
+            case ELECTRONIC_INFORMATION -> {
+                ElectronicInformation electronicInformation = assetDto.toElectronicInformation();
+                electronicInformation.setAssetNo(commonAsset1);
+                electronicInformationRepository.save(electronicInformation);
+            }
+            case DOCUMENT -> {
+                Document document = assetDto.toDocumnet();
+                document.setAssetNo(commonAsset1);
+                documentRepository.save(document);
+            }
+            case PATENTS_AND_TRADEMARKS -> {
+                PatentsAndTrademarks patentsAndTrademarks = assetDto.toPatentsAndTrademarks();
+                patentsAndTrademarks.setAssetNo(commonAsset1);
+                patentsAndTrademarksRepository.save(patentsAndTrademarks);
+            }
+            case ITSYSTEM_EQUIPMENT -> {
+                ItSystemEquipment itSystemEquipment = assetDto.toItSystemEquipment();
+                itSystemEquipment.setAssetNo(commonAsset1);
+                itSystemEquipmentRepository.save(itSystemEquipment);
+            }
+            case ITNETWORK_EQUIPMENT -> {
+                ItNetworkEquipment itNetworkEquipment = assetDto.toItNetworkEquipment();
+                itNetworkEquipment.setAssetNo(commonAsset1);
+                itNetworkEquipmentRepository.save(itNetworkEquipment);
+            }
+            case TERMINAL -> {
+                Terminal terminal = assetDto.toTerminal();
+                terminal.setAssetNo(commonAsset1);
+                terminalRepository.save(terminal);
+            }
+            case FURNITURE -> {
+                Furniture furniture = assetDto.toFurniture();
+                furniture.setAssetNo(commonAsset1);
+                furnitureRepository.save(furniture);
+            }
+            case DEVICES -> {
+                Devices devices = assetDto.toDevices();
+                devices.setAssetNo(commonAsset1);
+                devicesRepository.save(devices);
+            }
+            case CAR -> {
+                Car car = assetDto.toCar();
+                car.setAssetNo(commonAsset1);
+                carRepository.save(car);
+            }
+            case OTHERASSETS -> {
+                OtherAssets otherAssets = assetDto.toOtherAssets();
+                otherAssets.setAssetNo(commonAsset1);
+                otherAssetsRepository.save(otherAssets);
+            }
         }
-
-
-
+        return assetId;
 
     }
 
+    @Transactional
+    //엑셀로 등록
+    public void excelRegister (ExcelDto excelDto) {
+
+//        Member assetOwner = memberRepository.findByUName(excelDto.getAssetOwner())
+//                .orElse(new Member(excelDto.getAssetOwner()));
+//        Member assetUser = memberRepository.findByUName(excelDto.getAssetUser())
+//                .orElse(new Member(excelDto.getAssetUser()));
+//        Member assetSecurityManager = memberRepository.findByUName(excelDto.getAssetSecurityManager())
+//                .orElse(new Member(excelDto.getAssetSecurityManager()));
+        CommonAsset commonAsset = excelDto.toExcel();
+//        commonAsset.setAssetOwner(assetOwner);
+//        commonAsset.setAssetUser(assetUser);
+//
+//        commonAsset.setAssetSecurityManager(assetSecurityManager);
+        commonAssetRepository.save(commonAsset);
+
+        CommonAsset commonAsset1 = commonAssetRepository.findTopByOrderByAssetNoDesc();
+
+        InformationProtectionSystem informationProtectionSystem = excelDto.toExcelInfo();
+        informationProtectionSystem.setAssetNo(commonAsset1);
+
+        informationProtectionSystemRepository.save(informationProtectionSystem);
+
+    }
+    @Transactional
+    public void excelRegisterAll(List<ExcelDto> excelDtos) {
+        for (ExcelDto excelDto : excelDtos) {
+            excelRegister(excelDto);
+        }
+    }
     public Optional<CommonAsset> findById(Long id) {
         return commonAssetRepository.findById(id);
     }
@@ -87,4 +182,6 @@ public class RegisterService {
                 })
                 .collect(Collectors.toList());
     }
+
+    // 자산 코드 생성
 }

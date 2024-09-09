@@ -1,11 +1,7 @@
 package com.codehows.taelim.entity;
 
 import com.codehows.taelim.constant.Role;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,5 +23,14 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    public Member(String uName){
+        this.uName = uName;
+    }
 
+
+    public Member orElse(Member member) {
+
+        return member;
+    }
 }
+

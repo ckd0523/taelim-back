@@ -31,6 +31,7 @@ public class AssetService {
     private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
     private final InformationProtectionSystemRepository informationProtectionSystemRepository;
 
+
     //자산코드로 하나의 자산 공통정보 가져오기
     public Optional<CommonAsset> getCommonAsset(String assetCode) {
       return commonAssetRepository.findLatestApprovedAsset(assetCode);
@@ -47,12 +48,48 @@ public class AssetService {
                     dto.setAssetBasis(asset.getAssetBasis());
                     dto.setAssetCode(asset.getAssetCode());
                     dto.setAssetName(asset.getAssetName());
+                    dto.setManufacturingCompany(asset.getManufacturingCompany());
                     dto.setPurpose(asset.getPurpose());
                     dto.setDepartment(asset.getDepartment());
                     dto.setAssetLocation(asset.getAssetLocation());
+
+                            // Null 체크를 추가한 부분
+                            if (asset.getAssetUser() != null) {
+                                dto.setAssetUser(asset.getAssetUser().getUName());
+                            } else {
+                                dto.setAssetUser("N/A"); // 또는 null일 경우의 기본 값 설정
+                            }
+
+                            if (asset.getAssetOwner() != null) {
+                                dto.setAssetOwner(asset.getAssetOwner().getUName());
+                            } else {
+                                dto.setAssetOwner("N/A"); // 또는 null일 경우의 기본 값 설정
+                            }
+
+                            if (asset.getAssetSecurityManager() != null) {
+                                dto.setAssetSecurityManager(asset.getAssetSecurityManager().getUName());
+                            } else {
+                                dto.setAssetSecurityManager("N/A"); // 또는 null일 경우의 기본 값 설정
+                            }
+
+//                    dto.setAssetUser(asset.getAssetUser().getUName());
+//                    dto.setAssetOwner(asset.getAssetOwner().getUName());
+//                    dto.setAssetSecurityManager(asset.getAssetSecurityManager().getUName());
+                    dto.setUseState(asset.getUseState());
                     dto.setOperationStatus(asset.getOperationStatus());
+                    dto.setIntroducedDate(asset.getIntroducedDate());
+                    dto.setConfidentiality(asset.getConfidentiality());
+                    dto.setIntegrity(asset.getIntegrity());
+                    dto.setAvailability(asset.getAvailability());
+                    dto.setNote(asset.getNote());
+                    dto.setPurchaseCost(asset.getPurchaseCost());
                     dto.setPurchaseDate(asset.getPurchaseDate());
-                    dto.setManufacturingCompany(asset.getManufacturingCompany());
+                    dto.setUsefulLife(asset.getUsefulLife());
+                    dto.setDepreciationMethod(asset.getDepreciationMethod());
+                    dto.setPurchaseSource(asset.getPurchaseSource());
+                    dto.setContactInformation(asset.getContactInformation());
+                    dto.setAcquisitionRoute(asset.getAcquisitionRoute());
+                    dto.setMaintenancePeriod(asset.getMaintenancePeriod());
                     dto.setWarrantyDetails(asset.getWarrantyDetails());
                     dto.setApproval(asset.getApproval());
                     dto.setAttachment(asset.getAttachment());
@@ -193,7 +230,7 @@ public class AssetService {
                 ElectronicInformation electronicInformation = electronicInformationRepository.findByAssetNo(commonAsset);
                 assetDto.setOs(electronicInformation.getOs());
                 assetDto.setSystem(electronicInformation.getSystem());
-                assetDto.setDBType(electronicInformation.getDBType());
+                assetDto.setDbtype(electronicInformation.getDbtype());
             }
             case PATENTS_AND_TRADEMARKS -> {
                 PatentsAndTrademarks patentsAndTrademarks = patentsAndTrademarksRepository.findByAssetNo(commonAsset);
