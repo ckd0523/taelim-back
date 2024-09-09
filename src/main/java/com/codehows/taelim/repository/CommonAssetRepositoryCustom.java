@@ -13,4 +13,6 @@ public interface CommonAssetRepositoryCustom {
     List<CommonAsset> findApprovedAndNotDisposedAssets();
 
     List<CommonAsset> findAssetNoByAssetLocation(AssetLocation location);
+    // 수정 이력
+    List<CommonAsset> findApprovedAssetsByCodeExceptLatest(String assetCode);
 }

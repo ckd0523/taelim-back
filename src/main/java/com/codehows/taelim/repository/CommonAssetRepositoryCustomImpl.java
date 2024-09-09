@@ -4,6 +4,7 @@ import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetLocation;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.QCommonAsset;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -84,4 +85,23 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .where(ca.assetNo.in(subQuery))
                 .fetch();
     }
+    // 수정 이력
+    @Override
+    public List<CommonAsset> findApprovedAssetsByCodeExceptLatest(String assetCode) {
+        QCommonAsset commonAsset = QCommonAsset.commonAsset;
+
+        return queryFactory
+                .selectFrom(commonAsset)
+                .where(commonAsset.assetCode.eq(assetCode)
+                        .and(commonAsset.approval.eq(Approval.APPROVE))
+                        .and(commonAsset.assetNo.ne(
+                                JPAExpressions
+                                        .select(commonAsset.assetNo.max())
+                                        .from(commonAsset)
+                                        .where(commonAsset.assetCode.eq(assetCode)
+                                                .and(commonAsset.approval.eq(Approval.APPROVE)))
+                        )))
+                .fetch();
+    }
+
 }
