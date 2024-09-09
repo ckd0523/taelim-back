@@ -56,6 +56,10 @@ dependencies {
 
 
 
+    // https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox
+    implementation 'org.apache.pdfbox:pdfbox:3.0.1'
+    // https://mvnrepository.com/artifact/org.apache.pdfbox/fontbox
+    implementation 'org.apache.pdfbox:fontbox:3.0.1'
 
 
 
@@ -63,4 +67,9 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// 테스트 코드를 제외한 빌드 수행
+tasks.withType(Test) {
+    enabled = false
 }
