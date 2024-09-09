@@ -1,10 +1,7 @@
 package com.codehows.taelim.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "electronicInformation")
@@ -12,6 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class ElectronicInformation {
 
     @Id
@@ -25,5 +23,5 @@ public class ElectronicInformation {
 
     private String os;
     private String system;
-    private String DBType;
+    private String dbtype;
 }
