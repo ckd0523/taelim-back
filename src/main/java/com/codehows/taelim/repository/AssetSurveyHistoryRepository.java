@@ -1,5 +1,6 @@
 package com.codehows.taelim.repository;
 
+import com.codehows.taelim.constant.AssetLocation;
 import com.codehows.taelim.entity.AssetSurveyHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +19,7 @@ public interface AssetSurveyHistoryRepository extends JpaRepository<AssetSurveyH
 
     //assetService에서 자산 조사 상세 이력 가져올 때 사용
     AssetSurveyHistory findByAssetSurveyNo(Long assetSurveyNo);
+
+    //위치로 자산 조사 이력 가져오기
+    AssetSurveyHistory findByAssetSurveyLocation(AssetLocation location);
 }

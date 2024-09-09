@@ -34,9 +34,13 @@ public class AssetSurveyController {
     public ResponseEntity<Void> createAssetSurvey(@RequestBody AssetSurveyHistoryRegisterDto assetSurveyHistory) {
         //postService.createPost(post);
         //assetSurveyService.assetSurveyRegister(AssetLocation.MAIN_1F, 1L, "user10@example.com");
-        String result = assetSurveyService.assetSurveyRegister(assetSurveyHistory.getLocation(), assetSurveyHistory.getRound(), assetSurveyHistory.getEmail());
+        Boolean result = assetSurveyService.assetSurveyRegister(assetSurveyHistory);
         System.out.println(result);
-        return new ResponseEntity<>(HttpStatus.CREATED); // 201 Created 상태 코드 반환
+        if(result) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     //삭제하는거라 deleteMapping으로 했드만
