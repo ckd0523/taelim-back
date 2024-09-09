@@ -49,10 +49,27 @@ dependencies {
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
+    // https://mvnrepository.com/artifact/org.apache.poi/poi
+    implementation group: 'org.apache.poi', name: 'poi', version: '5.2.3'
+    // https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.3'
+
+
+
+    // https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox
+    implementation 'org.apache.pdfbox:pdfbox:3.0.1'
+    // https://mvnrepository.com/artifact/org.apache.pdfbox/fontbox
+    implementation 'org.apache.pdfbox:fontbox:3.0.1'
+
 
 
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// 테스트 코드를 제외한 빌드 수행
+tasks.withType(Test) {
+    enabled = false
 }

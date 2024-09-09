@@ -127,9 +127,9 @@ public class AssetDto {
     private String usageFrequency;
 
     //파일
-    private MultipartFile image;
-    private MultipartFile warrantyDocument;
-    private MultipartFile userDocument;
+    private FileType image;
+    private FileType warrantyDocument;
+    private FileType userDocument;
 
     public CommonAsset toEntity() {
 

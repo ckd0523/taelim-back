@@ -3,13 +3,15 @@ package com.codehows.taelim.service;
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
 import com.codehows.taelim.dto.AssetDto;
+import com.codehows.taelim.dto.ExcelDto;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,8 +35,8 @@ public class RegisterService {
     private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
     private final InformationProtectionSystemRepository informationProtectionSystemRepository;
     private final MemberRepository memberRepository;
-    private final FileRepository fileRepository;
 
+    //자산 등록
     public Long assetRegister(AssetDto assetDto){
 
         Member assetUser = memberRepository.findByEmail(assetDto.getAssetUser());
@@ -130,6 +132,37 @@ public class RegisterService {
 
     }
 
+    @Transactional
+    //엑셀로 등록
+    public void excelRegister (ExcelDto excelDto) {
+
+//        Member assetOwner = memberRepository.findByUName(excelDto.getAssetOwner())
+//                .orElse(new Member(excelDto.getAssetOwner()));
+//        Member assetUser = memberRepository.findByUName(excelDto.getAssetUser())
+//                .orElse(new Member(excelDto.getAssetUser()));
+//        Member assetSecurityManager = memberRepository.findByUName(excelDto.getAssetSecurityManager())
+//                .orElse(new Member(excelDto.getAssetSecurityManager()));
+        CommonAsset commonAsset = excelDto.toExcel();
+//        commonAsset.setAssetOwner(assetOwner);
+//        commonAsset.setAssetUser(assetUser);
+//
+//        commonAsset.setAssetSecurityManager(assetSecurityManager);
+        commonAssetRepository.save(commonAsset);
+
+        CommonAsset commonAsset1 = commonAssetRepository.findTopByOrderByAssetNoDesc();
+
+        InformationProtectionSystem informationProtectionSystem = excelDto.toExcelInfo();
+        informationProtectionSystem.setAssetNo(commonAsset1);
+
+        informationProtectionSystemRepository.save(informationProtectionSystem);
+
+    }
+    @Transactional
+    public void excelRegisterAll(List<ExcelDto> excelDtos) {
+        for (ExcelDto excelDto : excelDtos) {
+            excelRegister(excelDto);
+        }
+    }
     public Optional<CommonAsset> findById(Long id) {
         return commonAssetRepository.findById(id);
     }
