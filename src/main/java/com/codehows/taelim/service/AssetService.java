@@ -112,7 +112,7 @@ public class AssetService {
     }
 
     // 자산 상세 조회
-    public Map<String, Object> getAssetDetail(String assetCode) {
+    public AssetDto getAssetDetail (String assetCode) {
 
         AssetDto assetDto = new AssetDto();
         Optional<CommonAsset> commonAssetObj = commonAssetRepository.findLatestApprovedAsset(assetCode);
@@ -281,24 +281,24 @@ public class AssetService {
 
         assetDto.setFiles(fileDtos);
 
-        return assetDto;
+        //return assetDto;
         //파일
-        List<File> fileList = fileRepository.findByAssetNo(commonAsset);
+        //List<File> fileList = fileRepository.findByAssetNo(commonAsset);
         //유지보수
         List<RepairHistory> repairList = repairHistoryRepository.findByAssetNo(commonAsset);
         //수정이력
         List<CommonAsset> updateList = commonAssetRepository.findApprovedAssetsByCodeExceptLatest(assetCode);
         //자산조사이력
-        List<AssetSurvey> assetSurveyList = assetSurveyService.getAssetSurveysByAssetNo(commonAsset);
+        //List<AssetSurvey> assetSurveyList = assetSurveyService.getAssetSurveysByAssetNo(commonAsset);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("fileList", fileList != null ? fileList : Collections.emptyList());
+       // result.put("fileList", fileList != null ? fileList : Collections.emptyList());
         result.put("repairList", repairList != null ? repairList : Collections.emptyList());
         result.put("commonAssetList", updateList != null ? repairList : Collections.emptyList());
-        result.put("assetSurveyList", assetSurveyList != null ? repairList : Collections.emptyList());
+        //result.put("assetSurveyList", assetSurveyList != null ? repairList : Collections.emptyList());
         result.put("assetDto", assetDto);
 
-        return result;
+        return assetDto;
     }
 
     // 자산 상세 조회2
@@ -455,7 +455,7 @@ public class AssetService {
                 ElectronicInformationDto electronicInformationDto = new ElectronicInformationDto();
                 electronicInformationDto.setOs(electronicInformation.getOs());
                 electronicInformationDto.setSystem(electronicInformation.getSystem());
-                electronicInformationDto.setDBType(electronicInformation.getDBType());
+                electronicInformationDto.setDBType(electronicInformation.getDbtype());
                 result.put("electronicInformationDto", electronicInformationDto);
             }
             case PATENTS_AND_TRADEMARKS -> {
@@ -490,13 +490,13 @@ public class AssetService {
         //수정이력
         List<CommonAsset> updateList = commonAssetRepository.findApprovedAssetsByCodeExceptLatest(assetCode);
         //자산조사이력
-        List<AssetSurvey> assetSurveyList = assetSurveyService.getAssetSurveysByAssetNo(commonAsset);
+        //List<AssetSurvey> assetSurveyList = assetSurveyService.getAssetSurveysByAssetNo(commonAsset);
 
 
         result.put("fileList", fileList != null ? fileList : Collections.emptyList());
         result.put("repairList", repairList != null ? repairList : Collections.emptyList());
         result.put("commonAssetList", updateList != null ? updateList : Collections.emptyList());
-        result.put("assetSurveyList", assetSurveyList != null ? assetSurveyList : Collections.emptyList());
+        //result.put("assetSurveyList", assetSurveyList != null ? assetSurveyList : Collections.emptyList());
         result.put("assetDto", assetDto);
 
         return result;

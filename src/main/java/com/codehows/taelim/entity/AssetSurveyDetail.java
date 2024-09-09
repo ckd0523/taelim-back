@@ -16,14 +16,13 @@ import lombok.Setter;
 public class AssetSurveyDetail {
 
     @Id
-    @Column(name = "assetSurveyDetailNo")
+    @Column(name = "infoNo")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long assetSurveyDetailNo;
+    private Long infoNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetNo")
     private CommonAsset assetNo;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetSurveyNo")
     private AssetSurveyHistory assetSurveyNo;
