@@ -142,13 +142,13 @@ public class QRController {
     }
 
     //상세조회 (공통 및 서브 칼럼)
-//    @GetMapping("/asset/{assetCode}")
-//    public Map<String, Object> getAssetDetail(@PathVariable("assetCode") String assetCode) {
-//        return assetService.getAssetDetail(assetCode);
-//    }
+    @GetMapping("/asset/{assetCode}")
+    public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
+        return assetService.getAssetDetail(assetCode);
+    }
 
     //상세조회 (공통 및 서브 칼럼)
-    @GetMapping("/asset/{assetCode}")
+    @GetMapping("/asset1/{assetCode}")
     public Map<String, Object> getAssetDetail2(@PathVariable("assetCode") String assetCode) {
         return assetService.getAssetDetail2(assetCode);
     }
