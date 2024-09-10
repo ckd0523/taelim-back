@@ -1,6 +1,9 @@
 package com.codehows.taelim.dto;
 
 import com.codehows.taelim.constant.AssetBasis;
+import com.codehows.taelim.constant.AssetLocation;
+import com.codehows.taelim.constant.Department;
+import com.codehows.taelim.constant.OperationStatus;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.InformationProtectionSystem;
 import com.codehows.taelim.entity.Member;
@@ -24,12 +27,12 @@ public class ExcelDto {
     private String assetName;
     private String purpose;
     private Long quantity;
-    private String department;
-    private String assetLocation;
+    private Department department;
+    private AssetLocation assetLocation;
     private String assetUser;
     private String assetOwner;
     private String assetSecurityManager;
-    private String operationStatus;
+    private OperationStatus operationStatus;
     private LocalDate introducedDate;
     private int confidentiality;
     private int integrity;
@@ -42,6 +45,10 @@ public class ExcelDto {
                 .assetNo(assetNo)
                 .assetCode(assetCode)
                 .assetName(assetName)
+                .assetBasis(assetBasis)
+                .assetLocation(assetLocation)
+                .department(department)
+                .operationStatus(operationStatus)
 //                .assetUser(new Member(assetUser))
 //                .assetOwner(new Member(assetOwner))
 //                .assetSecurityManager(new Member(assetSecurityManager))

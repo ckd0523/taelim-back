@@ -1,5 +1,7 @@
 package com.codehows.taelim.constant;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -15,6 +17,26 @@ public enum Department {
     PRODUCTION_DEPARTMENT("생산부"),
     OPERATIONS_DEPARTMENT("운영부"),
     HUMAN_RESOURCES_DEPARTMENT("인사부");
-    private final String description;
+
+    private String description;
+
+    Department(String description) {
+        this.description = description;
+    }
+
+    @JsonValue
+    public String getDescription(){
+        return description;
+    }
+
+    @JsonCreator
+    public static Department from(String value){
+        for(Department department : Department.values()) {
+            if(department.description.equals(value)) {
+                return department;
+            }
+        }
+        throw new IllegalArgumentException("잘못된 값: " + value);
+    }
 
 }
