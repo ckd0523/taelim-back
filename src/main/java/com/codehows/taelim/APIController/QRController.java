@@ -36,7 +36,7 @@ public class QRController {
     public ResponseEntity<byte[]> generateQRCode(@RequestParam String assetCode) {
         try {
             // 자산 코드에 기반하여 QR 코드를 생성합니다.
-            String url = "http://localhost:8080/asset/" + assetCode;
+            String url = "http://133.186.153.78:8080/asset/" + assetCode;
             // String code = assetCode; // QR 코드에 포함할 텍스트를 설정합니다.
             byte[] qrCode = qrCodeService.generateQRCode(url, 200, 200); // QR 코드 생성
 
@@ -58,7 +58,7 @@ public class QRController {
             Map<String, String> qrCodeMap = new HashMap<>();
 
             for (String assetCode : assetCodes) {
-                String url = "http://localhost:8080/asset/" + assetCode;
+                String url = "http://133.186.153.78:8080/asset/" + assetCode;
                 byte[] qrCode = qrCodeService.generateQRCode(url, 200, 200);
                 String base64Image = Base64.getEncoder().encodeToString(qrCode);
                 qrCodeMap.put(assetCode, "data:image/png;base64," + base64Image);
@@ -85,7 +85,7 @@ public class QRController {
             int yPosition = 700;
 
             for (String assetCode : assetCodes) {
-                String url = "http://localhost:8080/asset/" + assetCode;
+                String url = "http://133.186.153.78:8080/asset/" + assetCode;
                 byte[] qrCode = qrCodeService.generateQRCode(url, 200, 200);
 
                 // 바이트 배열을 BufferedImage로 변환
