@@ -1,17 +1,8 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
-
-name: Java CI with Gradle
+name: Deploy Backend on distribution
 
 on:
   push:
-    branches: [ "distribution" ]
-  pull_request:
-    branches: [ "distribution" ]
+    branches: [ "distribution" ]  # distribution 브랜치에 푸시될 때 실행
 
 jobs:
   build:
@@ -28,24 +19,24 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
-    # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582
 
     - name: Build with Gradle Wrapper
       run: ./gradlew build
 
-    # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
-    # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
-    #
-    # - name: Setup Gradle
-    #   uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
-    #   with:
-    #     gradle-version: '8.9'
-    #
-    # - name: Build with Gradle 8.9
-    #   run: gradle build
+    # 배포 단계 추가
+    - name: Deploy to Server
+      uses: appleboy/ssh-action@v0.1.5  # SSH를 통해 서버에 연결
+      with:
+        host: ${{ secrets.HOST }}       # 서버의 IP 주소
+        username: ${{ secrets.USERNAME }}  # SSH 유저 이름
+        key: ${{ secrets.SSH_KEY }}     # SSH 키
+        script: |
+          cd /path/to/backend/project   # 백엔드 프로젝트가 위치한 디렉토리로 이동
+          git pull origin distribution  # distribution 브랜치에서 최신 코드 가져오기
+          ./gradlew build               # 백엔드 애플리케이션 빌드
+          sudo systemctl restart backend-service  # 백엔드 서비스 재시작 (systemd로 관리되는 경우)
 
   dependency-submission:
 
@@ -61,7 +52,5 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
-    # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
     - name: Generate and submit dependency graph
-      uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+      uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582
