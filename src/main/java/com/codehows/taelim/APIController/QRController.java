@@ -1,5 +1,6 @@
 package com.codehows.taelim.APIController;
 
+import com.codehows.taelim.dto.AssetDisposeDto;
 import com.codehows.taelim.dto.AssetDto;
 import com.codehows.taelim.dto.CommonAssetDto;
 import com.codehows.taelim.entity.CommonAsset;
@@ -164,5 +165,18 @@ public class QRController {
         assetService.DisposeApprove(assetCode);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/disposeAsset/{assetCode}")
+    public ResponseEntity<CommonAsset> disposeitem(@PathVariable("assetCode") String assetCode, @RequestBody AssetDisposeDto assetDisposeDto) {
+        assetService.DisposeAsset(assetCode, assetDisposeDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/disposeDemand/{assetCode}")
+    public ResponseEntity<CommonAsset> disposedemand(@PathVariable("assetCode") String assetCode, @RequestBody AssetDisposeDto assetDisposeDto) {
+        assetService.DisposeDemand(assetCode, assetDisposeDto);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

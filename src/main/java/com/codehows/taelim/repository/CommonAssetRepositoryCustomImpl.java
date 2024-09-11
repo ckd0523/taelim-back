@@ -30,8 +30,15 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         CommonAsset result = queryFactory
                 .selectFrom(QCommonAsset.commonAsset)  // QCommonAsset 사용
                 .where(QCommonAsset.commonAsset.assetCode.eq(assetCode)
-                        .and(QCommonAsset.commonAsset.disposalStatus.eq(false))
-                        .and(QCommonAsset.commonAsset.approval.eq(Approval.APPROVE)))
+                        .and(QCommonAsset.commonAsset.disposalStatus.eq(false)
+                                .or(QCommonAsset.commonAsset.disposalStatus.eq(true)
+                                        .and(QCommonAsset.commonAsset.approval.eq(Approval.valueOf("UNCONFIRMED")))
+                                .or(QCommonAsset.commonAsset.disposalStatus.eq(true)
+                                        .and(QCommonAsset.commonAsset.approval.eq(Approval.valueOf("REFUSAL")))
+                                )
+                                )
+                        )
+                )
                 .orderBy(QCommonAsset.commonAsset.assetNo.desc()) // 최신 데이터부터 정렬
                 .fetchFirst(); // 가장 최신의 하나만 가져옴
 
@@ -49,8 +56,16 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
 
         subQuery.select(subCa.assetNo.max())
                 .from(subCa)
-                .where(subCa.approval.eq(Approval.valueOf("APPROVE"))
-                        .and(subCa.disposalStatus.isFalse()))
+                .where(subCa.disposalStatus.isFalse()
+                                .or(
+                                        subCa.disposalStatus.isTrue()
+                                                .and(subCa.approval.eq(Approval.valueOf("UNCONFIRMED")))
+                                        .or(
+                                                subCa.disposalStatus.isTrue()
+                                                        .and(subCa.approval.eq(Approval.valueOf("REFUSAL")))
+                                        )
+                                )
+                )
                 .groupBy(subCa.assetCode);
 
         // 메인 쿼리: 최신 자산 정보 조회

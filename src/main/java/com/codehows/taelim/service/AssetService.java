@@ -10,6 +10,7 @@ import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,7 @@ public class AssetService {
     private final FileRepository fileRepository;
     private final RepairHistoryRepository repairHistoryRepository;
     private final AssetSurveyService assetSurveyService;
-
+    private final DemandRepository demandRepository;
 
     //자산코드로 하나의 자산 공통정보 가져오기
     public Optional<CommonAsset> getCommonAsset(String assetCode) {
@@ -509,8 +510,8 @@ public class AssetService {
         commonAsset.setApproval(Approval.APPROVE);
         commonAsset.setDisposalStatus(Boolean.TRUE);
         commonAssetRepository.save(commonAsset);
-        return commonAsset;
 
+        return commonAsset;
     }
 
     // 폐기 거절 처리
@@ -532,5 +533,49 @@ public class AssetService {
         return commonAsset;
     }
 
+    // 폐기 관리자 처리 (추후에 담당자랑 합칠거임)
+    public CommonAsset DisposeAsset(String assetCode, AssetDisposeDto assetDisposeDto){
+        CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode).get();
+        commonAsset.setApproval(Approval.APPROVE);
+        commonAsset.setDisposalStatus(Boolean.TRUE);
+        commonAssetRepository.save(commonAsset);
+
+        // 폐기 이력 저장
+        Demand demand = new Demand();
+        //demand.setDemandBy;
+        demand.setDemandDate(LocalDate.now()); // 폐기 일자 - 추후 자동생성 변경
+        demand.setDemandReason(assetDisposeDto.getDisposeReason()); // 폐기 사유
+        demand.setDemandDetail(assetDisposeDto.getDisposeDetail()); // 폐기내용
+        demand.setDisposeMethod(assetDisposeDto.getDisposeMethod()); // 폐기 방법
+        demand.setDisposeLocation(assetDisposeDto.getDisposeLocation());  // 폐기 위치
+        demandRepository.save(demand);
+
+        return commonAsset;
+    }
+    // 폐기 담당자 처리 (추후에 담당자랑 합칠거임)
+    public CommonAsset DisposeDemand(String assetCode, AssetDisposeDto assetDisposeDto){
+        CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode).get();
+        commonAsset.setApproval(Approval.UNCONFIRMED);
+        commonAsset.setDemandStatus(Boolean.TRUE);
+        commonAsset.setDemandCheck(Boolean.TRUE);
+        commonAssetRepository.save(commonAsset);
+
+        // 폐기 이력 저장
+        Demand demand = new Demand();
+        //demand.setDemandBy;
+        demand.setDemandDate(LocalDate.now()); // 폐기 일자 - 추후 자동생성 변경
+        demand.setDemandReason(assetDisposeDto.getDisposeReason()); // 폐기 사유
+        demand.setDemandDetail(assetDisposeDto.getDisposeDetail()); // 폐기내용
+        demand.setDisposeMethod(assetDisposeDto.getDisposeMethod()); // 폐기 방법
+        demand.setDisposeLocation(assetDisposeDto.getDisposeLocation());  // 폐기 위치
+        demandRepository.save(demand);
+
+        return commonAsset;
+    }
+
+    // 폐기 이력 List에 담아서가져오기
+//    public List<DeleteHistoryDto> getDeleteHistory() {
+//        List<Demand> demands = demandRepository.findById();
+//        }
 
 }
