@@ -33,7 +33,7 @@ jobs:
         username: ${{ secrets.USERNAME }}  # SSH 유저 이름
         key: ${{ secrets.SSH_KEY }}     # SSH 키
         script: |
-          cd /path/to/backend/project   # 백엔드 프로젝트가 위치한 디렉토리로 이동
+          cd /path/to/home/ubuntu/   # 백엔드 프로젝트가 위치한 디렉토리로 이동
           git pull origin distribution  # distribution 브랜치에서 최신 코드 가져오기
           ./gradlew build               # 백엔드 애플리케이션 빌드
           sudo systemctl restart backend-service  # 백엔드 서비스 재시작 (systemd로 관리되는 경우)
