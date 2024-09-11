@@ -26,7 +26,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @RequiredArgsConstructor
-@RestController
 public class QRController {
 
     private final QRService qrCodeService;

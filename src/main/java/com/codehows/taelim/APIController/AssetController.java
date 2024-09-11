@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/asset")
+@RequestMapping("/api/asset")
 public class AssetController {
 
     private final RegisterService registerService;
