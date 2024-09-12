@@ -3,6 +3,7 @@ package com.codehows.taelim.APIController;
 import com.codehows.taelim.dto.AssetDisposeDto;
 import com.codehows.taelim.dto.AssetDto;
 import com.codehows.taelim.dto.CommonAssetDto;
+import com.codehows.taelim.dto.DeleteHistoryDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.service.AssetService;
 import com.codehows.taelim.service.QRService;
@@ -166,17 +167,25 @@ public class QRController {
         return ResponseEntity.ok().build();
     }
 
+
+    // 자산관리자가 폐기
     @PostMapping("/disposeAsset/{assetCode}")
     public ResponseEntity<CommonAsset> disposeitem(@PathVariable("assetCode") String assetCode, @RequestBody AssetDisposeDto assetDisposeDto) {
         assetService.DisposeAsset(assetCode, assetDisposeDto);
         return ResponseEntity.ok().build();
     }
 
+    // 자산담당자가 폐기 요청
     @PostMapping("/disposeDemand/{assetCode}")
     public ResponseEntity<CommonAsset> disposedemand(@PathVariable("assetCode") String assetCode, @RequestBody AssetDisposeDto assetDisposeDto) {
         assetService.DisposeDemand(assetCode, assetDisposeDto);
         return ResponseEntity.ok().build();
     }
 
+    // 폐기이력 불러오기
+    @GetMapping("/deleteHistory")
+    public List<DeleteHistoryDto> getDeleteHistory() {
+        return assetService.getDeleteHistory();
+    }
 
 }
