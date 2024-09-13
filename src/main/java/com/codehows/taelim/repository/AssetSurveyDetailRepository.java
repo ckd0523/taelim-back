@@ -10,8 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-import java.util.List;
-
 public interface AssetSurveyDetailRepository extends JpaRepository<AssetSurveyDetail, Long> {
 
     //gpt가 List<Long>으로 받아 처리하려면 jpa 형식 메서드 뒤에 In을 붙이면 된다고 했는데

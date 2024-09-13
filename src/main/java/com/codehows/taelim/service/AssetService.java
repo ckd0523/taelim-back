@@ -7,9 +7,11 @@ import com.codehows.taelim.dto.FileDto;
 import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,11 +36,13 @@ public class AssetService {
     private final FileRepository fileRepository;
     private final RepairHistoryRepository repairHistoryRepository;
     private final AssetSurveyService assetSurveyService;
-
+    private final DemandRepository demandRepository;
+    private final DemandDtlRepository demandDtlRepository;
+    private final EmailServcie emailService;
 
     //자산코드로 하나의 자산 공통정보 가져오기
     public Optional<CommonAsset> getCommonAsset(String assetCode) {
-      return commonAssetRepository.findLatestApprovedAsset(assetCode);
+        return commonAssetRepository.findLatestApprovedAsset(assetCode);
     }
 
     // 자산목록 (자산 공통정보)
@@ -58,24 +62,24 @@ public class AssetService {
                     dto.setDepartment(asset.getDepartment());
                     dto.setAssetLocation(asset.getAssetLocation());
 
-                            // Null 체크를 추가한 부분
-                            if (asset.getAssetUser() != null) {
-                                dto.setAssetUser(asset.getAssetUser().getUName());
-                            } else {
-                                dto.setAssetUser("N/A"); // 또는 null일 경우의 기본 값 설정
-                            }
+                    // Null 체크를 추가한 부분
+                    if (asset.getAssetUser() != null) {
+                        dto.setAssetUser(asset.getAssetUser().getUName());
+                    } else {
+                        dto.setAssetUser("N/A"); // 또는 null일 경우의 기본 값 설정
+                    }
 
-                            if (asset.getAssetOwner() != null) {
-                                dto.setAssetOwner(asset.getAssetOwner().getUName());
-                            } else {
-                                dto.setAssetOwner("N/A"); // 또는 null일 경우의 기본 값 설정
-                            }
+                    if (asset.getAssetOwner() != null) {
+                        dto.setAssetOwner(asset.getAssetOwner().getUName());
+                    } else {
+                        dto.setAssetOwner("N/A"); // 또는 null일 경우의 기본 값 설정
+                    }
 
-                            if (asset.getAssetSecurityManager() != null) {
-                                dto.setAssetSecurityManager(asset.getAssetSecurityManager().getUName());
-                            } else {
-                                dto.setAssetSecurityManager("N/A"); // 또는 null일 경우의 기본 값 설정
-                            }
+                    if (asset.getAssetSecurityManager() != null) {
+                        dto.setAssetSecurityManager(asset.getAssetSecurityManager().getUName());
+                    } else {
+                        dto.setAssetSecurityManager("N/A"); // 또는 null일 경우의 기본 값 설정
+                    }
 
 //                    dto.setAssetUser(asset.getAssetUser().getUName());
 //                    dto.setAssetOwner(asset.getAssetOwner().getUName());
@@ -281,7 +285,26 @@ public class AssetService {
 
         assetDto.setFiles(fileDtos);
 
+
+        //return assetDto;
+        //파일
+        //List<File> fileList = fileRepository.findByAssetNo(commonAsset);
+        //유지보수
+        List<RepairHistory> repairList = repairHistoryRepository.findByAssetNo(commonAsset);
+        //수정이력
+        List<CommonAsset> updateList = commonAssetRepository.findApprovedAssetsByCodeExceptLatest(assetCode);
+        //자산조사이력
+        //List<AssetSurvey> assetSurveyList = assetSurveyService.getAssetSurveysByAssetNo(commonAsset);
+
+        Map<String, Object> result = new HashMap<>();
+        // result.put("fileList", fileList != null ? fileList : Collections.emptyList());
+        result.put("repairList", repairList != null ? repairList : Collections.emptyList());
+        result.put("commonAssetList", updateList != null ? repairList : Collections.emptyList());
+        //result.put("assetSurveyList", assetSurveyList != null ? repairList : Collections.emptyList());
+        result.put("assetDto", assetDto);
+
         return assetDto;
+
 //        //파일
 //        List<File> fileList = fileRepository.findByAssetNo(commonAsset);
 //        //유지보수
@@ -299,6 +322,7 @@ public class AssetService {
 //        result.put("assetDto", assetDto);
 //
 //        return result;
+
     }
 
     // 자산 상세 조회2
@@ -503,18 +527,18 @@ public class AssetService {
     }
 
     //폐기 승인 처리
-    public CommonAsset DisposeApprove(String assetCode){
+    public CommonAsset DisposeApprove(String assetCode) {
 
         CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode).get();
         commonAsset.setApproval(Approval.APPROVE);
         commonAsset.setDisposalStatus(Boolean.TRUE);
         commonAssetRepository.save(commonAsset);
-        return commonAsset;
 
+        return commonAsset;
     }
 
     // 폐기 거절 처리
-    public CommonAsset DisposeRefusal(String assetCode, String Comment){
+    public CommonAsset DisposeRefusal(String assetCode, String Comment) {
         CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode).get();
         commonAsset.setApproval(Approval.REFUSAL);
         commonAssetRepository.save(commonAsset);
@@ -524,7 +548,7 @@ public class AssetService {
     }
 
     //수정 승인 처리
-    public CommonAsset UpdateApprove(String assetCode, String Comment){
+    public CommonAsset UpdateApprove(String assetCode, String Comment) {
         CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode).get();
         commonAsset.setApproval(Approval.APPROVE);
         commonAssetRepository.save(commonAsset);
@@ -532,5 +556,94 @@ public class AssetService {
         return commonAsset;
     }
 
+    // 폐기 관리자 처리 (추후에 담당자랑 합칠거임)
+    public CommonAsset DisposeAsset(String assetCode, AssetDisposeDto assetDisposeDto) {
+        CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode).get();
+        commonAsset.setApproval(Approval.APPROVE);
+        commonAsset.setDisposalStatus(Boolean.TRUE);
+        commonAssetRepository.save(commonAsset);
+
+        // 폐기 이력 저장
+        Demand demand = new Demand();
+        //demand.setDemandBy;
+        demand.setDemandDate(LocalDate.now()); // 폐기 일자 - 추후 자동생성 변경
+        demand.setDemandReason(assetDisposeDto.getDisposeReason()); // 폐기 사유
+        demand.setDemandDetail(assetDisposeDto.getDisposeDetail()); // 폐기내용
+        demand.setDisposeMethod(assetDisposeDto.getDisposeMethod()); // 폐기 방법
+        demand.setDisposeLocation(assetDisposeDto.getDisposeLocation());  // 폐기 위치
+        demandRepository.save(demand);
+
+        // DemandDtl 테이블에 저장
+        DemandDtl demandDtl = new DemandDtl();
+        demandDtl.setAssetNo(commonAsset);  // CommonAsset과 연관 설정
+        demandDtl.setDemandNo(demand);  // Demand와 연관 설정
+        demandDtlRepository.save(demandDtl); // DemandDtl 테이블에 저장
+        return commonAsset;
+    }
+
+    // 폐기 담당자 처리 (추후에 담당자랑 합칠거임)
+    public CommonAsset DisposeDemand(String assetCode, AssetDisposeDto assetDisposeDto) {
+        CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode).get();
+        commonAsset.setApproval(Approval.UNCONFIRMED);
+        commonAsset.setDisposalStatus(Boolean.TRUE);
+        commonAsset.setDemandStatus(Boolean.TRUE);
+        commonAsset.setDemandCheck(Boolean.TRUE);
+        commonAssetRepository.save(commonAsset);
+
+        // 폐기 이력 저장
+        Demand demand = new Demand();
+        //demand.setDemandBy;
+        demand.setDemandDate(LocalDate.now()); // 폐기 일자 - 추후 자동생성 변경
+        demand.setDemandReason(assetDisposeDto.getDisposeReason()); // 폐기 사유
+        demand.setDemandDetail(assetDisposeDto.getDisposeDetail()); // 폐기내용
+        demand.setDisposeMethod(assetDisposeDto.getDisposeMethod()); // 폐기 방법
+        demand.setDisposeLocation(assetDisposeDto.getDisposeLocation());  // 폐기 위치
+        demandRepository.save(demand);
+
+        // DemandDtl 테이블에 저장
+        DemandDtl demandDtl = new DemandDtl();
+        demandDtl.setAssetNo(commonAsset);  // CommonAsset과 연관 설정
+        demandDtl.setDemandNo(demand);  // Demand와 연관 설정
+        demandDtlRepository.save(demandDtl); // DemandDtl 테이블에 저장
+
+//        // 이메일 전송 기능 추가
+//        try {
+//            String toEmail = "kydea2240@example.com"; // 폐기 요청 담당자 이메일
+//            String subject = "폐기 요청 알림";
+//            String body = "자산코드: " + assetCode + "의 폐기 요청이 접수되었습니다.";
+//
+//            emailService.sendEmail(toEmail, subject, body);
+//        } catch (MessagingException e) {
+//            e.printStackTrace();
+//            // 이메일 전송 실패 시 로그 기록 또는 예외 처리
+//        }
+
+        return commonAsset;
+    }
+
+    // 폐기 이력 List에 담아서가져오기
+    public List<DeleteHistoryDto> getDeleteHistory() {
+        List<DemandDtl> deleteList = demandDtlRepository.findDeleteHistory();
+
+        List<DeleteHistoryDto> deleteHistoryList = new ArrayList<>();
+
+        for (DemandDtl demandDtl : deleteList) {
+            DeleteHistoryDto dto = new DeleteHistoryDto();
+            CommonAsset asset = demandDtl.getAssetNo();
+            Demand demand = demandDtl.getDemandNo();
+
+            dto.setAssetCode(asset.getAssetCode());
+            dto.setAssetName(asset.getAssetName());
+            dto.setDeleteReason(demand.getDemandReason());
+            dto.setDeleteDetail(demand.getDemandDetail());
+            dto.setDeleteMethod(demand.getDisposeMethod());
+            dto.setDeleteLocation(demand.getDisposeLocation());
+            dto.setDeleteDate(demand.getDemandDate());
+
+            deleteHistoryList.add(dto);
+        }
+
+        return deleteHistoryList;
+    }
 
 }
