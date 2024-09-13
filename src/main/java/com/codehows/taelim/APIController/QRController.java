@@ -115,7 +115,6 @@ public class QRController {
     }
 
 
-
 //    //QR 조회
 //    @GetMapping("/{assetCode}")
 //    public ResponseEntity<String> getQRCode(@PathVariable("assetCode") String assetCode) {
@@ -154,19 +153,21 @@ public class QRController {
     @GetMapping("/asset/{assetCode}")
     public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
         return assetService.getAssetDetail(assetCode);
-
-    //상세조회 (공통 및 서브 칼럼)
-    //@GetMapping("/asset/{assetCode}")
-   // public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
-    //    return assetService.getAssetDetail(assetCode);
-    //}
-
-    //상세조회 (공통 및 서브 칼럼)
-    @GetMapping("/asset1/{assetCode}")
-    public Map<String, Object> getAssetDetail2(@PathVariable("assetCode") String assetCode) {
-        return assetService.getAssetDetail2(assetCode);
-
     }
+
+
+        //상세조회 (공통 및 서브 칼럼)
+        //@GetMapping("/asset/{assetCode}")
+        // public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
+        //    return assetService.getAssetDetail(assetCode);
+        //}
+
+        //상세조회 (공통 및 서브 칼럼)
+        @GetMapping("/asset1/{assetCode}")
+        public Map<String, Object> getAssetDetail2 (@PathVariable("assetCode") String assetCode){
+            return assetService.getAssetDetail2(assetCode);
+
+        }
 
 //    //상세조회 (공통 및 서브 칼럼)
 //    @GetMapping("/asset/{assetCode}")
@@ -174,31 +175,34 @@ public class QRController {
 //        return assetService.getAssetDetail2(assetCode);
 //    }
 
-    @PostMapping("/dispose/{assetCode}")
-    public ResponseEntity<CommonAsset> disposeAsset(@PathVariable("assetCode") String assetCode) {
-        assetService.DisposeApprove(assetCode);
-        return ResponseEntity.ok().build();
+        @PostMapping("/dispose/{assetCode}")
+        public ResponseEntity<CommonAsset> disposeAsset (@PathVariable("assetCode") String assetCode){
+            assetService.DisposeApprove(assetCode);
+            return ResponseEntity.ok().build();
+        }
+
+
+        // 자산관리자가 폐기
+        @PostMapping("/disposeAsset/{assetCode}")
+        public ResponseEntity<CommonAsset> disposeitem (@PathVariable("assetCode") String
+        assetCode, @RequestBody AssetDisposeDto assetDisposeDto){
+            assetService.DisposeAsset(assetCode, assetDisposeDto);
+            return ResponseEntity.ok().build();
+        }
+
+        // 자산담당자가 폐기 요청
+        @PostMapping("/disposeDemand/{assetCode}")
+        public ResponseEntity<CommonAsset> disposedemand (@PathVariable("assetCode") String
+        assetCode, @RequestBody AssetDisposeDto assetDisposeDto){
+            assetService.DisposeDemand(assetCode, assetDisposeDto);
+            return ResponseEntity.ok().build();
+        }
+
+        // 폐기이력 불러오기
+        @GetMapping("/deleteHistory")
+        public List<DeleteHistoryDto> getDeleteHistory () {
+            return assetService.getDeleteHistory();
+        }
+
     }
 
-
-    // 자산관리자가 폐기
-    @PostMapping("/disposeAsset/{assetCode}")
-    public ResponseEntity<CommonAsset> disposeitem(@PathVariable("assetCode") String assetCode, @RequestBody AssetDisposeDto assetDisposeDto) {
-        assetService.DisposeAsset(assetCode, assetDisposeDto);
-        return ResponseEntity.ok().build();
-    }
-
-    // 자산담당자가 폐기 요청
-    @PostMapping("/disposeDemand/{assetCode}")
-    public ResponseEntity<CommonAsset> disposedemand(@PathVariable("assetCode") String assetCode, @RequestBody AssetDisposeDto assetDisposeDto) {
-        assetService.DisposeDemand(assetCode, assetDisposeDto);
-        return ResponseEntity.ok().build();
-    }
-
-    // 폐기이력 불러오기
-    @GetMapping("/deleteHistory")
-    public List<DeleteHistoryDto> getDeleteHistory() {
-        return assetService.getDeleteHistory();
-    }
-
-}
