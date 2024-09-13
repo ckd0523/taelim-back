@@ -34,9 +34,12 @@ public class AssetSurveyService {
 
     //자산 조사 등록
     public Boolean assetSurveyRegister(AssetSurveyHistoryRegisterDto registerData) {
+        System.out.println("sjdsklfjklsdfjl");
         //프론트에서 받아온 2개 값을 추출
         String email = registerData.getEmail();
-        AssetLocation location = registerData.getLocation();
+
+        System.out.println("여기 뭔데 : " + registerData.getLocation());
+        AssetLocation location = AssetLocation.valueOf(registerData.getLocation());
         Long round = registerData.getRound();
         //long round = 1;
 
@@ -207,6 +210,4 @@ public class AssetSurveyService {
         return isExistRound.map(assetSurveyHistory -> assetSurveyHistory.getRound() + 1).orElse(1L);
     }
 }
-
-
 
