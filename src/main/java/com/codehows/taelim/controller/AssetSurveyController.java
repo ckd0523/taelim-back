@@ -35,6 +35,7 @@ public class AssetSurveyController {
     public ResponseEntity<Void> createAssetSurvey(@RequestBody AssetSurveyHistoryRegisterDto assetSurveyHistory) {
         //postService.createPost(post);
         //assetSurveyService.assetSurveyRegister(AssetLocation.MAIN_1F, 1L, "user10@example.com");
+        System.out.println("프론트에서 넘어온 위치 : " + assetSurveyHistory.getLocation());
         System.out.println("프론트에서 온 자산 조사자 : "+assetSurveyHistory.getEmail());
         Boolean result = assetSurveyService.assetSurveyRegister(assetSurveyHistory);
         System.out.println(result);
@@ -80,10 +81,11 @@ public class AssetSurveyController {
     @GetMapping("/checkLocation/{selectedLocation}")
     //ResponseEntity에 ?는 아무 타입이나 가능하다는 의미
     public ResponseEntity<?> checkLocation(@PathVariable("selectedLocation") String selectedLocation) {
-        System.out.println("프론트에서 넘어온 위치 : " + selectedLocation);
+        //System.out.println("프론트에서 넘어온 위치 : " + selectedLocation);
         //String을 Enum으로 변환
         AssetLocation location = AssetLocation.valueOf(selectedLocation);
         boolean exists = assetSurveyService.checkLocation(location);
+        //System.out.println("여기에서 문제인가?");
 
         if (exists) {
             // 이미 자산 조사가 있을 경우 HTTP 409(Conflict) 상태 코드와 함께 응답

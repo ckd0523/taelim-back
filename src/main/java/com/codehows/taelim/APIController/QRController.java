@@ -154,6 +154,7 @@ public class QRController {
     @GetMapping("/asset/{assetCode}")
     public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
         return assetService.getAssetDetail(assetCode);
+    }
 
     //상세조회 (공통 및 서브 칼럼)
     //@GetMapping("/asset/{assetCode}")
