@@ -14,24 +14,24 @@ public enum PatentTrademarkStatus {
     APPLICATION("출원"),
     REGISTERED("등록"),
     EXPIRED("만료");
-    private String description;
+    private final String description;
 
-    PatentTrademarkStatus(String description) {
-        this.description = description;
-    }
-
-    @JsonValue
-    public String getDescription(){
-        return description;
-    }
-
-    @JsonCreator
-    public static PatentTrademarkStatus from(String value){
-        for(PatentTrademarkStatus patentTrademarkStatus : PatentTrademarkStatus.values()) {
-            if(patentTrademarkStatus.description.equals(value)) {
-                return patentTrademarkStatus;
-            }
-        }
-        throw new IllegalArgumentException("잘못된 값: " + value);
-    }
+//    PatentTrademarkStatus(String description) {
+//        this.description = description;
+//    }
+//
+//    @JsonValue
+//    public String getDescription(){
+//        return description;
+//    }
+//
+//    @JsonCreator
+//    public static PatentTrademarkStatus from(String value){
+//        for(PatentTrademarkStatus patentTrademarkStatus : PatentTrademarkStatus.values()) {
+//            if(patentTrademarkStatus.description.equals(value)) {
+//                return patentTrademarkStatus;
+//            }
+//        }
+//        throw new IllegalArgumentException("잘못된 값: " + value);
+//    }
 }
