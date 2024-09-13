@@ -31,10 +31,11 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .selectFrom(QCommonAsset.commonAsset)  // QCommonAsset 사용
                 .where(QCommonAsset.commonAsset.assetCode.eq(assetCode)
                         .and(QCommonAsset.commonAsset.disposalStatus.eq(false)
-                                .or(QCommonAsset.commonAsset.disposalStatus.eq(true)
+                                .and(QCommonAsset.commonAsset.approval.eq(Approval.valueOf("APPROVE")))
+                                   .or(QCommonAsset.commonAsset.disposalStatus.eq(true)
                                         .and(QCommonAsset.commonAsset.approval.eq(Approval.valueOf("UNCONFIRMED")))
-                                .or(QCommonAsset.commonAsset.disposalStatus.eq(true)
-                                        .and(QCommonAsset.commonAsset.approval.eq(Approval.valueOf("REFUSAL")))
+                                            .or(QCommonAsset.commonAsset.disposalStatus.eq(true)
+                                                .and(QCommonAsset.commonAsset.approval.eq(Approval.valueOf("REFUSAL")))
                                 )
                                 )
                         )
@@ -57,11 +58,12 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         subQuery.select(subCa.assetNo.max())
                 .from(subCa)
                 .where(subCa.disposalStatus.isFalse()
+                        .and(subCa.approval.eq(Approval.valueOf("APPROVE")))
                                 .or(
                                         subCa.disposalStatus.isTrue()
                                                 .and(subCa.approval.eq(Approval.valueOf("UNCONFIRMED")))
-                                        .or(
-                                                subCa.disposalStatus.isTrue()
+                                                  .or(
+                                                     subCa.disposalStatus.isTrue()
                                                         .and(subCa.approval.eq(Approval.valueOf("REFUSAL")))
                                         )
                                 )
