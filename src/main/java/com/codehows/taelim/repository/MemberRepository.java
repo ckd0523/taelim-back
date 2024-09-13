@@ -13,4 +13,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     //이때 매개 변수 assetUser는 email임
     Member findByEmail(String assetUser);
+//    Member findByUName(String uName);
 }

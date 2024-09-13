@@ -1,7 +1,6 @@
 package com.codehows.taelim.entity;
 
 import com.codehows.taelim.constant.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -88,6 +87,5 @@ public class CommonAsset {
 
     private String acquisitionRoute;
     private LocalDate maintenancePeriod;
-
 
 }

@@ -4,8 +4,10 @@ import com.codehows.taelim.constant.*;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.MemberRepository;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -124,6 +126,11 @@ public class AssetDto {
     private String otherDescription;
     private String usageFrequency;
 
+    //파일
+    private FileType image;
+    private FileType warrantyDocument;
+    private FileType userDocument;
+
     public CommonAsset toEntity() {
 
         return CommonAsset.builder()
@@ -206,6 +213,7 @@ public class AssetDto {
                 .build();
     }
 
+
     public PatentsAndTrademarks toPatentsAndTrademarks(){
         return PatentsAndTrademarks.builder()
                 .applicationDate(applicationDate)
@@ -221,6 +229,7 @@ public class AssetDto {
                 .relatedDocuments(relatedDocuments)
                 .build();
     }
+
 
     public ItSystemEquipment toItSystemEquipment(){
         return ItSystemEquipment.builder()
@@ -299,4 +308,6 @@ public class AssetDto {
                 .usageFrequency(usageFrequency)
                 .build();
     }
+
+    private List<FileDto> files;
 }

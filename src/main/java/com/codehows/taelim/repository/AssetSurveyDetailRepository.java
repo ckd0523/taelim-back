@@ -2,6 +2,7 @@ package com.codehows.taelim.repository;
 
 import com.codehows.taelim.entity.AssetSurveyDetail;
 import com.codehows.taelim.entity.AssetSurveyHistory;
+import com.codehows.taelim.entity.CommonAsset;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -28,4 +29,5 @@ public interface AssetSurveyDetailRepository extends JpaRepository<AssetSurveyDe
 
     //자산 조사를 위한 자산 조사 상세 이력
     List<AssetSurveyDetail> findAllByAssetSurveyNo(AssetSurveyHistory assetSurveyHistory);
+    List<AssetSurveyDetail> findByAssetNo(CommonAsset assetNo);
 }

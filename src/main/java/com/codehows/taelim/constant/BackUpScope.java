@@ -10,4 +10,5 @@ public enum BackUpScope {
     FULL("전체"),
     PARTIAL("일부");
     private final String description;
+
 }

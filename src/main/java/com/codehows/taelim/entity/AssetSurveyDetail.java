@@ -23,7 +23,6 @@ public class AssetSurveyDetail {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetNo")
     private CommonAsset assetNo;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetSurveyNo")
     private AssetSurveyHistory assetSurveyNo;

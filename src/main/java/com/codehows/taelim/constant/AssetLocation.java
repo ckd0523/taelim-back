@@ -19,9 +19,28 @@ public enum AssetLocation {
     MAIN_2F_CONFERENCE_ROOM("본관 2층 대회의실"),
     MAIN_2F_CEO_OFFICE("본관 2층 대표이사실"),
     MAIN_3F_STORAGE("본관 3층 창고"),
-    MDCG("MDCG"),
+    MDCG("MDCG 천장"),
     FACTORY_BUILDING("공장동");
-    private final String description;
+    private String description;
+
+    AssetLocation(String description) {
+        this.description = description;
+    }
+
+    @JsonValue
+    public String getDescription(){
+        return description;
+    }
+
+    @JsonCreator
+    public static AssetLocation from(String value){
+        for(AssetLocation assetLocation : AssetLocation.values()) {
+            if(assetLocation.description.equals(value)) {
+                return assetLocation;
+            }
+        }
+        throw new IllegalArgumentException("잘못된 값: " + value);
+    }
 
 
 
