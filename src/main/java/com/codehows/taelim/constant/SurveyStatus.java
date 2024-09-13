@@ -11,24 +11,24 @@ import lombok.RequiredArgsConstructor;
 public enum SurveyStatus {
     IN_PROGRESS("조사중"),
     COMPLETED("조사완료");
-    private String description;
+    private final String description;
 
-    SurveyStatus(String description) {
-        this.description = description;
-    }
-
-    @JsonValue
-    public String getDescription(){
-        return description;
-    }
-
-    @JsonCreator
-    public static SurveyStatus from(String value){
-        for(SurveyStatus surveyStatus : SurveyStatus.values()) {
-            if(surveyStatus.description.equals(value)) {
-                return surveyStatus;
-            }
-        }
-        throw new IllegalArgumentException("잘못된 값: " + value);
-    }
+//    SurveyStatus(String description) {
+//        this.description = description;
+//    }
+//
+//    @JsonValue
+//    public String getDescription(){
+//        return description;
+//    }
+//
+//    @JsonCreator
+//    public static SurveyStatus from(String value){
+//        for(SurveyStatus surveyStatus : SurveyStatus.values()) {
+//            if(surveyStatus.description.equals(value)) {
+//                return surveyStatus;
+//            }
+//        }
+//        throw new IllegalArgumentException("잘못된 값: " + value);
+//    }
 }

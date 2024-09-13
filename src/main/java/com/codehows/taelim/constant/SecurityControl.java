@@ -12,24 +12,24 @@ public enum SecurityControl {
     MONITORING("관제중"),
     ANOMALY_DETECTED("이상감지"),
     MONITORING_COMPLETED("관제완료");
-    private String description;
+    private final String description;
 
-    SecurityControl(String description) {
-        this.description = description;
-    }
-
-    @JsonValue
-    public String getDescription(){
-        return description;
-    }
-
-    @JsonCreator
-    public static SecurityControl from(String value){
-        for(SecurityControl securityControl : SecurityControl.values()) {
-            if(securityControl.description.equals(value)) {
-                return securityControl;
-            }
-        }
-        throw new IllegalArgumentException("잘못된 값: " + value);
-    }
+//    SecurityControl(String description) {
+//        this.description = description;
+//    }
+//
+//    @JsonValue
+//    public String getDescription(){
+//        return description;
+//    }
+//
+//    @JsonCreator
+//    public static SecurityControl from(String value){
+//        for(SecurityControl securityControl : SecurityControl.values()) {
+//            if(securityControl.description.equals(value)) {
+//                return securityControl;
+//            }
+//        }
+//        throw new IllegalArgumentException("잘못된 값: " + value);
+//    }
 }
