@@ -1,6 +1,7 @@
 package com.codehows.taelim.controller;
 
 import com.codehows.taelim.constant.AssetLocation;
+import com.codehows.taelim.dto.AssetSurveyDetailDto;
 import com.codehows.taelim.dto.AssetSurveyHistoryDto;
 import com.codehows.taelim.dto.AssetSurveyHistoryRegisterDto;
 import com.codehows.taelim.dto.DeleteRequest;
@@ -34,6 +35,7 @@ public class AssetSurveyController {
     public ResponseEntity<Void> createAssetSurvey(@RequestBody AssetSurveyHistoryRegisterDto assetSurveyHistory) {
         //postService.createPost(post);
         //assetSurveyService.assetSurveyRegister(AssetLocation.MAIN_1F, 1L, "user10@example.com");
+        System.out.println("프론트에서 온 자산 조사자 : "+assetSurveyHistory.getEmail());
         Boolean result = assetSurveyService.assetSurveyRegister(assetSurveyHistory);
         System.out.println(result);
         if(result) {
@@ -65,8 +67,34 @@ public class AssetSurveyController {
         return new ResponseEntity<>(HttpStatus.CREATED); // 201 Created 상태 코드 반환
     }
 
+    /*
+
+    //자산 조사 상세 이력
     @GetMapping("/assetSurveyDetail")
-    public List<AssetSurveyDetail> getAssetSurveyDetail(@RequestParam Integer assetSurveyNo) {
+    public List<AssetSurveyDetailDto> getAssetSurveyDetail(@RequestParam Integer assetSurveyNo) {
         return assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo);
+    }
+
+     */
+
+    @GetMapping("/checkLocation/{selectedLocation}")
+    //ResponseEntity에 ?는 아무 타입이나 가능하다는 의미
+    public ResponseEntity<?> checkLocation(@PathVariable("selectedLocation") String selectedLocation) {
+        System.out.println("프론트에서 넘어온 위치 : " + selectedLocation);
+        //String을 Enum으로 변환
+        AssetLocation location = AssetLocation.valueOf(selectedLocation);
+        boolean exists = assetSurveyService.checkLocation(location);
+
+        if (exists) {
+            // 이미 자산 조사가 있을 경우 HTTP 409(Conflict) 상태 코드와 함께 응답
+            //conflict는 클라이언트가 요청한 작업이 서버의 현재 리소스 상태와 일치하지 않거나 충돌이 발생할 경우 사용
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("현재 위치에 대한 자산조사가 이미 있습니다.");
+        } else {
+            // 회차 정보를 가져오는 로직
+            Long nextRound = assetSurveyService.getNextRoundForLocation(location);
+            //Long nextRound = 3L;
+            // 회차 정보를 포함한 응답 (JSON 형태로 클라이언트에 전송)
+            return ResponseEntity.ok(nextRound);
+        }
     }
 }
