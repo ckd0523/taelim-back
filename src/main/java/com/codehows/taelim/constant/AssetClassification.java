@@ -24,25 +24,25 @@ public enum AssetClassification {
     CAR("차량"),
     OTHERASSETS("기타");
 
-    private String description;
+    private final String description;
 
-    AssetClassification(String description) {
-        this.description = description;
-    }
-
-    @JsonValue
-    public String getDescription(){
-        return description;
-    }
-
-    @JsonCreator
-    public static AssetClassification from(String value){
-        for(AssetClassification assetClassification : AssetClassification.values()) {
-            if(assetClassification.description.equals(value)) {
-                return assetClassification;
-            }
-        }
-        throw new IllegalArgumentException("잘못된 값: " + value);
-    }
+//    AssetClassification(String description) {
+//        this.description = description;
+//    }
+//
+//    @JsonValue
+//    public String getDescription(){
+//        return description;
+//    }
+//
+//    @JsonCreator
+//    public static AssetClassification from(String value){
+//        for(AssetClassification assetClassification : AssetClassification.values()) {
+//            if(assetClassification.description.equals(value)) {
+//                return assetClassification;
+//            }
+//        }
+//        throw new IllegalArgumentException("잘못된 값: " + value);
+//    }
 
 }
