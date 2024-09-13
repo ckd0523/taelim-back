@@ -67,11 +67,15 @@ public class AssetSurveyController {
         return new ResponseEntity<>(HttpStatus.CREATED); // 201 Created 상태 코드 반환
     }
 
+    /*
+
     //자산 조사 상세 이력
     @GetMapping("/assetSurveyDetail")
     public List<AssetSurveyDetailDto> getAssetSurveyDetail(@RequestParam Integer assetSurveyNo) {
         return assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo);
     }
+
+     */
 
     @GetMapping("/checkLocation/{selectedLocation}")
     //ResponseEntity에 ?는 아무 타입이나 가능하다는 의미

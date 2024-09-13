@@ -142,6 +142,8 @@ public class AssetSurveyService {
         return "자산 조사 삭제 성공";
     }
 
+    /*
+
     //자산 조사를 위한 자산 조사 상세 이력
     public List<AssetSurveyDetailDto> getAssetSurveyDetail(Long assetSurveyNo) {
         List<AssetSurveyDetailDto> assetSurveyDetailDtoList = new ArrayList<>();
@@ -173,6 +175,8 @@ public class AssetSurveyService {
         }
         return assetSurveyDetailDtoList;
     }
+
+    */
 
     //자산 조사 상세 수정
     //자산 조사를 진행할 때 각 자산에 대한 정위치 유무, 파손 유무 등을 실시간으로 처리
