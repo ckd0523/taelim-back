@@ -143,6 +143,7 @@ public class QRController {
         return commonAssetDto;
     }
 
+
 //    //상세조회 (공통 및 서브 칼럼)
 //    @GetMapping("/asset/{assetCode}")
 //    public Map<String, Object> getAssetDetail(@PathVariable("assetCode") String assetCode) {
@@ -153,6 +154,18 @@ public class QRController {
     @GetMapping("/asset/{assetCode}")
     public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
         return assetService.getAssetDetail(assetCode);
+
+    //상세조회 (공통 및 서브 칼럼)
+    //@GetMapping("/asset/{assetCode}")
+   // public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
+    //    return assetService.getAssetDetail(assetCode);
+    //}
+
+    //상세조회 (공통 및 서브 칼럼)
+    @GetMapping("/asset1/{assetCode}")
+    public Map<String, Object> getAssetDetail2(@PathVariable("assetCode") String assetCode) {
+        return assetService.getAssetDetail2(assetCode);
+
     }
 
 //    //상세조회 (공통 및 서브 칼럼)

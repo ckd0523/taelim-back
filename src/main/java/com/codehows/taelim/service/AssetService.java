@@ -285,6 +285,7 @@ public class AssetService {
 
         assetDto.setFiles(fileDtos);
 
+
         //return assetDto;
         //파일
         //List<File> fileList = fileRepository.findByAssetNo(commonAsset);
@@ -303,6 +304,25 @@ public class AssetService {
         result.put("assetDto", assetDto);
 
         return assetDto;
+
+//        //파일
+//        List<File> fileList = fileRepository.findByAssetNo(commonAsset);
+//        //유지보수
+//        List<RepairHistory> repairList = repairHistoryRepository.findByAssetNo(commonAsset);
+//        //수정이력
+//        List<CommonAsset> updateList = commonAssetRepository.findApprovedAssetsByCodeExceptLatest(assetCode);
+//        //자산조사이력
+//        List<AssetSurvey> assetSurveyList = assetSurveyService.getAssetSurveysByAssetNo(commonAsset);
+//
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("fileList", fileList != null ? fileList : Collections.emptyList());
+//        result.put("repairList", repairList != null ? repairList : Collections.emptyList());
+//        result.put("commonAssetList", updateList != null ? repairList : Collections.emptyList());
+//        result.put("assetSurveyList", assetSurveyList != null ? repairList : Collections.emptyList());
+//        result.put("assetDto", assetDto);
+//
+//        return result;
+
     }
 
     // 자산 상세 조회2

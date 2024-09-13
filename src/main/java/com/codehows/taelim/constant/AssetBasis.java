@@ -20,7 +20,7 @@ public enum AssetBasis {
     }
 
     @JsonValue
-    public String getKoreanName() {
+    public String getDescription() {
         return description;
     }
 
