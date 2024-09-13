@@ -61,6 +61,23 @@ public class AssetController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
         }
     }
+
+    // 자산 수정요청등록
+    @PostMapping("/updateDemand/{assetCode}")
+    public ResponseEntity<String> updateDemand(
+            @PathVariable String assetCode,
+            @RequestBody AssetDto assetDto) {
+
+        try {
+            Long newAssetNo = registerService.updatedemandAssetCode(assetCode, assetDto);
+            return ResponseEntity.ok("자산 수정 등록완료 : " + newAssetNo);
+        } catch (Exception e) {
+            // 예외 메시지 로깅
+            e.printStackTrace();
+            // 클라이언트에게 오류 메시지 전송
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
+        }
+    }
     @PostMapping("/file/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("assetNo") String assetId, @RequestParam("fileType") String fileType) {
 

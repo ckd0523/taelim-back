@@ -24,7 +24,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
     @PersistenceContext
     private EntityManager entityManager;
 
-    //자산코드로 하나의 자산 공통정보 가져오기
+    //자산코드로 하나의 자산 공통정보 가져오기 - 조건 : 폐기여부 F and 폐기여부 T + 요청 미확인 and 폐기여부 T + 요청 거절  하나 조회
     @Override
     public Optional<CommonAsset> findLatestApprovedAsset(String assetCode) {
         CommonAsset result = queryFactory
@@ -45,7 +45,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         return Optional.ofNullable(result);
     }
 
-    // 자산목록 (자산 공통정보)
+    // 자산목록 (자산 공통정보) - 조건 : 폐기여부 F and 폐기여부 T + 요청 미확인 and 폐기여부 T + 요청 거절   리스트 조회
     @Override
     public List<CommonAsset> findApprovedAndNotDisposedAssets() {
         QCommonAsset ca = QCommonAsset.commonAsset;
@@ -135,4 +135,17 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .fetch();
     }
 
+    // 자산 수정할때 하나의 assetCode 중에 데이터가 여러개일때 최신 assetNo 조회 하는 쿼리
+    @Override
+    public Optional<CommonAsset> findLatestAssetCode(String assetCode) {
+
+        CommonAsset result = queryFactory
+                .selectFrom(QCommonAsset.commonAsset)
+                .where(QCommonAsset.commonAsset.assetCode.eq(assetCode))
+                .orderBy(QCommonAsset.commonAsset.assetNo.desc()) // assetNo 기준으로 내림차순 정렬
+                .fetchFirst(); // 가장 높은 assetNo를 가진 하나의 결과를 가져옴
+
+        return Optional.ofNullable(result);
+
+    }
 }

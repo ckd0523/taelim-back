@@ -238,21 +238,21 @@ public class RegisterService {
     public Long updateAssetCode(String assetCode, AssetDto assetDto) {
 
         // 기존 입력되어있는 assetCode 조회
-        CommonAsset existAsset = commonAssetRepository.findByAssetCode(assetCode)
+        CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
                 .orElseThrow(() -> new RuntimeException("자산코드를 찾을수 없음 " + assetCode));
 
         // 기존 자산 정보에 새로운 자산 생성
         CommonAsset updateAsset = new CommonAsset();
         updateAsset.setAssetCode(existAsset.getAssetCode()); // 코드 동일하게 유지하고
+        updateAsset.setAssetName(existAsset.getAssetName());
+        updateAsset.setAssetBasis(existAsset.getAssetBasis());
+        updateAsset.setManufacturingCompany(existAsset.getManufacturingCompany());
+        updateAsset.setPurpose(existAsset.getPurpose());
 //        updateAsset.setAssetUser(existAsset.getAssetUser());    // 사용자들은 나중에 바꿔야함
 //        updateAsset.setAssetOwner(existAsset.getAssetOwner());
 //        updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
 
         // AssetDto에서 업데이트할 필드 설정 (null 체크 후 기존 값 유지)
-        //updateAsset.setAssetName(assetDto.getAssetName() != null ? assetDto.getAssetName() : existAsset.getAssetName());
-        //updateAsset.setAssetBasis(assetDto.getAssetBasis() != null ? assetDto.getAssetBasis() : existAsset.getAssetBasis());
-        //updateAsset.setManufacturingCompany(assetDto.getManufacturingCompany() != null ? assetDto.getManufacturingCompany() : existAsset.getManufacturingCompany());
-        //updateAsset.setPurpose(assetDto.getPurpose() != null ? assetDto.getPurpose() : existAsset.getPurpose());
         updateAsset.setDepartment(assetDto.getDepartment() != null ? assetDto.getDepartment() : existAsset.getDepartment());
         updateAsset.setAssetLocation(assetDto.getAssetLocation() != null ? assetDto.getAssetLocation() : existAsset.getAssetLocation());
         //updateAsset.setAssetUser(assetDto.getAssetUser() != null ? assetDto.getAssetUser() : existAsset.getAssetUser());
@@ -276,13 +276,74 @@ public class RegisterService {
         updateAsset.setAcquisitionRoute(assetDto.getAcquisitionRoute() != null ? assetDto.getAcquisitionRoute() : existAsset.getAcquisitionRoute());
         updateAsset.setMaintenancePeriod(assetDto.getMaintenancePeriod() != null ? assetDto.getMaintenancePeriod() : existAsset.getMaintenancePeriod());
 
-        updateAsset.setAssetClassification(existAsset.getAssetClassification() != null ? assetDto.getAssetClassification() : existAsset.getAssetClassification() // 기본값 설정
+        updateAsset.setAssetClassification(assetDto.getAssetClassification() != null ? assetDto.getAssetClassification() : existAsset.getAssetClassification() // 기본값 설정
         );
         //자산정보에 따른 세부 변경사항
         updateAsset.setApproval(Approval.APPROVE);
         updateAsset.setDisposalStatus(Boolean.FALSE);
         updateAsset.setDemandStatus(Boolean.FALSE);
         updateAsset.setDemandCheck(Boolean.FALSE);
+        updateAsset.setCreateDate(LocalDate.now());  // 등록일 갱신
+
+        commonAssetRepository.save(updateAsset);
+
+        // 새로운 자산 번호 생성
+        Long newAssetNo = updateAsset.getAssetNo();
+        CommonAsset latestAsset = commonAssetRepository.findTopByOrderByAssetNoDesc();
+        // 자산 분류에 따라 관련된 데이터베이스 저장
+        saveRelatedEntity(assetDto, latestAsset);
+
+        return newAssetNo;
+    }
+
+    public Long updatedemandAssetCode(String assetCode, AssetDto assetDto) {
+
+        // 기존 입력되어있는 assetCode 조회
+        CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
+                .orElseThrow(() -> new RuntimeException("자산코드를 찾을수 없음 " + assetCode));
+
+        // 기존 자산 정보에 새로운 자산 생성
+        CommonAsset updateAsset = new CommonAsset();
+        updateAsset.setAssetCode(existAsset.getAssetCode()); // 코드 동일하게 유지하고
+        updateAsset.setAssetName(existAsset.getAssetName());
+        updateAsset.setAssetBasis(existAsset.getAssetBasis());
+        updateAsset.setManufacturingCompany(existAsset.getManufacturingCompany());
+        updateAsset.setPurpose(existAsset.getPurpose());
+//        updateAsset.setAssetUser(existAsset.getAssetUser());    // 사용자들은 나중에 바꿔야함
+//        updateAsset.setAssetOwner(existAsset.getAssetOwner());
+//        updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
+
+        // AssetDto에서 업데이트할 필드 설정 (null 체크 후 기존 값 유지)
+        updateAsset.setDepartment(assetDto.getDepartment() != null ? assetDto.getDepartment() : existAsset.getDepartment());
+        updateAsset.setAssetLocation(assetDto.getAssetLocation() != null ? assetDto.getAssetLocation() : existAsset.getAssetLocation());
+        //updateAsset.setAssetUser(assetDto.getAssetUser() != null ? assetDto.getAssetUser() : existAsset.getAssetUser());
+        //updateAsset.setAssetOwner(assetDto.getAssetOwner() != null ? assetDto.getAssetOwner() : existAsset.getAssetOwner());
+        //updateAsset.setAssetSecurityManager(assetDto.getAssetSecurityManager() != null ? assetDto.getAssetSecurityManager() : existAsset.getAssetSecurityManager());
+        updateAsset.setUseState(assetDto.getUseState() != null ? assetDto.getUseState() : existAsset.getUseState());
+        updateAsset.setOperationStatus(assetDto.getOperationStatus() != null ? assetDto.getOperationStatus() : existAsset.getOperationStatus());
+        updateAsset.setIntroducedDate(assetDto.getIntroducedDate() != null ? assetDto.getIntroducedDate() : existAsset.getIntroducedDate());
+        // int 필드에 대해 기본값 처리
+        updateAsset.setConfidentiality(assetDto.getConfidentiality() != 0 ? assetDto.getConfidentiality() : existAsset.getConfidentiality());
+        updateAsset.setIntegrity(assetDto.getIntegrity() != 0 ? assetDto.getIntegrity() : existAsset.getIntegrity());
+        updateAsset.setAvailability(assetDto.getAvailability() != 0 ? assetDto.getAvailability() : existAsset.getAvailability());
+        // 다시
+        updateAsset.setNote(assetDto.getNote() != null ? assetDto.getNote() : existAsset.getNote());
+        updateAsset.setPurchaseCost(assetDto.getPurchaseCost() != null ? assetDto.getPurchaseCost() : existAsset.getPurchaseCost());
+        updateAsset.setPurchaseDate(assetDto.getPurchaseDate() != null ? assetDto.getPurchaseDate() : existAsset.getPurchaseDate());
+        updateAsset.setUsefulLife(assetDto.getUsefulLife() != null ? assetDto.getUsefulLife() : existAsset.getUsefulLife());
+        updateAsset.setDepreciationMethod(assetDto.getDepreciationMethod() != null ? assetDto.getDepreciationMethod() : existAsset.getDepreciationMethod());
+        updateAsset.setPurchaseSource(assetDto.getPurchaseSource() != null ? assetDto.getPurchaseSource() : existAsset.getPurchaseSource());
+        updateAsset.setContactInformation(assetDto.getContactInformation() != null ? assetDto.getContactInformation() : existAsset.getContactInformation());
+        updateAsset.setAcquisitionRoute(assetDto.getAcquisitionRoute() != null ? assetDto.getAcquisitionRoute() : existAsset.getAcquisitionRoute());
+        updateAsset.setMaintenancePeriod(assetDto.getMaintenancePeriod() != null ? assetDto.getMaintenancePeriod() : existAsset.getMaintenancePeriod());
+
+        updateAsset.setAssetClassification(assetDto.getAssetClassification() != null ? assetDto.getAssetClassification() : existAsset.getAssetClassification() // 기본값 설정
+        );
+        //자산정보에 따른 세부 변경사항
+        updateAsset.setApproval(Approval.UNCONFIRMED);
+        updateAsset.setDisposalStatus(Boolean.FALSE);
+        updateAsset.setDemandStatus(Boolean.TRUE);
+        updateAsset.setDemandCheck(Boolean.TRUE);
         updateAsset.setCreateDate(LocalDate.now());  // 등록일 갱신
 
         commonAssetRepository.save(updateAsset);
