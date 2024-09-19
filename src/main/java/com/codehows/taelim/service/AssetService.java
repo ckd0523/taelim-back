@@ -646,4 +646,25 @@ public class AssetService {
         return deleteHistoryList;
     }
 
+    // 수정 이력 List 에 담아서 가져오기
+    public List<UpdateHistoryDto> getUpDateHistory(){
+        List<DemandDtl> updateList = demandDtlRepository.findUpdateHistory();
+
+        List<UpdateHistoryDto> updateHistoryDtoList = new ArrayList<>();
+
+        for (DemandDtl demandDtl : updateList) {
+            UpdateHistoryDto dto = new UpdateHistoryDto();
+            CommonAsset asset= demandDtl.getAssetNo();
+            Demand demand = demandDtl.getDemandNo();
+
+            dto.setAssetCode(asset.getAssetCode());
+            dto.setAssetName(asset.getAssetName());
+            dto.setUpdateReason(demand.getDemandReason());
+            dto.setUpdateDetail(demand.getDemandDetail());
+            dto.setUpdateDate(demand.getDemandDate());
+
+            updateHistoryDtoList.add(dto);
+        }
+        return updateHistoryDtoList;
+    }
 }

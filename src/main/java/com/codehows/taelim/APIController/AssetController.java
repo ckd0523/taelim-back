@@ -2,6 +2,7 @@ package com.codehows.taelim.APIController;
 
 import com.codehows.taelim.constant.FileType;
 import com.codehows.taelim.dto.AssetDto;
+import com.codehows.taelim.dto.AssetUpdateDto;
 import com.codehows.taelim.dto.ExcelDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.File;
@@ -49,7 +50,7 @@ public class AssetController {
     @PostMapping("/update/{assetCode}")
     public ResponseEntity<String> updateAsset(
             @PathVariable String assetCode,
-            @RequestBody AssetDto assetDto) {
+            @RequestBody AssetUpdateDto assetDto) {
 
         try {
             Long newAssetNo = registerService.updateAssetCode(assetCode, assetDto);
@@ -66,7 +67,7 @@ public class AssetController {
     @PostMapping("/updateDemand/{assetCode}")
     public ResponseEntity<String> updateDemand(
             @PathVariable String assetCode,
-            @RequestBody AssetDto assetDto) {
+            @RequestBody AssetUpdateDto assetDto) {
 
         try {
             Long newAssetNo = registerService.updatedemandAssetCode(assetCode, assetDto);

@@ -1,9 +1,6 @@
 package com.codehows.taelim.APIController;
 
-import com.codehows.taelim.dto.AssetDisposeDto;
-import com.codehows.taelim.dto.AssetDto;
-import com.codehows.taelim.dto.CommonAssetDto;
-import com.codehows.taelim.dto.DeleteHistoryDto;
+import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.service.AssetService;
 import com.codehows.taelim.service.QRService;
@@ -202,6 +199,12 @@ public class QRController {
         @GetMapping("/deleteHistory")
         public List<DeleteHistoryDto> getDeleteHistory () {
             return assetService.getDeleteHistory();
+        }
+
+        // 수정이력 불러오기
+        @GetMapping("/updateHistory")
+        public List<UpdateHistoryDto> getUpDateHistory() {
+            return assetService.getUpDateHistory();
         }
 
     }

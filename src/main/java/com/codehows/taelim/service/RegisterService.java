@@ -3,6 +3,7 @@ package com.codehows.taelim.service;
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
 import com.codehows.taelim.dto.AssetDto;
+import com.codehows.taelim.dto.AssetUpdateDto;
 import com.codehows.taelim.dto.ExcelDto;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
@@ -35,6 +36,8 @@ public class RegisterService {
     private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
     private final InformationProtectionSystemRepository informationProtectionSystemRepository;
     private final MemberRepository memberRepository;
+    private final DemandRepository demandRepository;
+    private final DemandDtlRepository demandDtlRepository;
 
     //자산 등록
     public Long assetRegister(AssetDto assetDto){
@@ -235,7 +238,7 @@ public class RegisterService {
         return String.format("%s%s-%05d", prefix, classificationCode, newAssetNumber);
     }
 
-    public Long updateAssetCode(String assetCode, AssetDto assetDto) {
+    public Long updateAssetCode(String assetCode, AssetUpdateDto assetDto) {
 
         // 기존 입력되어있는 assetCode 조회
         CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
@@ -293,10 +296,23 @@ public class RegisterService {
         // 자산 분류에 따라 관련된 데이터베이스 저장
         saveRelatedEntity(assetDto, latestAsset);
 
+        // 수정 이력 저장
+        Demand demand = new Demand();
+        //demand.setDemandBy(); 추후 사람
+        demand.setDemandDate(assetDto.getCreateDate());
+        demand.setDemandReason(assetDto.getUpdateReason());
+        demand.setDemandDetail(assetDto.getUpdateDetail());
+        demandRepository.save(demand);
+        // DemandDtl 테이블 저장
+        DemandDtl demandDtl = new DemandDtl();
+        demandDtl.setAssetNo(existAsset);
+        demandDtl.setDemandNo(demand);
+        demandDtlRepository.save(demandDtl);
+
         return newAssetNo;
     }
 
-    public Long updatedemandAssetCode(String assetCode, AssetDto assetDto) {
+    public Long updatedemandAssetCode(String assetCode, AssetUpdateDto assetDto) {
 
         // 기존 입력되어있는 assetCode 조회
         CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
@@ -354,9 +370,22 @@ public class RegisterService {
         // 자산 분류에 따라 관련된 데이터베이스 저장
         saveRelatedEntity(assetDto, latestAsset);
 
+        // 수정 이력 저장
+        Demand demand = new Demand();
+        //demand.setDemandBy(); 추후 사람
+        demand.setDemandDate(assetDto.getCreateDate());
+        demand.setDemandReason(assetDto.getUpdateReason());
+        demand.setDemandDetail(assetDto.getUpdateDetail());
+        demandRepository.save(demand);
+        // DemandDtl 테이블 저장
+        DemandDtl demandDtl = new DemandDtl();
+        demandDtl.setAssetNo(existAsset);
+        demandDtl.setDemandNo(demand);
+        demandDtlRepository.save(demandDtl);
+
         return newAssetNo;
     }
-    private void saveRelatedEntity(AssetDto assetDto, CommonAsset latestAsset) {
+    private void saveRelatedEntity(AssetUpdateDto assetDto, CommonAsset latestAsset) {
         if (latestAsset.getAssetClassification() == null) {
             throw new IllegalArgumentException("Asset classification cannot be null.");
         }
