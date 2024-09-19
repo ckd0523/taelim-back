@@ -21,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -146,7 +148,6 @@ public class AssetSurveyService {
     }
 
     /*
-
     //자산 조사를 위한 자산 조사 상세 이력
     public List<AssetSurveyDetailDto> getAssetSurveyDetail(Long assetSurveyNo) {
         List<AssetSurveyDetailDto> assetSurveyDetailDtoList = new ArrayList<>();
@@ -160,6 +161,10 @@ public class AssetSurveyService {
         //일단 자산 조사 상세를 전부 가져옴
         List<AssetSurveyDetail> assetSurveyDetailList = assetSurveyDetailRepository.findAllByAssetSurveyNo(assetSurveyHistory);
 
+        //findLatestData는 용대형이 merge를 해줘야함
+        //해당 위치에 대한 최신 자산 정보를 가져옴
+        List<CommonAsset> commonAssets = commonAssetRepository.findDetailByLocation(assetSurveyHistory.getAssetSurveyLocation());
+
         for(AssetSurveyDetail assetSurveyDetail : assetSurveyDetailList) {
             //자산 조사 상세의 자산 번호로 공통 정보에 있는 자산 코드, 자산명 등을 가져와야함
             //이렇게 참조를 해서 가져오면
@@ -168,18 +173,43 @@ public class AssetSurveyService {
             //하지만 자산 상세에서 변경 이력을 볼 수 있으므로 추적을 가능하겠지만
             //매우 불편한 형식이 될것으로 예상
 
-            //findLatestData는 용대형이 merge를 해줘야함
-            //해당 위치에 대한 최신 자산 정보를 가져옴
-            CommonAsset commonAsset = commonAssetRepository.findLatestData(assetSurveyHistory.getAssetSurveyLocation());
-
             //자산 조사 상세 정보와 최신 자산 정보를 dto로 다시 만듦
-            AssetSurveyDetailDto assetSurveyDetailDto = new AssetSurveyDetailDto(commonAsset, assetSurveyDetail);
-            assetSurveyDetailDtoList.add(assetSurveyDetailDto);
+            for(CommonAsset commonAsset : commonAssets){
+                AssetSurveyDetailDto assetSurveyDetailDto = new AssetSurveyDetailDto(commonAsset, assetSurveyDetail);
+                assetSurveyDetailDtoList.add(assetSurveyDetailDto);
+            }
         }
         return assetSurveyDetailDtoList;
     }
-
     */
+
+    public List<AssetSurveyDetailDto> getAssetSurveyDetail(Long assetSurveyNo) {
+        // 자산 조사 이력 조회
+        AssetSurveyHistory assetSurveyHistory = assetSurveyHistoryRepository.findByAssetSurveyNo(assetSurveyNo);
+
+        // 자산 조사 상세 리스트 조회
+        List<AssetSurveyDetail> assetSurveyDetailList = assetSurveyDetailRepository.findAllByAssetSurveyNo(assetSurveyHistory);
+
+        // 공통 자산 정보를 자산 번호별로 매핑
+        List<Long> assetNos = assetSurveyDetailList.stream()
+                .map(assetSurveyDetail -> assetSurveyDetail.getAssetNo().getAssetNo()) // CommonAsset의 assetNo 가져오기
+                .collect(Collectors.toList());
+
+        List<CommonAsset> commonAssets = commonAssetRepository.findAllById(assetNos);
+        Map<Long, CommonAsset> commonAssetMap = commonAssets.stream()
+                .collect(Collectors.toMap(CommonAsset::getAssetNo, commonAsset -> commonAsset));
+
+        // DTO로 변환
+        return assetSurveyDetailList.stream()
+                .map(assetSurveyDetail -> {
+                    // 자산 조사 상세의 assetNo로 공통 자산 정보 매핑
+                    CommonAsset commonAsset = commonAssetMap.get(assetSurveyDetail.getAssetNo().getAssetNo());
+
+                    // DTO로 변환
+                    return new AssetSurveyDetailDto(commonAsset, assetSurveyDetail);
+                })
+                .collect(Collectors.toList());
+    }
 
     //자산 조사 상세 수정
     //자산 조사를 진행할 때 각 자산에 대한 정위치 유무, 파손 유무 등을 실시간으로 처리
