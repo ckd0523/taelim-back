@@ -76,9 +76,9 @@ pipeline {
                         sh """
                         docker run \
                           --name=be_taelim \
-                          -p 8080:8080 \
                           -v /docker_projects/be_taelim/volumes/gen:/gen \
                           --restart unless-stopped \
+                          --network app \
                           -e TZ=Asia/Seoul \
                           -d \
                           be_taelim:${timestamp}
