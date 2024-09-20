@@ -656,7 +656,7 @@ public class AssetService {
             UpdateHistoryDto dto = new UpdateHistoryDto();
             CommonAsset asset= demandDtl.getAssetNo();
             Demand demand = demandDtl.getDemandNo();
-
+            dto.setAssetNo(asset.getAssetNo());
             dto.setAssetCode(asset.getAssetCode());
             dto.setAssetName(asset.getAssetName());
             dto.setUpdateReason(demand.getDemandReason());
@@ -669,10 +669,10 @@ public class AssetService {
     }
 
     // 수정 이력 상세화면 자산 2개 비교하기
-    public List<AssetDto> getLatestAndPreviousAssets(String assetCode) {
+    public List<AssetDto> getLatestAndPreviousAssets(Long assetNo) {
 
         // 자산코드 (assetCode)로  최신 자산(수정) 과 그 이전 자산 가져오기
-        List<CommonAsset> assets = commonAssetRepository.findTop2ByAssetCodeOrderByAssetNoDesc(assetCode);
+        List<CommonAsset> assets = commonAssetRepository.findNextAssetsByAssetNo(assetNo);
 
         if (assets.size() < 2) {
             throw new RuntimeException("이전 자산 정보를 찾을 수 없습니다.");

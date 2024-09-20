@@ -11,6 +11,7 @@ import java.time.LocalDate;
 public class UpdateHistoryDto {
 
     private Long updateNo;
+    private Long assetNo;
     private String assetCode;
     private String assetName;
     private String updateReason;
