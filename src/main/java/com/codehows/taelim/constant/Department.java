@@ -37,7 +37,12 @@ public enum Department {
                 return department;
             }
         }
-        throw new IllegalArgumentException("잘못된 값: " + value);
+
+        try{
+            return Department.valueOf(value);
+        }catch(IllegalArgumentException e) {
+            throw new IllegalArgumentException("잘못된 값: " + value);
+        }
     }
 
 }
