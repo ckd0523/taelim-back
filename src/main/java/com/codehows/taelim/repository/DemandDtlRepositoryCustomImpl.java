@@ -42,4 +42,26 @@ public class DemandDtlRepositoryCustomImpl implements DemandDtlRepositoryCustom 
                )
                .fetch();
     }
+
+    @Override
+    public List<DemandDtl> findUpdateHistory() {
+        QDemandDtl demandDtl = QDemandDtl.demandDtl;
+        QCommonAsset commonAsset = QCommonAsset.commonAsset;
+        QDemand demand = QDemand.demand;
+
+        // 서브쿼리
+        JPAQuery<DemandDtl> subQuery = new JPAQuery<>(entityManager);
+
+        return subQuery.select(demandDtl)
+                .from(demandDtl)
+                .join(commonAsset).on(demandDtl.assetNo.assetNo.eq(commonAsset.assetNo))
+                .join(demand).on(demandDtl.demandNo.demandNo.eq(demand.demandNo))
+                .where(
+                        commonAsset.disposalStatus.isFalse()
+                                .and(commonAsset.approval.eq(Approval.APPROVE))
+                                .or(commonAsset.approval.eq(Approval.UNCONFIRMED))
+                                .or(commonAsset.approval.eq(Approval.REFUSAL))
+                )
+                .fetch();
+    }
 }
