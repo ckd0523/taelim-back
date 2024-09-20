@@ -207,5 +207,12 @@ public class QRController {
             return assetService.getUpDateHistory();
         }
 
+        // 자산 상세화면 가져오기
+        @GetMapping("/list/{assetCode}")
+        public ResponseEntity<List<AssetDto>> getAssetList(@PathVariable String assetCode) {
+            List<AssetDto> assets = assetService.getLatestAndPreviousAssets(assetCode);
+            return ResponseEntity.ok(assets);
+        }
+
     }
 

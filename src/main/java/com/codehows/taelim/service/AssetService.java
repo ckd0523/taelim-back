@@ -667,4 +667,180 @@ public class AssetService {
         }
         return updateHistoryDtoList;
     }
+
+    // 수정 이력 상세화면 자산 2개 비교하기
+    public List<AssetDto> getLatestAndPreviousAssets(String assetCode) {
+
+        // 자산코드 (assetCode)로  최신 자산(수정) 과 그 이전 자산 가져오기
+        List<CommonAsset> assets = commonAssetRepository.findTop2ByAssetCodeOrderByAssetNoDesc(assetCode);
+
+        if (assets.size() < 2) {
+            throw new RuntimeException("이전 자산 정보를 찾을 수 없습니다.");
+        }
+        // 이미 존재하는 AssetUpdateDto를 그대로 사용하여 리스트로 반환
+        List<AssetDto> assetDtos = new ArrayList<>();
+        for (CommonAsset asset : assets) {
+            AssetDto dto = AssetDto.builder()
+                    .assetNo(asset.getAssetNo())
+                    .assetClassification(asset.getAssetClassification())
+                    .assetBasis(asset.getAssetBasis())
+                    .assetCode(asset.getAssetCode())
+                    .assetName(asset.getAssetName())
+                    .purpose(asset.getPurpose())
+                    .quantity(asset.getQuantity())
+                    .department(asset.getDepartment())
+                    .assetLocation(asset.getAssetLocation())
+                    .operationStatus(asset.getOperationStatus())
+                    .introducedDate(asset.getIntroducedDate())
+                    .confidentiality(asset.getConfidentiality())
+                    .integrity(asset.getIntegrity())
+                    .availability(asset.getAvailability())
+                    .note(asset.getNote())
+                    .manufacturingCompany(asset.getManufacturingCompany())
+                    .ownership(asset.getOwnership())
+                    .purchaseSource(asset.getPurchaseSource())
+                    .contactInformation(asset.getContactInformation())
+                    .useState(asset.getUseState())
+                    .acquisitionRoute(asset.getAcquisitionRoute())
+                    .maintenancePeriod(asset.getMaintenancePeriod())
+                    .build(); // 공통필드 builder 하고
+
+            // classification에 따라 추가 엔티티 정보를 조회
+            switch (asset.getAssetClassification()) {
+                case INFORMATION_PROTECTION_SYSTEM -> {
+                    InformationProtectionSystem informationProtectionSystem = informationProtectionSystemRepository.findByAssetNo(asset);
+                    if (informationProtectionSystem != null) {
+                        dto.setServiceScope(informationProtectionSystem.getServiceScope());
+                    }
+                }
+                case APPLICATION_PROGRAM -> {
+                    ApplicationProgram applicationProgram = applicationProgramRepository.findByAssetNo(asset);
+                    if (applicationProgram != null) {
+                        dto.setServiceScope(applicationProgram.getServiceScope());
+                        dto.setOs(applicationProgram.getOs());
+                        dto.setRelatedDB(applicationProgram.getRelatedDB());
+                        dto.setIp(applicationProgram.getIp());
+                        dto.setScreenNumber(applicationProgram.getScreenNumber());
+                    }
+                }
+                case SOFTWARE -> {
+                    Software software = softwareRepository.findByAssetNo(asset);
+                    if (software != null) {
+                        dto.setIp(software.getIp());
+                        dto.setServerId(software.getServerId());
+                        dto.setServerPassword(software.getServerPassword());
+                        dto.setCompanyManager(software.getCompanyManager());
+                        dto.setOs(software.getOs());
+                    }
+                }
+                case ELECTRONIC_INFORMATION -> {
+                    ElectronicInformation electronicInformation = electronicInformationRepository.findByAssetNo(asset);
+                    if (electronicInformation != null) {
+                        dto.setOs(electronicInformation.getOs());
+                        dto.setSystem(electronicInformation.getSystem());
+                        dto.setDbtype(electronicInformation.getDbtype());
+                    }
+                }
+                case DOCUMENT -> {
+                    Document document = documentRepository.findByAssetNo(asset);
+                    if(document != null) {
+                        dto.setDocumentGrade(document.getDocumentGrade());
+                        dto.setDocumentType(document.getDocumentType());
+                        dto.setDocumentLink(document.getDocumentLink());
+                    }
+                }
+                case PATENTS_AND_TRADEMARKS -> {
+                    PatentsAndTrademarks patentsAndTrademarks = patentsAndTrademarksRepository.findByAssetNo(asset);
+                    if (patentsAndTrademarks != null) {
+                        dto.setApplicationDate(patentsAndTrademarks.getApplicationDate());
+                        dto.setRegistrationDate(patentsAndTrademarks.getRegistrationDate());
+                        dto.setExpirationDate(patentsAndTrademarks.getExpirationDate());
+                        dto.setPatentTrademarkStatus(patentsAndTrademarks.getPatentTrademarkStatus());
+                        dto.setCountryApplication(patentsAndTrademarks.getCountryApplication());
+                        dto.setPatentClassification(patentsAndTrademarks.getPatentClassification());
+                        dto.setPatentItem(patentsAndTrademarks.getPatentItem());
+                        dto.setApplicationNo(patentsAndTrademarks.getApplicationNo());
+                        dto.setInventor(patentsAndTrademarks.getInventor());
+                        dto.setAssignee(patentsAndTrademarks.getAssignee());
+                        dto.setRelatedDocuments(patentsAndTrademarks.getRelatedDocuments());
+                    }
+                }
+                case ITSYSTEM_EQUIPMENT -> {
+                    ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(asset);
+                    if (itSystemEquipment != null) {
+                        dto.setEquipmentType(itSystemEquipment.getEquipmentType());
+                        dto.setRackUnit(itSystemEquipment.getRackUnit());
+                        dto.setPowerSupply(itSystemEquipment.getPowerSupply());
+                        dto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
+                        dto.setInterfacePorts(itSystemEquipment.getInterfacePorts());
+                        dto.setFormFactor(itSystemEquipment.getFormFactor());
+                        dto.setExpansionSlots(itSystemEquipment.getExpansionSlots());
+                        dto.setGraphicsCard(itSystemEquipment.getGraphicsCard());
+                        dto.setPortConfiguration(itSystemEquipment.getPortConfiguration());
+                        dto.setMonitorIncluded(itSystemEquipment.getMonitorIncluded());
+                    }
+                }
+                case ITNETWORK_EQUIPMENT -> {
+                    ItNetworkEquipment itNetworkEquipment = itNetworkEquipmentRepository.findByAssetNo(asset);
+                    if (itNetworkEquipment != null) {
+                        dto.setEquipmentType(itNetworkEquipment.getEquipmentType());
+                        dto.setNumberOfPorts(itNetworkEquipment.getNumberOfPorts());
+                        dto.setSupportedProtocols(itNetworkEquipment.getSupportedProtocols());
+                        dto.setFirmwareVersion(itNetworkEquipment.getFirmwareVersion());
+                        dto.setNetworkSpeed(itNetworkEquipment.getNetworkSpeed());
+                        dto.setServiceScope(itNetworkEquipment.getServiceScope());
+                    }
+                }
+                case TERMINAL -> {
+                    Terminal terminal = terminalRepository.findByAssetNo(asset);
+                    if (terminal != null) {
+                        dto.setIp(terminal.getIp());
+                        dto.setProductSerialNumber(terminal.getProductSerialNumber());
+                        dto.setOs(terminal.getOs());
+                        dto.setSecurityControl(terminal.getSecurityControl());
+                        dto.setKaitsKeeper(terminal.getKaitsKeeper());
+                        dto.setV3OfficeSecurity(terminal.getV3OfficeSecurity());
+                        dto.setAppCheckPro(terminal.getAppCheckPro());
+                        dto.setTgate(terminal.getTgate());
+                    }
+                }
+                case FURNITURE -> {
+                    Furniture furniture = furnitureRepository.findByAssetNo(asset);
+                    if(furniture != null) {
+                        dto.setFurnitureSize(furniture.getFurnitureSize());
+                    }
+                }
+                case DEVICES -> {
+                    Devices devices = devicesRepository.findByAssetNo(asset);
+                    if (devices != null) {
+                        dto.setDeviceType(devices.getDeviceType());
+                        dto.setModelNumber(devices.getModelNumber());
+                        dto.setConnectionType(devices.getConnectionType());
+                        dto.setPowerSpecifications(devices.getPowerSpecifications());
+                    }
+                }
+                case CAR -> {
+                    Car car = carRepository.findByAssetNo(asset);
+                    if (car != null) {
+                        dto.setDisplacement(car.getDisplacement());
+                        dto.setDoorsCount(car.getDoorsCount());
+                        dto.setEngineType(car.getEngineType());
+                        dto.setCarType(car.getCarType());
+                        dto.setIdentificationNo(car.getIdentificationNo());
+                        dto.setCarColor(car.getCarColor());
+                        dto.setModelYear(car.getModelYear());
+                    }
+                }
+                case OTHERASSETS -> {
+                    OtherAssets otherAssets = otherAssetsRepository.findByAssetNo(asset);
+                    if (otherAssets != null) {
+                        dto.setOtherDescription(otherAssets.getOtherDescription());
+                        dto.setUsageFrequency(otherAssets.getUsageFrequency());
+                    }
+                }
+            }
+            assetDtos.add(dto);
+        }
+        return assetDtos;
+    }
 }
