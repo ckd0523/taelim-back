@@ -79,6 +79,39 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .fetch();
     }
 
+    //위치에 따른 자산 목록
+    @Override
+    public List<CommonAsset> findDetailByLocation(AssetLocation location) {
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 서브쿼리: 각 자산 코드별 최대 자산 번호 찾기
+        JPAQuery<Long> subQuery = new JPAQuery<Long>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset;
+
+        subQuery.select(subCa.assetNo.max())
+                .from(subCa)
+                .where(subCa.disposalStatus.isFalse()
+                        .and(subCa.assetLocation.eq(location))
+                        .or(
+                                subCa.disposalStatus.isTrue()
+                                        .and(subCa.approval.eq(Approval.valueOf("UNCONFIRMED")))
+                                        .or(
+                                                subCa.disposalStatus.isTrue()
+                                                        .and(subCa.approval.eq(Approval.valueOf("REFUSAL")))
+                                        )
+                        )
+                )
+                .groupBy(subCa.assetCode);
+
+        // 메인 쿼리: 최신 자산 정보 조회
+        JPAQuery<CommonAsset> query = new JPAQuery<CommonAsset>(entityManager);
+
+        return query.select(ca)
+                .from(ca)
+                .where(ca.assetNo.in(subQuery))
+                .fetch();
+    }
+
     // 자산 분류에 따른 최신 자산 코드 가져오기
     @Override
     public Optional<String> findLastAssetCodeByClassification(AssetClassification classification) {

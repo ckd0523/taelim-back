@@ -68,15 +68,25 @@ public class AssetSurveyController {
         return new ResponseEntity<>(HttpStatus.CREATED); // 201 Created 상태 코드 반환
     }
 
-    /*
 
     //자산 조사 상세 이력
-    @GetMapping("/assetSurveyDetail")
-    public List<AssetSurveyDetailDto> getAssetSurveyDetail(@RequestParam Integer assetSurveyNo) {
+    @GetMapping("/assetSurveyDetail/{assetSurveyNo}")
+    public List<AssetSurveyDetailDto> getAssetSurveyDetail(@PathVariable("assetSurveyNo") Integer assetSurveyNo) {
+        //System.out.println("여기라고!!!");
+        //System.out.println("얘 아무것도 없어? : " + assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo));
         return assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo);
     }
 
-     */
+/*
+    //자산 조사 상세 이력
+    @GetMapping("/assetSurveyDetail/{assetSurveyNo}")
+    public List<AssetSurveyDetailDto> getAssetSurveyDetail(@PathVariable("assetSurveyNo") Integer assetSurveyNo) {
+        System.out.println("여기라고!!!");
+        //System.out.println("얘 아무것도 없어? : " + assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo));
+        return assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo);
+    }
+
+ */
 
     @GetMapping("/checkLocation/{selectedLocation}")
     //ResponseEntity에 ?는 아무 타입이나 가능하다는 의미
