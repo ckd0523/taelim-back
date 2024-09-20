@@ -2,6 +2,7 @@ package com.codehows.taelim.APIController;
 
 import com.codehows.taelim.constant.FileType;
 import com.codehows.taelim.dto.AssetDto;
+import com.codehows.taelim.dto.AssetUpdateDto;
 import com.codehows.taelim.dto.ExcelDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.File;
@@ -49,13 +50,35 @@ public class AssetController {
     @PostMapping("/update/{assetCode}")
     public ResponseEntity<String> updateAsset(
             @PathVariable String assetCode,
-            @RequestBody AssetDto updatedAssetDto) {
+            @RequestBody AssetUpdateDto assetDto) {
 
-        Long newAssetNo = registerService.updateAssetCode(assetCode, updatedAssetDto);
-
-        return ResponseEntity.ok("New asset registered with assetNo: " + newAssetNo);
+        try {
+            Long newAssetNo = registerService.updateAssetCode(assetCode, assetDto);
+            return ResponseEntity.ok("자산 수정 등록완료 : " + newAssetNo);
+        } catch (Exception e) {
+            // 예외 메시지 로깅
+            e.printStackTrace();
+            // 클라이언트에게 오류 메시지 전송
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
+        }
     }
 
+    // 자산 수정요청등록
+    @PostMapping("/updateDemand/{assetCode}")
+    public ResponseEntity<String> updateDemand(
+            @PathVariable String assetCode,
+            @RequestBody AssetUpdateDto assetDto) {
+
+        try {
+            Long newAssetNo = registerService.updatedemandAssetCode(assetCode, assetDto);
+            return ResponseEntity.ok("자산 수정 등록완료 : " + newAssetNo);
+        } catch (Exception e) {
+            // 예외 메시지 로깅
+            e.printStackTrace();
+            // 클라이언트에게 오류 메시지 전송
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
+        }
+    }
     @PostMapping("/file/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("assetNo") String assetId, @RequestParam("fileType") String fileType) {
 

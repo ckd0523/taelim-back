@@ -1,7 +1,7 @@
 package com.codehows.taelim.APIController;
 
 
-import com.codehows.taelim.dto.UpdateDto;
+import com.codehows.taelim.dto.AssetUpdateDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.service.UpdateService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class AssetUpdateController {
 
 
     @PostMapping("/insert")
-    public ResponseEntity<?> insertAsset(@RequestBody UpdateDto updateDto) {
+    public ResponseEntity<?> insertAsset(@RequestBody AssetUpdateDto updateDto) {
         updateService.update(updateDto);
 
         return new ResponseEntity<>("success", HttpStatus.CREATED);
