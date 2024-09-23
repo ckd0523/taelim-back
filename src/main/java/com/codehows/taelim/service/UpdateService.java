@@ -1,6 +1,6 @@
 package com.codehows.taelim.service;
 
-import com.codehows.taelim.dto.UpdateDto;
+import com.codehows.taelim.dto.AssetUpdateDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class UpdateService {
     private final FurnitureRepository furnitureRepository;
     private final OtherAssetsRepository otherAssetsRepository;
 
-    public void update(UpdateDto updateDto) {
+    public void update(AssetUpdateDto updateDto) {
 
         CommonAsset commonAsset = CommonAsset.builder()
                 .assetNo(updateDto.getAssetNo())

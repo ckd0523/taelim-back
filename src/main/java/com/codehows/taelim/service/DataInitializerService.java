@@ -169,9 +169,9 @@ public class DataInitializerService {
                     softwareRepository.save(software);
                 } else {
                     Furniture furniture = new Furniture();
-                    furniture.setAssetNo(asset);
-                    furniture.setFurnitureSize("500");
-                    furnitureRepository.save(furniture);
+                        furniture.setAssetNo(asset);
+                        furniture.setFurnitureSize("500");
+                        furnitureRepository.save(furniture);
                 }
             }
         }

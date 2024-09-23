@@ -1,5 +1,7 @@
 package com.codehows.taelim.constant;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -13,4 +15,23 @@ public enum PatentTrademarkStatus {
     REGISTERED("등록"),
     EXPIRED("만료");
     private final String description;
+
+//    PatentTrademarkStatus(String description) {
+//        this.description = description;
+//    }
+//
+//    @JsonValue
+//    public String getDescription(){
+//        return description;
+//    }
+//
+//    @JsonCreator
+//    public static PatentTrademarkStatus from(String value){
+//        for(PatentTrademarkStatus patentTrademarkStatus : PatentTrademarkStatus.values()) {
+//            if(patentTrademarkStatus.description.equals(value)) {
+//                return patentTrademarkStatus;
+//            }
+//        }
+//        throw new IllegalArgumentException("잘못된 값: " + value);
+//    }
 }

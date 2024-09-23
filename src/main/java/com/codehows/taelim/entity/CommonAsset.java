@@ -1,7 +1,6 @@
 package com.codehows.taelim.entity;
 
 import com.codehows.taelim.constant.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -48,8 +47,8 @@ public class CommonAsset {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetSecurityManager")
-
     private Member assetSecurityManager;
+    
     @Enumerated(EnumType.STRING)
     private OperationStatus operationStatus;
 
@@ -88,6 +87,5 @@ public class CommonAsset {
 
     private String acquisitionRoute;
     private LocalDate maintenancePeriod;
-
 
 }

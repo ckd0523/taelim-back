@@ -3,10 +3,7 @@ package com.codehows.taelim.entity;
 import com.codehows.taelim.constant.DocumentGrade;
 import com.codehows.taelim.constant.DocumentType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "document")
@@ -14,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Document {
 
     @Id
