@@ -26,7 +26,7 @@ public class MaintainController {
         return new ResponseEntity<>(assetNo, HttpStatus.OK);
     }
 
-    @PostMapping("/file/upload")
+//    @PostMapping("/file/upload")
 
 
     @GetMapping("/get")
