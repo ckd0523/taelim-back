@@ -305,7 +305,7 @@ public class RegisterService {
         demandRepository.save(demand);
         // DemandDtl 테이블 저장
         DemandDtl demandDtl = new DemandDtl();
-        demandDtl.setAssetNo(existAsset);
+        demandDtl.setAssetNo(updateAsset);
         demandDtl.setDemandNo(demand);
         demandDtlRepository.save(demandDtl);
 
@@ -379,7 +379,7 @@ public class RegisterService {
         demandRepository.save(demand);
         // DemandDtl 테이블 저장
         DemandDtl demandDtl = new DemandDtl();
-        demandDtl.setAssetNo(existAsset);
+        demandDtl.setAssetNo(updateAsset);
         demandDtl.setDemandNo(demand);
         demandDtlRepository.save(demandDtl);
 
