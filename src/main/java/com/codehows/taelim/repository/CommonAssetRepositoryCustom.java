@@ -25,4 +25,7 @@ public interface CommonAssetRepositoryCustom {
 
     //위치에 따른 자산 목록
     List<CommonAsset> findDetailByLocation(AssetLocation location);
+
+    // 최신 자산과 그 이전 자산 가져오는 쿼리
+    List<CommonAsset> findNextAssetsByAssetNo(Long assetNo);
 }

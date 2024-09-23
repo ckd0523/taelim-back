@@ -59,13 +59,14 @@ public class AssetSurveyController {
         for (Integer integer : deleteRequest.getAssetSurveyNo()) {
             assetSurveyNos.add(integer.longValue()); // 각 Integer를 Long으로 변환 후 추가
         }
+        System.out.println("자산 조사 번호 잘 넘어왔나 : " + assetSurveyNos);
 
         //System.out.println(assetSurveyNos.get(0).getClass().getTypeName());
         //변환된 List<Long>을 매개변수로 넘겨줌
         String result = assetSurveyService.deleteAssetSurveyHistory(assetSurveyNos);
         System.out.println(result);
 
-        return new ResponseEntity<>(HttpStatus.CREATED); // 201 Created 상태 코드 반환
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
