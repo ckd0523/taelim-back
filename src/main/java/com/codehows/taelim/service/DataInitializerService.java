@@ -6,6 +6,7 @@ import com.codehows.taelim.entity.Furniture;
 import com.codehows.taelim.entity.Member;
 import com.codehows.taelim.entity.Software;
 import com.codehows.taelim.repository.CommonAssetRepository;
+import com.codehows.taelim.repository.FurnitureRepository;
 import com.codehows.taelim.repository.MemberRepository;
 import com.codehows.taelim.repository.SoftwareRepository;
 import jakarta.transaction.Transactional;
@@ -22,11 +23,12 @@ public class DataInitializerService {
     private final MemberRepository memberRepository;
     private final CommonAssetRepository commonAssetRepository;
     private final SoftwareRepository softwareRepository;
+    private final FurnitureRepository furnitureRepository;
 
     @Transactional
     public void insertDummyData() {
         // Member 데이터 삽입
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 40; i++) {
             Member member = new Member();
             member.setEmail("user" + i + "@example.com");
             member.setPassword("password" + i);
@@ -36,7 +38,7 @@ public class DataInitializerService {
         }
 
         // CommonAsset 첫번째 데이터 삽입
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 40; i++) {
 
             Member member = new Member();
             member.setEmail("user" + i + "@example.com");
@@ -99,6 +101,7 @@ public class DataInitializerService {
                 Furniture furniture = new Furniture();
                 furniture.setAssetNo(asset);
                 furniture.setFurnitureSize("500");
+                furnitureRepository.save(furniture);
             }
         }
 
@@ -157,17 +160,18 @@ public class DataInitializerService {
                 commonAssetRepository.save(asset);
                 if(i<=5) {
                     Software software = new Software();
-                        software.setAssetNo(asset);
-                        software.setIp("192.168.1." + i);
-                        software.setServerId("server" + String.format("%02d", i));
-                        software.setServerPassword("pass" + i);
-                        software.setCompanyManager("Manager " + i);
-                        software.setOs("Windows Server 2022");
-                        softwareRepository.save(software);
-                    } else {
+                    software.setAssetNo(asset);
+                    software.setIp("192.168.1." + i);
+                    software.setServerId("server" + String.format("%02d", i));
+                    software.setServerPassword("pass" + i);
+                    software.setCompanyManager("Manager " + i);
+                    software.setOs("Windows Server 2022");
+                    softwareRepository.save(software);
+                } else {
                     Furniture furniture = new Furniture();
-                        furniture.setAssetNo(asset);
-                        furniture.setFurnitureSize("500");
+                    furniture.setAssetNo(asset);
+                    furniture.setFurnitureSize("500");
+                    furnitureRepository.save(furniture);
                 }
             }
         }
