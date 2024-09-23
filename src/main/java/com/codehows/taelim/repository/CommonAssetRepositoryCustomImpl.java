@@ -190,22 +190,22 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         QCommonAsset ca = QCommonAsset.commonAsset;
 
         // 주어진 assetNo를 기준으로 자산 코드 가져오기
-        CommonAsset currentAsset = queryFactory
+        CommonAsset modifiedAsset  = queryFactory
                 .selectFrom(ca)
-                .where(ca.assetNo.eq(assetNo)) // 현재 자산 조회
+                .where(ca.assetNo.eq(assetNo)) // 수정된 자산 조회
                 .fetchOne();
 
-        if (currentAsset == null) {
+        if (modifiedAsset  == null) {
             throw new RuntimeException("해당 assetNo에 대한 자산을 찾을 수 없습니다.");
         }
 
-        String assetCode = currentAsset.getAssetCode();
+        String assetCode = modifiedAsset .getAssetCode();
 
        // 동일한 assetCode의 자산을 조회 (현재 자산과 그 이전 자산 모두)
         return queryFactory
                 .selectFrom(ca)
                 .where(ca.assetCode.eq(assetCode) // 동일한 assetCode 필털링
-                        .and(ca.assetNo.goe(assetNo)) // 주어진 assetNo와 그보다 큰 값 필터링
+                        .and(ca.assetNo.loe(assetNo)) // 주어진 assetNo보다 작은 값 필터링
                 )
                 .orderBy(ca.assetNo.asc()) // 오름차순 정렬 (이후 자산이 먼저 오도록)
                 .limit(2) // 최대 2개만 가져오기 (현재 자산과 그 이전 자산)
