@@ -32,6 +32,10 @@ public enum CountryApplication {
                 return countryApplication;
             }
         }
-        throw new IllegalArgumentException("잘못된 값: " + value);
+        try{
+            return CountryApplication.valueOf(value);
+        }catch(IllegalArgumentException e) {
+            throw new IllegalArgumentException("잘못된 값: " + value);
+        }
     }
 }

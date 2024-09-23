@@ -29,20 +29,25 @@ public enum AssetClassification {
     AssetClassification(String description) {
         this.description = description;
     }
-//
-//    @JsonValue
-//    public String getDescription(){
-//        return description;
-//    }
-//
-//    @JsonCreator
-//    public static AssetClassification from(String value){
-//        for(AssetClassification assetClassification : AssetClassification.values()) {
-//            if(assetClassification.description.equals(value)) {
-//                return assetClassification;
-//            }
-//        }
-//        throw new IllegalArgumentException("잘못된 값: " + value);
-//    }
+
+    @JsonValue
+    public String getDescription(){
+        return description;
+    }
+
+    @JsonCreator
+    public static AssetClassification from(String value){
+        for(AssetClassification assetClassification : AssetClassification.values()) {
+            if(assetClassification.description.equals(value)) {
+                return assetClassification;
+            }
+        }
+
+        try{
+            return AssetClassification.valueOf(value);
+        }catch(IllegalArgumentException e) {
+            throw new IllegalArgumentException("잘못된 값: " + value);
+        }
+    }
 
 }

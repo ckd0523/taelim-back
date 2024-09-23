@@ -30,7 +30,11 @@ public enum DocumentGrade {
                 return documentGrade;
             }
         }
-        throw new IllegalArgumentException("잘못된 값: " + value);
+        try{
+            return DocumentGrade.valueOf(value);
+        }catch(IllegalArgumentException e) {
+            throw new IllegalArgumentException("잘못된 값: " + value);
+        }
     }
 
 }

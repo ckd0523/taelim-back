@@ -11,24 +11,24 @@ import lombok.RequiredArgsConstructor;
 public enum MonitorIncluded {
     YES("포함"),
     NO("미포함");
-    private String description;
+    private final String description;
 
-    MonitorIncluded(String description) {
-        this.description = description;
-    }
-
-    @JsonValue
-    public String getDescription(){
-        return description;
-    }
-
-    @JsonCreator
-    public static MonitorIncluded from(String value){
-        for(MonitorIncluded monitorIncluded : MonitorIncluded.values()) {
-            if(monitorIncluded.description.equals(value)) {
-                return monitorIncluded;
-            }
-        }
-        throw new IllegalArgumentException("잘못된 값: " + value);
-    }
+//    MonitorIncluded(String description) {
+//        this.description = description;
+//    }
+//
+//    @JsonValue
+//    public String getDescription(){
+//        return description;
+//    }
+//
+//    @JsonCreator
+//    public static MonitorIncluded from(String value){
+//        for(MonitorIncluded monitorIncluded : MonitorIncluded.values()) {
+//            if(monitorIncluded.description.equals(value)) {
+//                return monitorIncluded;
+//            }
+//        }
+//        throw new IllegalArgumentException("잘못된 값: " + value);
+//    }
 }

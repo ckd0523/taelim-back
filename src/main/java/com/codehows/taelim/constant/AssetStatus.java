@@ -29,6 +29,10 @@ public enum AssetStatus {
                 return assetStatus;
             }
         }
-        throw new IllegalArgumentException("잘못된 값: " + value);
+        try{
+            return AssetStatus.valueOf(value);
+        }catch(IllegalArgumentException e) {
+            throw new IllegalArgumentException("잘못된 값: " + value);
+        }
     }
 }

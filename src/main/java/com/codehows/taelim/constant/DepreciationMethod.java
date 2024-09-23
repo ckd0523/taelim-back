@@ -30,6 +30,10 @@ public enum DepreciationMethod {
                 return depreciationMethod;
             }
         }
-        throw new IllegalArgumentException("잘못된 값: " + value);
+        try{
+            return DepreciationMethod.valueOf(value);
+        }catch(IllegalArgumentException e) {
+            throw new IllegalArgumentException("잘못된 값: " + value);
+        }
     }
 }

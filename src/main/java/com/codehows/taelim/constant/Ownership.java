@@ -30,7 +30,11 @@ public enum Ownership {
                 return ownership;
             }
         }
-        throw new IllegalArgumentException("잘못된 값: " + value);
+        try{
+            return Ownership.valueOf(value);
+        }catch(IllegalArgumentException e) {
+            throw new IllegalArgumentException("잘못된 값: " + value);
+        }
     }
 
 }

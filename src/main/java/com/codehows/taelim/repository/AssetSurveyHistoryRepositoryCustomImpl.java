@@ -1,5 +1,6 @@
 package com.codehows.taelim.repository;
 
+import com.codehows.taelim.constant.AssetLocation;
 import com.codehows.taelim.dto.AssetSurveyHistoryDto;
 import com.codehows.taelim.entity.AssetSurveyHistory;
 import com.codehows.taelim.entity.QAssetSurveyHistory;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
@@ -29,6 +31,7 @@ public class AssetSurveyHistoryRepositoryCustomImpl implements AssetSurveyHistor
         QAssetSurveyHistory assetSurveyHistory = QAssetSurveyHistory.assetSurveyHistory;
         QMember member = QMember.member;
 
+        //projections.constructor로 매핑 시 null이 있으면 안됨
         return queryFactory
                 .select(Projections.constructor(
                         AssetSurveyHistoryDto.class,
@@ -44,4 +47,19 @@ public class AssetSurveyHistoryRepositoryCustomImpl implements AssetSurveyHistor
                 .join(assetSurveyHistory.assetSurveyBy, member) // member.email = asset_survey_history.asset_survey_by
                 .fetch();
     }
+
+    @Override
+    public Optional<AssetSurveyHistory> findLastAssetSurvey(AssetLocation location, boolean status) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+        QAssetSurveyHistory assetSurveyHistory = QAssetSurveyHistory.assetSurveyHistory;
+
+        AssetSurveyHistory result = queryFactory.selectFrom(assetSurveyHistory)
+                .where(assetSurveyHistory.assetSurveyLocation.eq(location)
+                        .and(assetSurveyHistory.surveyStatus.eq(status)))
+                .orderBy(assetSurveyHistory.assetSurveyNo.desc())
+                .limit(1)
+                .fetchOne();
+        return Optional.ofNullable(result);
+    }
+
 }

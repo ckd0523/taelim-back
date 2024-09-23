@@ -31,6 +31,11 @@ public enum Approval {
                 return approval;
             }
         }
-        throw new IllegalArgumentException("잘못된 값: " + value);
+
+        try{
+            return Approval.valueOf(value);
+        }catch(IllegalArgumentException e) {
+            throw new IllegalArgumentException("잘못된 값: " + value);
+        }
     }
 }

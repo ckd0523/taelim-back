@@ -6,7 +6,6 @@ import com.codehows.taelim.constant.Department;
 import com.codehows.taelim.constant.OperationStatus;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.InformationProtectionSystem;
-import com.codehows.taelim.entity.Member;
 import lombok.*;
 
 import java.time.LocalDate;
