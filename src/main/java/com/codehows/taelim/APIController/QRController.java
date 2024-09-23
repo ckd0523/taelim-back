@@ -208,9 +208,10 @@ public class QRController {
         }
 
         // 자산 상세화면 가져오기
-        @GetMapping("/list/{assetCode}")
-        public ResponseEntity<List<AssetDto>> getAssetList(@PathVariable String assetCode) {
-            List<AssetDto> assets = assetService.getLatestAndPreviousAssets(assetCode);
+        @GetMapping("/list/{assetNo}")
+        public ResponseEntity<List<AssetDto>> getAssetList(@PathVariable Long assetNo) {
+            System.out.println("Requested assetNo: " + assetNo); // 로그 추가
+            List<AssetDto> assets = assetService.getLatestAndPreviousAssets(assetNo);
             return ResponseEntity.ok(assets);
         }
 
