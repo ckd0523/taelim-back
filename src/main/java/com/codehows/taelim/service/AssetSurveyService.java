@@ -183,6 +183,7 @@ public class AssetSurveyService {
     }
     */
 
+    //자산 조사를 위한 자산 조사 상세 이력
     public List<AssetSurveyDetailDto> getAssetSurveyDetail(Long assetSurveyNo) {
         // 자산 조사 이력 조회
         AssetSurveyHistory assetSurveyHistory = assetSurveyHistoryRepository.findByAssetSurveyNo(assetSurveyNo);
