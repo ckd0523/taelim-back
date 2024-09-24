@@ -13,8 +13,10 @@ import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Repository
@@ -199,16 +201,20 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
             throw new RuntimeException("해당 assetNo에 대한 자산을 찾을 수 없습니다.");
         }
 
-        String assetCode = modifiedAsset .getAssetCode();
+        String assetCode = modifiedAsset.getAssetCode();
 
-       // 동일한 assetCode의 자산을 조회 (현재 자산과 그 이전 자산 모두)
-        return queryFactory
-                .selectFrom(ca)
-                .where(ca.assetCode.eq(assetCode) // 동일한 assetCode 필털링
-                        .and(ca.assetNo.loe(assetNo)) // 주어진 assetNo보다 작은 값 필터링
-                )
-                .orderBy(ca.assetNo.asc()) // 오름차순 정렬 (이후 자산이 먼저 오도록)
-                .limit(2) // 최대 2개만 가져오기 (현재 자산과 그 이전 자산)
-                .fetch();
+       // 동일한 assetCode의 자산을 조회 (최신 자산 2개를 내림차순으로 가져옴)
+       List<CommonAsset> assets = queryFactory
+               .selectFrom(ca)
+               .where(ca.assetCode.eq(assetCode) // 동일한 assetCode 필터링
+                       .and(ca.assetNo.loe(assetNo))) // 주어진 assetNo보다 작은 자산 필터링
+               .orderBy(ca.assetNo.desc()) // 내림차순 정렬 (최신 자산이 먼저 오도록)
+               .limit(2) // 최신 자산과 그 직전 자산만 가져오기
+               .fetch();
+
+       // 리스트를 오름차순으로 정렬 (assetNo 기준으로)
+       return assets.stream()
+               .sorted(Comparator.comparing(CommonAsset::getAssetNo)) // assetNo 기준 오름차순 정렬
+               .collect(Collectors.toList());
     }
 }
