@@ -1,10 +1,8 @@
 package com.codehows.taelim.entity;
 
+import com.codehows.taelim.dto.RepairDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -14,6 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class RepairHistory {
     @Id
     @Column(name = "repairNo")
@@ -29,5 +28,16 @@ public class RepairHistory {
     private String repairBy;
     private String repairResult;
     private Boolean repairStatus;
+
+    public RepairDto toDto(){
+        return RepairDto.builder()
+                .repairNo(repairNo)
+                .assetCode(assetNo.getAssetCode())
+                .assetName(assetNo.getAssetName())
+                .repairResult(repairResult)
+                .repairStartDate(repairStartDate)
+                .repairEndDate(repairEndDate)
+        .build();
+    }
 
 }

@@ -1,23 +1,39 @@
 package com.codehows.taelim.APIController;
 
 
-import com.codehows.taelim.dto.MaintainDto;
+import com.codehows.taelim.dto.RepairDto;
+import com.codehows.taelim.service.RepairService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/maintain")
 public class MaintainController {
 
-    @PostMapping("/register")
-    public ResponseEntity<Long> maintainRegister(@RequestBody MaintainDto maintainDto) {
+    private final RepairService repairService;
 
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PostMapping("/register")
+    public ResponseEntity<?> maintainRegister(@RequestBody RepairDto repairDto) {
+
+        Long assetNo = repairService.repairRegister(repairDto);
+        System.out.println(assetNo);
+
+        return new ResponseEntity<>(assetNo, HttpStatus.OK);
+    }
+
+//    @PostMapping("/file/upload")
+
+
+    @GetMapping("/get")
+    public ResponseEntity<List<RepairDto>> getAllRepairs() {
+
+        List<RepairDto> allRepairs = repairService.findAll();
+
+        return new ResponseEntity<>(allRepairs, HttpStatus.OK);
     }
 }
