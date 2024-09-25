@@ -115,7 +115,7 @@ public class AssetService {
                 .collect(Collectors.toList());
     }
 
-    // 자산 상세 조회
+    // 자산 상세 조회 - RowDetail 에서 하나의 assetCode 를 들고 오는 동작
     public AssetDto getAssetDetail(String assetCode) {
 
         AssetDto assetDto = new AssetDto();
