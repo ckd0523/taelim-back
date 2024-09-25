@@ -4,6 +4,7 @@ import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.service.AssetService;
 import com.codehows.taelim.service.QRService;
+import com.codehows.taelim.service.UpdateService;
 import com.google.zxing.WriterException;
 import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -29,6 +30,7 @@ import java.util.zip.ZipOutputStream;
 public class QRController {
 
     private final QRService qrCodeService;
+    private final UpdateService updateService;
 
     //QR 생성하는곳
     @GetMapping("/generateQRCode")
@@ -213,6 +215,13 @@ public class QRController {
             System.out.println("Requested assetNo: " + assetNo); // 로그 추가
             List<AssetDto> assets = assetService.getLatestAndPreviousAssets(assetNo);
             return ResponseEntity.ok(assets);
+        }
+
+        @PostMapping("/allUpdate")
+        public ResponseEntity<String> allUpdate(@RequestBody AllUpdateDto updateToSend){
+            System.out.println("여깅야니ㅏㅣㅏ"+updateToSend.getAssetNo());
+            updateService.allUpdate(updateToSend);
+            return ResponseEntity.ok("Update successful");
         }
 
     }

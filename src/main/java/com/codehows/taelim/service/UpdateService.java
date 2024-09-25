@@ -1,13 +1,19 @@
 package com.codehows.taelim.service;
 
+import com.codehows.taelim.dto.AllUpdateDto;
 import com.codehows.taelim.dto.AssetUpdateDto;
-import com.codehows.taelim.entity.CommonAsset;
+import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.codehows.taelim.constant.AssetClassification.INFORMATION_PROTECTION_SYSTEM;
 
 @RequiredArgsConstructor
 @Service
@@ -26,6 +32,9 @@ public class UpdateService {
     private final CarRepository carRepository;
     private final FurnitureRepository furnitureRepository;
     private final OtherAssetsRepository otherAssetsRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public void update(AssetUpdateDto updateDto) {
 
@@ -72,5 +81,35 @@ public class UpdateService {
     }
     public List<CommonAsset> findAll() {
         return commonAssetRepository.findAll();
+    }
+
+    public String allUpdate(AllUpdateDto allUpdateDto) {
+        // Optional 처리
+        CommonAsset commonAsset = commonAssetRepository.findById(allUpdateDto.getAssetNo())
+                .orElseThrow(() -> new EntityNotFoundException("Asset not found"));
+        commonAsset.setAssetNo(null);
+        CommonAsset commonAsset1 = commonAssetRepository.save(commonAsset); // 영속 상태로 저장
+
+        // AssetClassification에 따른 처리
+        switch (commonAsset.getAssetClassification()) {
+            case SOFTWARE -> {
+                Software software = softwareRepository.findByAssetNo(commonAsset);
+
+                    software.setSoftwareNo(null);
+                    software.setAssetNo(commonAsset1);
+                    softwareRepository.save(software);
+
+            }
+            case CAR -> {
+                Car car = carRepository.findByAssetNo(commonAsset);
+
+                    car.setCarNo(null);
+                    car.setAssetNo(commonAsset1);
+                    carRepository.save(car);
+
+            }
+        }
+
+        return "good";
     }
 }
