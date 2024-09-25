@@ -2,6 +2,7 @@ package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
+import com.codehows.taelim.dto.AssetDisposeDto;
 import com.codehows.taelim.dto.AssetDto;
 import com.codehows.taelim.dto.AssetUpdateDto;
 import com.codehows.taelim.dto.ExcelDto;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -386,6 +388,172 @@ public class RegisterService {
         return newAssetNo;
     }
     private void saveRelatedEntity(AssetUpdateDto assetDto, CommonAsset latestAsset) {
+        if (latestAsset.getAssetClassification() == null) {
+            throw new IllegalArgumentException("Asset classification cannot be null.");
+        }
+
+        switch (latestAsset.getAssetClassification()) {
+            case INFORMATION_PROTECTION_SYSTEM -> {
+                InformationProtectionSystem infoSystem = assetDto.toInformationProtectionSystem();
+                infoSystem.setAssetNo(latestAsset);
+                informationProtectionSystemRepository.save(infoSystem);
+            }
+            case APPLICATION_PROGRAM -> {
+                ApplicationProgram appProgram = assetDto.toApplication();
+                appProgram.setAssetNo(latestAsset);
+                applicationProgramRepository.save(appProgram);
+            }
+            case SOFTWARE -> {
+                Software software = assetDto.toSoftware();
+                software.setAssetNo(latestAsset);
+                softwareRepository.save(software);
+            }
+            case ELECTRONIC_INFORMATION -> {
+                ElectronicInformation elecInfo = assetDto.toElectronicInformation();
+                elecInfo.setAssetNo(latestAsset);
+                electronicInformationRepository.save(elecInfo);
+            }
+            case DOCUMENT -> {
+                Document document = assetDto.toDocumnet();
+                document.setAssetNo(latestAsset);
+                documentRepository.save(document);
+            }
+            case PATENTS_AND_TRADEMARKS -> {
+                PatentsAndTrademarks patents = assetDto.toPatentsAndTrademarks();
+                patents.setAssetNo(latestAsset);
+                patentsAndTrademarksRepository.save(patents);
+            }
+            case ITSYSTEM_EQUIPMENT -> {
+                ItSystemEquipment itEquipment = assetDto.toItSystemEquipment();
+                itEquipment.setAssetNo(latestAsset);
+                itSystemEquipmentRepository.save(itEquipment);
+            }
+            case ITNETWORK_EQUIPMENT -> {
+                ItNetworkEquipment networkEquipment = assetDto.toItNetworkEquipment();
+                networkEquipment.setAssetNo(latestAsset);
+                itNetworkEquipmentRepository.save(networkEquipment);
+            }
+            case TERMINAL -> {
+                Terminal terminal = assetDto.toTerminal();
+                terminal.setAssetNo(latestAsset);
+                terminalRepository.save(terminal);
+            }
+            case FURNITURE -> {
+                Furniture furniture = assetDto.toFurniture();
+                furniture.setAssetNo(latestAsset);
+                furnitureRepository.save(furniture);
+            }
+            case DEVICES -> {
+                Devices devices = assetDto.toDevices();
+                devices.setAssetNo(latestAsset);
+                devicesRepository.save(devices);
+            }
+            case CAR -> {
+                Car car = assetDto.toCar();
+                car.setAssetNo(latestAsset);
+                carRepository.save(car);
+            }
+            case OTHERASSETS -> {
+                OtherAssets otherAssets = assetDto.toOtherAssets();
+                otherAssets.setAssetNo(latestAsset);
+                otherAssetsRepository.save(otherAssets);
+            }
+            default -> throw new IllegalArgumentException("Unknown asset classification: " + latestAsset.getAssetClassification());
+        }
+    }
+
+    // 폐기 담당자 요청처리 에  새로운 자산을 만들어서 처리하는 개념
+    public Long DisposeDemand(String assetCode, AssetDisposeDto assetDisposeDto) {
+
+        // 1. 기존 입력되어있는 assetCode 조회
+        CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
+                .orElseThrow(() -> new RuntimeException("자산코드를 찾을수 없음 " + assetCode));
+
+        // 2. 새로운 자산 생성
+        CommonAsset demandAsset = new CommonAsset();
+        demandAsset.setAssetCode(existAsset.getAssetCode()); // 코드 동일하게 유지하고
+        demandAsset.setAssetName(existAsset.getAssetName());
+        demandAsset.setAssetBasis(existAsset.getAssetBasis());
+        demandAsset.setManufacturingCompany(existAsset.getManufacturingCompany());
+        demandAsset.setPurpose(existAsset.getPurpose());
+//        updateAsset.setAssetUser(existAsset.getAssetUser());    // 사용자들은 나중에 바꿔야함
+//        updateAsset.setAssetOwner(existAsset.getAssetOwner());
+//        updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
+
+        // AssetDto에서 업데이트할 필드 설정 (null 체크 후 기존 값 유지)
+        demandAsset.setDepartment(existAsset.getDepartment());
+        demandAsset.setAssetLocation(existAsset.getAssetLocation());
+        //updateAsset.setAssetUser(existAsset.getAssetUser());
+        //updateAsset.setAssetOwner(existAsset.getAssetOwner());
+        //updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
+        demandAsset.setUseState(existAsset.getUseState());
+        demandAsset.setOperationStatus(existAsset.getOperationStatus());
+        demandAsset.setIntroducedDate(existAsset.getIntroducedDate());
+        // int 필드에 대해 기본값 처리
+        demandAsset.setConfidentiality(existAsset.getConfidentiality());
+        demandAsset.setIntegrity(existAsset.getIntegrity());
+        demandAsset.setAvailability(existAsset.getAvailability());
+        // 다시
+        demandAsset.setNote(existAsset.getNote());
+        demandAsset.setPurchaseCost(existAsset.getPurchaseCost());
+        demandAsset.setPurchaseDate(existAsset.getPurchaseDate());
+        demandAsset.setUsefulLife(existAsset.getUsefulLife());
+        demandAsset.setDepreciationMethod(existAsset.getDepreciationMethod());
+        demandAsset.setPurchaseSource(existAsset.getPurchaseSource());
+        demandAsset.setContactInformation(existAsset.getContactInformation());
+        demandAsset.setAcquisitionRoute(existAsset.getAcquisitionRoute());
+        demandAsset.setMaintenancePeriod(existAsset.getMaintenancePeriod());
+        demandAsset.setAssetClassification(existAsset.getAssetClassification() // 기본값 설정
+        );
+
+
+        demandAsset.setApproval(Approval.UNCONFIRMED);
+        demandAsset.setDisposalStatus(Boolean.TRUE);
+        demandAsset.setDemandStatus(Boolean.TRUE);
+        demandAsset.setDemandCheck(Boolean.TRUE);
+        demandAsset.setCreateDate(LocalDate.now());
+
+        commonAssetRepository.save(demandAsset);
+
+        // 폐기 요청도 결국 새로운 자산 번호 생성해야함
+        Long newAssetNo = demandAsset.getAssetNo();
+
+        CommonAsset latestAsset = commonAssetRepository.findTopByOrderByAssetNoDesc();
+        //자산 분류에 따라 관련된 데이터 베이스 저장
+        saveRelatedEntity1(assetDisposeDto, latestAsset);
+
+        // 폐기 이력 저장
+        Demand demand = new Demand();
+        //demand.setDemandBy;
+        demand.setDemandDate(LocalDate.now()); // 폐기 일자 - 추후 자동생성 변경
+        demand.setDemandReason(assetDisposeDto.getDisposeReason()); // 폐기 사유
+        demand.setDemandDetail(assetDisposeDto.getDisposeDetail()); // 폐기내용
+        demand.setDisposeMethod(assetDisposeDto.getDisposeMethod()); // 폐기 방법
+        demand.setDisposeLocation(assetDisposeDto.getDisposeLocation());  // 폐기 위치
+        demandRepository.save(demand);
+
+        // DemandDtl 테이블에 저장
+        DemandDtl demandDtl = new DemandDtl();
+        demandDtl.setAssetNo(demandAsset);  // CommonAsset과 연관 설정
+        demandDtl.setDemandNo(demand);  // Demand와 연관 설정
+        demandDtlRepository.save(demandDtl); // DemandDtl 테이블에 저장
+
+//        // 이메일 전송 기능 추가
+//        try {
+//            String toEmail = "kydea2240@example.com"; // 폐기 요청 담당자 이메일
+//            String subject = "폐기 요청 알림";
+//            String body = "자산코드: " + assetCode + "의 폐기 요청이 접수되었습니다.";
+//
+//            emailService.sendEmail(toEmail, subject, body);
+//        } catch (MessagingException e) {
+//            e.printStackTrace();
+//            // 이메일 전송 실패 시 로그 기록 또는 예외 처리
+//        }
+
+        return newAssetNo;
+    }
+
+    private void saveRelatedEntity1(AssetDisposeDto assetDto, CommonAsset latestAsset) {
         if (latestAsset.getAssetClassification() == null) {
             throw new IllegalArgumentException("Asset classification cannot be null.");
         }

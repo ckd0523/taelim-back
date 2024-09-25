@@ -4,6 +4,7 @@ import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.service.AssetService;
 import com.codehows.taelim.service.QRService;
+import com.codehows.taelim.service.RegisterService;
 import com.google.zxing.WriterException;
 import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -119,7 +120,7 @@ public class QRController {
 //    }
 
     private final AssetService assetService;
-
+    private final RegisterService registerService;
     //목록 조회
     @GetMapping("/assets/approved-not-disposed")
     public List<AssetDto> getApprovedAndNotDisposedAssets() {
@@ -189,9 +190,9 @@ public class QRController {
 
         // 자산담당자가 폐기 요청
         @PostMapping("/disposeDemand/{assetCode}")
-        public ResponseEntity<CommonAsset> disposedemand (@PathVariable("assetCode") String
-        assetCode, @RequestBody AssetDisposeDto assetDisposeDto){
-            assetService.DisposeDemand(assetCode, assetDisposeDto);
+        public ResponseEntity<CommonAsset> disposedemand1 (@PathVariable("assetCode") String
+        assetCode, @RequestBody AssetDisposeDto assetDisposeDto ){
+            registerService.DisposeDemand(assetCode, assetDisposeDto);
             return ResponseEntity.ok().build();
         }
 
