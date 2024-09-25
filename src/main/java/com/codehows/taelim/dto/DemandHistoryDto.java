@@ -11,12 +11,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class DemandHistoryDto {
 
-    private Long demandNo;
-    private Long assetNo;
+
+
     private String assetCode;
-    private String demandType;
-    private LocalDate demandDate;
+    private Long assetNo;
     private String demandBy;
+    private LocalDate demandDate;
+    private Long demandNo;
     private String demandStatus;
+    private String demandType;
 
 }

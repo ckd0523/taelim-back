@@ -1,14 +1,13 @@
 package com.codehows.taelim.service;
 
 import com.codehows.taelim.dto.RepairDto;
-import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.RepairHistory;
 import com.codehows.taelim.repository.RepairHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,6 +16,7 @@ public class RepairService {
 
     private final RepairHistoryRepository repairHistoryRepository;
 
+    //유지보수 등록
     public Long repairRegister(RepairDto repairDto) {
 
 
@@ -32,8 +32,13 @@ public class RepairService {
 
     }
 
+    //유지보수 조회
     public List<RepairDto> findAll(){
 
         return repairHistoryRepository.findAll().stream().map(RepairHistory::toDto).collect(Collectors.toList());
+    }
+
+    public Optional<RepairHistory> findById(Long id) {
+        return repairHistoryRepository.findById(id);
     }
 }

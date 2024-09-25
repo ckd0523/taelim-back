@@ -69,7 +69,6 @@ public class AssetSurveyController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
     //자산 조사 상세 이력
     @GetMapping("/assetSurveyDetail/{assetSurveyNo}")
     public List<AssetSurveyDetailDto> getAssetSurveyDetail(@PathVariable("assetSurveyNo") Integer assetSurveyNo) {
@@ -77,17 +76,6 @@ public class AssetSurveyController {
         //System.out.println("얘 아무것도 없어? : " + assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo));
         return assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo);
     }
-
-/*
-    //자산 조사 상세 이력
-    @GetMapping("/assetSurveyDetail/{assetSurveyNo}")
-    public List<AssetSurveyDetailDto> getAssetSurveyDetail(@PathVariable("assetSurveyNo") Integer assetSurveyNo) {
-        System.out.println("여기라고!!!");
-        //System.out.println("얘 아무것도 없어? : " + assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo));
-        return assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo);
-    }
-
- */
 
     @GetMapping("/checkLocation/{selectedLocation}")
     //ResponseEntity에 ?는 아무 타입이나 가능하다는 의미

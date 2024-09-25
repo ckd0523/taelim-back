@@ -80,11 +80,8 @@ public class AssetController {
         }
     }
     @PostMapping("/file/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("assetNo") String assetId, @RequestParam("fileType") String fileType) {
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("assetNo") Long assetNo, @RequestParam("fileType") String fileType) {
 
-        System.out.println("Received assetId : "+ assetId);
-        Long assetNo = Long.valueOf(assetId);
-        System.out.println("Received assetId : "+ assetNo);
         CommonAsset asset = registerService.findById(assetNo).orElseThrow(() -> new RuntimeException("자산을 찾을 수 없습니다."));
 
         FileType type;
