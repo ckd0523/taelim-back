@@ -32,52 +32,59 @@ public class DemandController {
         return demandService.getAllDemandHistory();
     }
 
-//    @PostMapping("/updateAction")
-//    public ResponseEntity<String> updateAction(@RequestBody DemandActionDto request) {
-//        // request 객체에서 데이터를 추출하여 처리
-//        Long DemandNo = request.getDemandNo();
-//        Long AssetNo = request.getAssetNo();
-//
-//        Demand demand = demandRepository.findById(DemandNo).orElse(null);
-//        if (demand != null) {
-//            demand.setDemandReason(request.getReason());
-//            demandRepository.save(demand);
-//        }
-//        CommonAsset commonAsset = commonAssetRepository.findById(AssetNo).orElse(null);
-//        if (commonAsset != null) {
-//            if (Objects.equals(request.getActionType(), "approve")) {
-//                commonAsset.setApproval(Approval.APPROVE);
-//                commonAsset.setDemandCheck(true);
-//                commonAssetRepository.save(commonAsset);
-//            } else {
-//                commonAsset.setApproval(Approval.REFUSAL);
-//                commonAsset.setDemandCheck(true);
-//                commonAssetRepository.save(commonAsset);
-//            }
-//        }
-//        // 성공적으로 처리했음을 클라이언트에게 응답
-//        return ResponseEntity.ok("Update successful");
-//    }
-
     @PostMapping("/updateAction")
     public ResponseEntity<String> updateAction(@RequestBody DemandActionDto request) {
+        // request 객체에서 데이터를 추출하여 처리
         DemandHistoryDto actionData = request.getDemandAction(); // actionData 배열
         String reason = request.getReason(); // reason 값
         String actionType = request.getActionType(); // actionType 값
 
-        // 요청 처리 로직 작성
-
-            System.out.println("Asset No: " + request.getDemandAction());
-            System.out.println("Demand Type: " + actionType);
-            // 업데이트 로직 처리
-
-
+        Demand demand = demandRepository.findById(actionData.getDemandNo()).orElse(null);
+        if (demand != null) {
+            demand.setDemandReason(reason);
+            demandRepository.save(demand);
+        }
+        CommonAsset commonAsset = commonAssetRepository.findById(actionData.getAssetNo()).orElse(null);
+        if (commonAsset != null) {
+            if (Objects.equals(actionType, "approve")) {
+                commonAsset.setApproval(Approval.APPROVE);
+                commonAsset.setDemandCheck(true);
+                commonAssetRepository.save(commonAsset);
+            } else {
+                commonAsset.setApproval(Approval.REFUSAL);
+                commonAsset.setDemandCheck(true);
+                commonAssetRepository.save(commonAsset);
+            }
+        }
+        // 성공적으로 처리했음을 클라이언트에게 응답
         return ResponseEntity.ok("Update successful");
     }
 
     @PostMapping("/deleteAction")
     public ResponseEntity<String> deleteAction(@RequestBody DemandActionDto request) {
-        // deleteAction에 대한 처리도 updateAction과 유사하게 진행
+        DemandHistoryDto actionData = request.getDemandAction(); // actionData 배열
+        String reason = request.getReason(); // reason 값
+        String actionType = request.getActionType(); // actionType 값
+
+        Demand demand = demandRepository.findById(actionData.getDemandNo()).orElse(null);
+        if (demand != null) {
+            demand.setDemandReason(reason);
+            demandRepository.save(demand);
+        }
+        CommonAsset commonAsset = commonAssetRepository.findById(actionData.getAssetNo()).orElse(null);
+        if (commonAsset != null) {
+            if (Objects.equals(actionType, "approve")) {
+                commonAsset.setApproval(Approval.APPROVE);
+                commonAsset.setDisposalStatus(true);
+                commonAsset.setDemandCheck(true);
+                commonAssetRepository.save(commonAsset);
+            } else {
+                commonAsset.setApproval(Approval.REFUSAL);
+                commonAsset.setDemandCheck(true);
+                commonAssetRepository.save(commonAsset);
+            }
+        }
+
         return ResponseEntity.ok("Delete successful");
     }
 

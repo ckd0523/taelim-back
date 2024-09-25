@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class DemandActionDto {
 
-    private DemandHistoryDto DemandAction;  // actionData 배열
+    private DemandHistoryDto demandAction;
     private String reason;
     private String actionType;
 }
