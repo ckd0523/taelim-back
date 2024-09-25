@@ -2,10 +2,7 @@ package com.codehows.taelim.entity;
 
 import com.codehows.taelim.constant.RepairType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "repairFile")
@@ -13,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class RepairFile {
     @Id
     @Column(name = "repairFileNo")
