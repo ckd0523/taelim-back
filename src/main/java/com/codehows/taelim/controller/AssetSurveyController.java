@@ -98,7 +98,4 @@ public class AssetSurveyController {
             return ResponseEntity.ok(nextRound);
         }
     }
-
-    @PutMapping("/completeSurvey/{assetSurveyNo}")
-    public ResponseEntity<Void> completeSurvey(@PathVariable("assetSurveyNo") Integer assetSurveyNo) {}
 }
