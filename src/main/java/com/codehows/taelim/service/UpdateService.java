@@ -33,9 +33,6 @@ public class UpdateService {
     private final FurnitureRepository furnitureRepository;
     private final OtherAssetsRepository otherAssetsRepository;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     public void update(AssetUpdateDto updateDto) {
 
         CommonAsset commonAsset = CommonAsset.builder()
@@ -83,33 +80,5 @@ public class UpdateService {
         return commonAssetRepository.findAll();
     }
 
-    public String allUpdate(AllUpdateDto allUpdateDto) {
-        // Optional 처리
-        CommonAsset commonAsset = commonAssetRepository.findById(allUpdateDto.getAssetNo())
-                .orElseThrow(() -> new EntityNotFoundException("Asset not found"));
-        commonAsset.setAssetNo(null);
-        CommonAsset commonAsset1 = commonAssetRepository.save(commonAsset); // 영속 상태로 저장
 
-        // AssetClassification에 따른 처리
-        switch (commonAsset.getAssetClassification()) {
-            case SOFTWARE -> {
-                Software software = softwareRepository.findByAssetNo(commonAsset);
-
-                    software.setSoftwareNo(null);
-                    software.setAssetNo(commonAsset1);
-                    softwareRepository.save(software);
-
-            }
-            case CAR -> {
-                Car car = carRepository.findByAssetNo(commonAsset);
-
-                    car.setCarNo(null);
-                    car.setAssetNo(commonAsset1);
-                    carRepository.save(car);
-
-            }
-        }
-
-        return "good";
-    }
 }

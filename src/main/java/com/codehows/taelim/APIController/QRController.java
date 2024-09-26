@@ -2,8 +2,10 @@ package com.codehows.taelim.APIController;
 
 import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.CommonAsset;
+import com.codehows.taelim.repository.CommonAssetRepository;
 import com.codehows.taelim.service.AssetService;
 import com.codehows.taelim.service.QRService;
+import com.codehows.taelim.service.RegisterService;
 import com.codehows.taelim.service.UpdateService;
 import com.google.zxing.WriterException;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,8 @@ public class QRController {
 
     private final QRService qrCodeService;
     private final UpdateService updateService;
+    private final RegisterService registerService;
+    private final CommonAssetRepository commonAssetRepository;
 
     //QR 생성하는곳
     @GetMapping("/generateQRCode")
@@ -154,7 +158,6 @@ public class QRController {
         return assetService.getAssetDetail(assetCode);
     }
 
-
         //상세조회 (공통 및 서브 칼럼)
         //@GetMapping("/asset/{assetCode}")
         // public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
@@ -167,6 +170,17 @@ public class QRController {
             return assetService.getAssetDetail2(assetCode);
 
         }
+
+    //상세조회 (공통 및 서브 칼럼)
+    @GetMapping("/test/{assetNo}")
+    public CommonAsset getAssetDetail3 (@PathVariable("assetNo") Long assetNo){
+        CommonAssetDto commonAssetDto = CommonAssetDto.fromEntity(commonAssetRepository.findById(assetNo).orElseThrow());
+        commonAssetDto.setAssetNo(null);
+        CommonAsset commonAsset = commonAssetDto.toEntity(commonAssetDto);
+        CommonAsset commonAsset1 = commonAssetRepository.save(commonAsset);
+        return commonAsset1;
+
+    }
 
 //    //상세조회 (공통 및 서브 칼럼)
 //    @GetMapping("/asset/{assetCode}")
@@ -219,9 +233,15 @@ public class QRController {
 
         @PostMapping("/allUpdate")
         public ResponseEntity<String> allUpdate(@RequestBody AllUpdateDto updateToSend){
-            System.out.println("여깅야니ㅏㅣㅏ"+updateToSend.getAssetNo());
-            updateService.allUpdate(updateToSend);
-            return ResponseEntity.ok("Update successful");
+            try {
+                Long newAssetNo = registerService.allUpdate(updateToSend);
+                return ResponseEntity.ok("자산 수정 등록완료 : " + newAssetNo);
+            } catch (Exception e) {
+                // 예외 메시지 로깅
+                e.printStackTrace();
+                // 클라이언트에게 오류 메시지 전송
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
+            }
         }
 
     }

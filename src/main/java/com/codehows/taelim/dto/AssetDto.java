@@ -310,4 +310,8 @@ public class AssetDto {
     }
 
     private List<FileDto> files;
+
+    //private List<RepairHistory> repairList;
+
+    //private List<CommonAsset> updateList =
 }

@@ -2,17 +2,19 @@ package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
-import com.codehows.taelim.dto.AssetDto;
-import com.codehows.taelim.dto.AssetUpdateDto;
-import com.codehows.taelim.dto.ExcelDto;
+import com.codehows.taelim.constant.AssetLocation;
+import com.codehows.taelim.constant.Department;
+import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -458,5 +460,148 @@ public class RegisterService {
             }
             default -> throw new IllegalArgumentException("Unknown asset classification: " + latestAsset.getAssetClassification());
         }
+    }
+
+    public Long allUpdate(AllUpdateDto allUpdateDto) {
+        // Optional 처리
+        CommonAsset existAsset = commonAssetRepository.findById(allUpdateDto.getAssetNo())
+                .orElseThrow(() -> new EntityNotFoundException("Asset not found"));
+
+        CommonAssetDto commonAssetDto = CommonAssetDto.fromEntity(existAsset);
+        commonAssetDto.setAssetNo(null);
+        CommonAsset commonAsset = commonAssetDto.toEntity(commonAssetDto);
+        CommonAsset updateAsset = commonAssetRepository.save(commonAsset);
+
+        updateAssetBasedOnClassification(updateAsset, existAsset);
+
+        // 수정 이력 저장
+        saveDemand(allUpdateDto, updateAsset);
+
+        return updateAsset.getAssetNo();
+    }
+
+    private void updateAssetBasedOnClassification(CommonAsset updateAsset, CommonAsset existAsset) {
+        switch (updateAsset.getAssetClassification()) {
+            case INFORMATION_PROTECTION_SYSTEM -> updateInformationProtectionSystem(existAsset, updateAsset);
+            case APPLICATION_PROGRAM -> updateApplicationProgram(existAsset, updateAsset);
+            case SOFTWARE -> updateSoftware(existAsset, updateAsset);
+            case ELECTRONIC_INFORMATION -> updateElectronicInformation(existAsset, updateAsset);
+            case DOCUMENT -> updateDocument(existAsset, updateAsset);
+            case PATENTS_AND_TRADEMARKS -> updatePatentsAndTrademarks(existAsset, updateAsset);
+            case ITSYSTEM_EQUIPMENT -> updateItSystemEquipment(existAsset, updateAsset);
+            case ITNETWORK_EQUIPMENT -> updateItNetworkEquipment(existAsset, updateAsset);
+            case TERMINAL -> updateTerminal(existAsset, updateAsset);
+            case FURNITURE -> updateFurniture(existAsset, updateAsset);
+            case DEVICES -> updateDevices(existAsset, updateAsset);
+            case CAR -> updateCar(existAsset, updateAsset);
+            case OTHERASSETS -> updateOtherAssets(existAsset, updateAsset);
+            default -> throw new IllegalArgumentException("Unknown asset classification: " + updateAsset.getAssetClassification());
+        }
+    }
+
+    private void updateInformationProtectionSystem(CommonAsset existAsset, CommonAsset updateAsset) {
+        InformationProtectionSystemDto informationProtectionSystemDto = InformationProtectionSystemDto.fromEntity(informationProtectionSystemRepository.findByAssetNo(existAsset));
+        informationProtectionSystemDto.setInfoNo(null);
+        informationProtectionSystemDto.setAssetNo(updateAsset);
+        informationProtectionSystemRepository.save(informationProtectionSystemDto.toEntity());
+    }
+
+    private void updateApplicationProgram(CommonAsset existAsset, CommonAsset updateAsset) {
+        ApplicationProgramDto appProgramDto = ApplicationProgramDto.fromEntity(applicationProgramRepository.findByAssetNo(existAsset));
+        appProgramDto.setAppNo(null); // ID를 null로 설정
+        appProgramDto.setAssetNo(updateAsset); // 새로운 자산 정보 설정
+        applicationProgramRepository.save(appProgramDto.toEntity()); // 저장
+    }
+
+    private void updateSoftware(CommonAsset existAsset, CommonAsset updateAsset) {
+        SoftwareDto softwareDto = SoftwareDto.fromEntity(softwareRepository.findByAssetNo(existAsset));
+        softwareDto.setSoftwareNo(null); // ID를 null로 설정
+        softwareDto.setAssetNo(updateAsset); // 새로운 자산 정보 설정
+        softwareRepository.save(softwareDto.toEntity()); // 저장
+    }
+
+    private void updateElectronicInformation(CommonAsset existAsset, CommonAsset updateAsset) {
+        ElectronicInformationDto elecInfoDto = ElectronicInformationDto.fromEntity(electronicInformationRepository.findByAssetNo(existAsset));
+        elecInfoDto.setEInfoNo(null); // ID를 null로 설정
+        elecInfoDto.setAssetNo(updateAsset); // 새로운 자산 정보 설정
+        electronicInformationRepository.save(elecInfoDto.toEntity()); // 저장
+    }
+
+    private void updateDocument(CommonAsset existAsset, CommonAsset updateAsset) {
+        DocumentDto documentDto = DocumentDto.fromEntity(documentRepository.findByAssetNo(existAsset));
+        documentDto.setDocumentNo(null); // ID를 null로 설정
+        documentDto.setAssetNo(updateAsset); // 새로운 자산 정보 설정
+        documentRepository.save(documentDto.toEntity()); // 저장
+    }
+
+    private void updatePatentsAndTrademarks(CommonAsset existAsset, CommonAsset updateAsset) {
+        PatentsAndTrademarksDto patentsDto = PatentsAndTrademarksDto.fromEntity(patentsAndTrademarksRepository.findByAssetNo(existAsset));
+        patentsDto.setPatentTrademarkNo(null); // ID를 null로 설정
+        patentsDto.setAssetNo(updateAsset); // 새로운 자산 정보 설정
+        patentsAndTrademarksRepository.save(patentsDto.toEntity()); // 저장
+    }
+
+    private void updateItSystemEquipment(CommonAsset existAsset, CommonAsset updateAsset) {
+        ItSystemEquipmentDto itEquipmentDto = ItSystemEquipmentDto.fromEntity(itSystemEquipmentRepository.findByAssetNo(existAsset));
+        itEquipmentDto.setEquipmentNo(null); // ID를 null로 설정
+        itEquipmentDto.setAssetNo(updateAsset); // 새로운 자산 정보 설정
+        itSystemEquipmentRepository.save(itEquipmentDto.toEntity()); // 저장
+    }
+
+    private void updateItNetworkEquipment(CommonAsset existAsset, CommonAsset updateAsset) {
+        ItNetworkEquipmentDto networkEquipmentDto = ItNetworkEquipmentDto.fromEntity(itNetworkEquipmentRepository.findByAssetNo(existAsset));
+        networkEquipmentDto.setNetworkNo(null); // ID를 null로 설정
+        networkEquipmentDto.setAssetNo(updateAsset); // 새로운 자산 정보 설정
+        itNetworkEquipmentRepository.save(networkEquipmentDto.toEntity()); // 저장
+    }
+
+    private void updateTerminal(CommonAsset existAsset, CommonAsset updateAsset) {
+        TerminalDto terminalDto = TerminalDto.fromEntity(terminalRepository.findByAssetNo(existAsset));
+        terminalDto.setTerminalNo(null); // ID를 null로 설정
+        terminalDto.setAssetNo(updateAsset); // 새로운 자산 정보 설정
+        terminalRepository.save(terminalDto.toEntity()); // 저장
+    }
+
+    private void updateFurniture(CommonAsset existAsset, CommonAsset updateAsset) {
+        FurnitureDto furnitureDto = FurnitureDto.fromEntity(furnitureRepository.findByAssetNo(existAsset));
+        furnitureDto.setFurnitureNo(null); // ID를 null로 설정
+        furnitureDto.setAssetNo(updateAsset); // 새로운 자산 정보 설정
+        furnitureRepository.save(furnitureDto.toEntity()); // 저장
+    }
+
+    private void updateDevices(CommonAsset existAsset, CommonAsset updateAsset) {
+        DevicesDto devicesDto = DevicesDto.fromEntity(devicesRepository.findByAssetNo(existAsset));
+        devicesDto.setDeviceNo(null); // ID를 null로 설정
+        devicesDto.setAssetNo(updateAsset); // 새로운 자산 정보 설정
+        devicesRepository.save(devicesDto.toEntity()); // 저장
+    }
+
+    private void updateCar(CommonAsset existAsset, CommonAsset updateAsset) {
+        CarDto carDto = CarDto.fromEntity(carRepository.findByAssetNo(existAsset));
+        carDto.setCarNo(null); // ID를 null로 설정
+        carDto.setAssetNo(updateAsset); // 새로운 자산 정보 설정
+        carRepository.save(carDto.toEntity()); // 저장
+    }
+
+    private void updateOtherAssets(CommonAsset existAsset, CommonAsset updateAsset) {
+        OtherAssetsDto otherAssetsDto = OtherAssetsDto.fromEntity(otherAssetsRepository.findByAssetNo(existAsset));
+        otherAssetsDto.setOtherNo(null); // ID를 null로 설정
+        otherAssetsDto.setAssetNo(updateAsset); // 새로운 자산 정보 설정
+        otherAssetsRepository.save(otherAssetsDto.toEntity()); // 저장
+    }
+
+    private void saveDemand(AllUpdateDto allUpdateDto, CommonAsset updateAsset) {
+        Demand demand = new Demand();
+        //demand.setDemandBy(); // 추후 사람
+        demand.setDemandDate(LocalDate.now());
+        demand.setDemandReason(allUpdateDto.getReason());
+        demand.setDemandDetail(allUpdateDto.getDetail());
+        demandRepository.save(demand);
+
+        // DemandDtl 테이블 저장
+        DemandDtl demandDtl = new DemandDtl();
+        demandDtl.setAssetNo(updateAsset);
+        demandDtl.setDemandNo(demand);
+        demandDtlRepository.save(demandDtl);
     }
 }

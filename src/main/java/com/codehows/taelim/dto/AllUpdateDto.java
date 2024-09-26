@@ -10,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AllUpdateDto {
+    private AssetUpdateDto assetDto;
     private Long assetNo;
     private String department;
     private String assetLocation;
