@@ -15,4 +15,13 @@ public class AmountSetService {
         AmountSet amountSet = amountSetRepository.findAmountSetByValueStandardNo(1L);
         return new AmountSetDto(amountSet.getHighValueStandard(), amountSet.getLowValueStandard());
     }
+
+    public boolean changeAmountSet(AmountSet amountSet) {
+        try {
+            amountSetRepository.updateAmountSet(amountSet.getHighValueStandard(), amountSet.getLowValueStandard());
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
 }
