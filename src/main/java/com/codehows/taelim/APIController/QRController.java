@@ -216,5 +216,11 @@ public class QRController {
             return ResponseEntity.ok(assets);
         }
 
+
+        // 자산 조회 - 상세정보 화면 까지 다 가져오는 테스트
+        @GetMapping("/assets/test")
+        public List<AssetDto> test() {
+            return assetService.getAssetDetail3();
+        }
     }
 

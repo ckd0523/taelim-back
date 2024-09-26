@@ -211,6 +211,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
        List<CommonAsset> assets = queryFactory
                .selectFrom(ca)
                .where(ca.assetCode.eq(assetCode) // 동일한 assetCode 필터링
+                       .and(ca.approval.eq(Approval.APPROVE)) // 주어진 assetCode 에서 approve 인 자산 필터
                        .and(ca.assetNo.loe(assetNo))) // 주어진 assetNo보다 작은 자산 필터링
                .orderBy(ca.assetNo.desc()) // 내림차순 정렬 (최신 자산이 먼저 오도록)
                .limit(2) // 최신 자산과 그 직전 자산만 가져오기

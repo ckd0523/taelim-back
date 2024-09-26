@@ -59,8 +59,29 @@ public class DemandDtlRepositoryCustomImpl implements DemandDtlRepositoryCustom 
                 .where(
                         commonAsset.disposalStatus.isFalse()
                                 .and(commonAsset.approval.eq(Approval.APPROVE))
-                                .or(commonAsset.approval.eq(Approval.UNCONFIRMED))
-                                .or(commonAsset.approval.eq(Approval.REFUSAL))
+
+                )
+                .fetch();
+    }
+
+    // 상세정보화면에서 수정이력을 가져오는 쿼리
+    @Override
+    public List<DemandDtl> findUpdateHistoryByAssetCode(String assetCode) {
+        QDemandDtl demandDtl = QDemandDtl.demandDtl;
+        QCommonAsset commonAsset = QCommonAsset.commonAsset;
+        QDemand demand = QDemand.demand;
+
+        // 서브쿼리
+        JPAQuery<DemandDtl> subQuery = new JPAQuery<>(entityManager);
+
+        return subQuery.select(demandDtl)
+                .from(demandDtl)
+                .join(commonAsset).on(demandDtl.assetNo.assetNo.eq(commonAsset.assetNo))
+                .join(demand).on(demandDtl.demandNo.demandNo.eq(demand.demandNo))
+                .where(
+                        commonAsset.assetCode.eq(assetCode) // 특정 assetCode 필터링
+                                .and(commonAsset.disposalStatus.isFalse())
+                                .and(commonAsset.approval.eq(Approval.APPROVE))
                 )
                 .fetch();
     }
