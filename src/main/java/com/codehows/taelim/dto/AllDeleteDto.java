@@ -1,7 +1,5 @@
 package com.codehows.taelim.dto;
 
-import com.codehows.taelim.constant.AssetLocation;
-import com.codehows.taelim.constant.Department;
 import lombok.*;
 
 import java.util.List;
@@ -11,12 +9,14 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class AllUpdateDto {
+public class AllDeleteDto {
+
     private List<AssetUpdateDto> assetDtos;
     private AssetUpdateDto assetDto;
     private Long assetNo;
-    private String department;
-    private String assetLocation;
+    private String disposeMethod;
+    private String disposeLocation;
     private String reason;
     private String detail;
+
 }

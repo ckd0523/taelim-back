@@ -31,20 +31,15 @@ public class DemandService {
             Optional<CommonAsset> commonAsset = commonAssetRepository.findById(demandDtl.getAssetNo().getAssetNo());
             CommonAsset asset = commonAsset.orElseThrow();
             DemandHistoryDto demandHistoryDto = new DemandHistoryDto();
-            System.out.println("요청"+asset.getDemandStatus());
             if(asset.getDemandStatus()){
                 Optional<Demand> demand = demandRepository.findById(demandDtl.getDemandNo().getDemandNo());
                 Demand demand1 = demand.orElseThrow();
-                System.out.println("여기야1"+demand1.getDemandNo());
                 if(demand1.getDisposeLocation() == null){
                     //수정이력
-                    System.out.println("여기야2:"+demand1.getDemandNo());
                     demandHistoryDto.setDemandBy("이창현");
                     demandHistoryDto.setDemandType("update");
-
                 }else {
                     //폐기이력
-                    System.out.println("여기야3:"+demand1.getDemandNo());
                     demandHistoryDto.setDemandBy("이창현");
                     demandHistoryDto.setDemandType("delete");
                 }

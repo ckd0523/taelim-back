@@ -462,20 +462,144 @@ public class RegisterService {
         }
     }
 
-    public Long allUpdate(AllUpdateDto allUpdateDto) {
-        // Optional 처리
+    // 일괄 수정
+    public Long allUpdate(AllUpdateDto allUpdateDto, Demand demand) {
+        // Optional 처리 기존 자산 불러오기
         CommonAsset existAsset = commonAssetRepository.findById(allUpdateDto.getAssetNo())
+                .orElseThrow(() -> new EntityNotFoundException("Asset not found"));
+        //기존 자산 Dto로 변환
+        CommonAssetDto commonAssetDto = CommonAssetDto.fromEntity(existAsset);
+        //assetNo를 null로
+        commonAssetDto.setAssetNo(null);
+        commonAssetDto.setApproval(Approval.APPROVE);
+        commonAssetDto.setDisposalStatus(Boolean.FALSE);
+        commonAssetDto.setDemandStatus(Boolean.FALSE);
+        commonAssetDto.setDemandCheck(Boolean.FALSE);
+        commonAssetDto.setCreateDate(LocalDate.now());  // 등록일 갱신
+        //Dto를 엔티티로 변환
+        CommonAsset commonAsset = commonAssetDto.toEntity(commonAssetDto);
+        // 저장해서 새로운 자산 만들기
+        CommonAsset updateAsset = commonAssetRepository.save(commonAsset);
+        // 기존자산과 똑같은 서브컬럼 복사
+        updateAssetBasedOnClassification(updateAsset, existAsset);
+
+        // DemandDtl 테이블 저장
+        DemandDtl demandDtl = new DemandDtl();
+        demandDtl.setAssetNo(updateAsset);
+        demandDtl.setDemandNo(demand);
+        demandDtlRepository.save(demandDtl);
+
+        return updateAsset.getAssetNo();
+    }
+    public Demand UpdateDemand(AllUpdateDto allUpdateDto){
+        Demand demand = new Demand();
+        //demand.setDemandBy(); // 추후 사람
+        demand.setDemandDate(LocalDate.now());
+        demand.setDemandReason(allUpdateDto.getReason());
+        demand.setDemandDetail(allUpdateDto.getDetail());
+
+        return demandRepository.save(demand);
+    }
+
+
+    //일괄 수정 요청
+    public Long allUpdateDemand(AllUpdateDto allUpdateDto, Demand demand) {
+        // Optional 처리 기존 자산 불러오기
+        CommonAsset existAsset = commonAssetRepository.findById(allUpdateDto.getAssetNo())
+                .orElseThrow(() -> new EntityNotFoundException("Asset not found"));
+
+        //기존 자산 Dto로 변환
+        CommonAssetDto commonAssetDto = CommonAssetDto.fromEntity(existAsset);
+        //assetNo를 null로
+        commonAssetDto.setAssetNo(null);
+        //자산정보에 따른 세부 변경사항
+        commonAssetDto.setApproval(Approval.UNCONFIRMED);
+        commonAssetDto.setDisposalStatus(Boolean.FALSE);
+        commonAssetDto.setDemandStatus(Boolean.TRUE);
+        commonAssetDto.setDemandCheck(Boolean.TRUE);
+        commonAssetDto.setCreateDate(LocalDate.now());  // 등록일 갱신
+
+        //Dto를 엔티티로 변환
+        CommonAsset commonAsset = commonAssetDto.toEntity(commonAssetDto);
+        // 저장해서 새로운 자산 만들기
+        CommonAsset updateAsset = commonAssetRepository.save(commonAsset);
+        // 기존자산과 똑같은 서브컬럼 복사
+        updateAssetBasedOnClassification(updateAsset, existAsset);
+
+        // DemandDtl 테이블 저장
+        DemandDtl demandDtl = new DemandDtl();
+        demandDtl.setAssetNo(updateAsset);
+        demandDtl.setDemandNo(demand);
+        demandDtlRepository.save(demandDtl);
+
+        return updateAsset.getAssetNo();
+    }
+
+    //일괄 폐기
+    public Long allDelete(AllDeleteDto allDeleteDto, Demand demand) {
+        // Optional 처리
+        CommonAsset existAsset = commonAssetRepository.findById(allDeleteDto.getAssetNo())
                 .orElseThrow(() -> new EntityNotFoundException("Asset not found"));
 
         CommonAssetDto commonAssetDto = CommonAssetDto.fromEntity(existAsset);
         commonAssetDto.setAssetNo(null);
+        commonAssetDto.setApproval(Approval.APPROVE);
+        commonAssetDto.setDisposalStatus(Boolean.TRUE);
         CommonAsset commonAsset = commonAssetDto.toEntity(commonAssetDto);
         CommonAsset updateAsset = commonAssetRepository.save(commonAsset);
 
         updateAssetBasedOnClassification(updateAsset, existAsset);
 
-        // 수정 이력 저장
-        saveDemand(allUpdateDto, updateAsset);
+        // DemandDtl 테이블에 저장
+        DemandDtl demandDtl = new DemandDtl();
+        demandDtl.setAssetNo(updateAsset);  // CommonAsset과 연관 설정
+        demandDtl.setDemandNo(demand);  // Demand와 연관 설정
+        demandDtlRepository.save(demandDtl); // DemandDtl 테이블에 저장
+
+        return updateAsset.getAssetNo();
+
+    }
+
+    public Demand DeleteDemand(AllDeleteDto allDeleteDto){
+        // 폐기 이력 저장
+        Demand demand = new Demand();
+        //demand.setDemandBy;
+        demand.setDemandDate(LocalDate.now()); // 폐기 일자 - 추후 자동생성 변경
+        demand.setDemandReason(allDeleteDto.getReason()); // 폐기 사유
+        demand.setDemandDetail(allDeleteDto.getDetail()); // 폐기내용
+        demand.setDisposeMethod(allDeleteDto.getDisposeMethod()); // 폐기 방법
+        demand.setDisposeLocation(allDeleteDto.getDisposeLocation());  // 폐기 위치
+        return demandRepository.save(demand);
+    }
+
+    //일괄 요청 폐기
+    public Long allDeleteDemamd(AllDeleteDto allDeleteDto, Demand demand) {
+        // Optional 처리
+        CommonAsset existAsset = commonAssetRepository.findById(allDeleteDto.getAssetNo())
+                .orElseThrow(() -> new EntityNotFoundException("Asset not found"));
+
+        CommonAssetDto commonAssetDto = CommonAssetDto.fromEntity(existAsset);
+        commonAssetDto.setAssetNo(null);
+        // AssetDto에서 업데이트할 필드 설정 (null 체크 후 기존 값 유지)
+        commonAssetDto.setApproval(Approval.UNCONFIRMED);
+        commonAssetDto.setDisposalStatus(Boolean.TRUE);
+        commonAssetDto.setDemandStatus(Boolean.TRUE);
+        commonAssetDto.setDemandCheck(Boolean.TRUE);
+        commonAssetDto.setCreateDate(LocalDate.now());
+
+        //updateAsset.setAssetUser(existAsset.getAssetUser());
+        //updateAsset.setAssetOwner(existAsset.getAssetOwner());
+
+        CommonAsset commonAsset = commonAssetDto.toEntity(commonAssetDto);
+        CommonAsset updateAsset = commonAssetRepository.save(commonAsset);
+
+        updateAssetBasedOnClassification(updateAsset, existAsset);
+
+        // DemandDtl 테이블에 저장
+        DemandDtl demandDtl = new DemandDtl();
+        demandDtl.setAssetNo(updateAsset);  // CommonAsset과 연관 설정
+        demandDtl.setDemandNo(demand);  // Demand와 연관 설정
+        demandDtlRepository.save(demandDtl); // DemandDtl 테이블에 저장
 
         return updateAsset.getAssetNo();
     }
@@ -590,18 +714,5 @@ public class RegisterService {
         otherAssetsRepository.save(otherAssetsDto.toEntity()); // 저장
     }
 
-    private void saveDemand(AllUpdateDto allUpdateDto, CommonAsset updateAsset) {
-        Demand demand = new Demand();
-        //demand.setDemandBy(); // 추후 사람
-        demand.setDemandDate(LocalDate.now());
-        demand.setDemandReason(allUpdateDto.getReason());
-        demand.setDemandDetail(allUpdateDto.getDetail());
-        demandRepository.save(demand);
 
-        // DemandDtl 테이블 저장
-        DemandDtl demandDtl = new DemandDtl();
-        demandDtl.setAssetNo(updateAsset);
-        demandDtl.setDemandNo(demand);
-        demandDtlRepository.save(demandDtl);
-    }
 }

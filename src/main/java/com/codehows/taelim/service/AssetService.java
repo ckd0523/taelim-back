@@ -1020,7 +1020,7 @@ public class AssetService {
                 return fileDto;
             }).collect(Collectors.toList());
 
-            assetDto.setFiles(fileDtos);
+                    assetDto.setFiles(fileDtos);
 
 
             //return assetDto;
