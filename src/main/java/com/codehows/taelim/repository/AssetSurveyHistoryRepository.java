@@ -3,7 +3,10 @@ package com.codehows.taelim.repository;
 import com.codehows.taelim.constant.AssetLocation;
 import com.codehows.taelim.entity.AssetSurveyHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,5 +31,8 @@ public interface AssetSurveyHistoryRepository extends JpaRepository<AssetSurveyH
 
     List<AssetSurveyHistory> findByAssetSurveyNoIn(List<Long> assetSurveyNos);
 
-
+    @Modifying
+    @Transactional
+    @Query("UPDATE AssetSurveyHistory a SET a.surveyStatus = true WHERE a.assetSurveyNo = :assetSurveyNo")
+    void completeSurvey(@Param("assetSurveyNo") Long assetSurveyNo);
 }
