@@ -127,7 +127,7 @@ public class QRController {
 //    }
 
     private final AssetService assetService;
-
+    
     //목록 조회
     @GetMapping("/assets/approved-not-disposed")
     public List<AssetDto> getApprovedAndNotDisposedAssets() {
@@ -207,9 +207,9 @@ public class QRController {
 
         // 자산담당자가 폐기 요청
         @PostMapping("/disposeDemand/{assetCode}")
-        public ResponseEntity<CommonAsset> disposedemand (@PathVariable("assetCode") String
-        assetCode, @RequestBody AssetDisposeDto assetDisposeDto){
-            assetService.DisposeDemand(assetCode, assetDisposeDto);
+        public ResponseEntity<CommonAsset> disposedemand1 (@PathVariable("assetCode") String
+        assetCode, @RequestBody AssetDisposeDto assetDisposeDto ){
+            registerService.DisposeDemand(assetCode, assetDisposeDto);
             return ResponseEntity.ok().build();
         }
 
@@ -311,5 +311,11 @@ public class QRController {
         }
     }
 
+
+        // 자산 조회 - 상세정보 화면 까지 다 가져오는 테스트
+        @GetMapping("/assets/test")
+        public List<AssetDto> test() {
+            return assetService.getAssetDetail3();
+        }
     }
 

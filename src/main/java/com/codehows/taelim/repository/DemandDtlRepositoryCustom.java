@@ -10,4 +10,6 @@ public interface DemandDtlRepositoryCustom {
     List<DemandDtl> findDeleteHistory();
 
     List<DemandDtl> findUpdateHistory();
+
+    List<DemandDtl> findUpdateHistoryByAssetCode(String assetCode);
 }

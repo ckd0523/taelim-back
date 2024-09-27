@@ -45,8 +45,8 @@ public class AssetService {
         return commonAssetRepository.findLatestApprovedAsset(assetCode);
     }
 
-    // 자산목록 (자산 공통정보)
-    public List<AssetDto> getApprovedAndNotDisposedAssets() {
+     // 자산목록 (자산 공통정보)
+     public List<AssetDto> getApprovedAndNotDisposedAssets() {
         List<CommonAsset> assets = commonAssetRepository.findApprovedAndNotDisposedAssets();
         return assets.stream()
                 .map(asset -> {
@@ -114,8 +114,10 @@ public class AssetService {
                 })
                 .collect(Collectors.toList());
     }
+    
 
-    // 자산 상세 조회
+
+    // 자산 상세 조회 - RowDetail 에서 하나의 assetCode 를 들고 오는 동작
     public AssetDto getAssetDetail(String assetCode) {
 
         AssetDto assetDto = new AssetDto();
@@ -848,8 +850,7 @@ public class AssetService {
         return assetDtos;
     }
 
-
-    // 자산 상세 조회
+    // 자산 상세 조회 - 이걸로 리스트로 불러와서 프론트에 떄려박기 test
     public List<AssetDto> getAssetDetail3() {
 
         List<CommonAsset> assets = commonAssetRepository.findApprovedAndNotDisposedAssets();
@@ -1020,30 +1021,31 @@ public class AssetService {
                 return fileDto;
             }).collect(Collectors.toList());
 
+
                     assetDto.setFiles(fileDtos);
 
 
             //return assetDto;
-            //파일
-            //List<File> fileList = fileRepository.findByAssetNo(commonAsset);
-            //유지보수
-            //List<RepairHistory> repairList = repairHistoryRepository.findByAssetNo(commonAsset);
-            //수정이력
-            //List<CommonAsset> updateList = commonAssetRepository.findApprovedAssetsByCodeExceptLatest(assetCode);
-            //자산조사이력
-            //List<AssetSurvey> assetSurveyList = assetSurveyService.getAssetSurveysByAssetNo(commonAsset);
+            // 수정이력을 AssetDto에 추가
+            List<UpdateHistoryDto> updateHistoryDtos = updateHistory.stream()
+                            .map(demandDtl -> {
+                                UpdateHistoryDto updateHistoryDto = new UpdateHistoryDto();
+                                updateHistoryDto.setAssetNo(demandDtl.getAssetNo().getAssetNo());
+                                updateHistoryDto.setAssetCode(demandDtl.getAssetNo().getAssetCode());
+                                updateHistoryDto.setAssetName(demandDtl.getAssetNo().getAssetName());
+                                updateHistoryDto.setUpdateDate(demandDtl.getDemandNo().getDemandDate());
+                                //updateHistoryDto.setUpdateBy(demandDtl.getDemandNo().getDemandBy());
+                                updateHistoryDto.setUpdateReason(demandDtl.getDemandNo().getDemandReason());
+                                updateHistoryDto.setUpdateDetail(demandDtl.getDemandNo().getDemandDetail());
 
-            //Map<String, Object> result = new HashMap<>();
-            // result.put("fileList", fileList != null ? fileList : Collections.emptyList());
-            //result.put("repairList", repairList != null ? repairList : Collections.emptyList());
-            //result.put("commonAssetList", updateList != null ? repairList : Collections.emptyList());
-            //result.put("assetSurveyList", assetSurveyList != null ? repairList : Collections.emptyList());
-            //result.put("assetDto", assetDto);
+                                return updateHistoryDto;
+                            }).collect(Collectors.toList());
+            assetDto.setUpdateHistory(updateHistoryDtos);
+
 
             assetDtos.add(assetDto);
         }
 
-        return assetDtos;
     }
 
 

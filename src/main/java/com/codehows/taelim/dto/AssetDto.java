@@ -314,4 +314,5 @@ public class AssetDto {
     //private List<RepairHistory> repairList;
 
     //private List<CommonAsset> updateList =
+    private List<UpdateHistoryDto> updateHistory;
 }
