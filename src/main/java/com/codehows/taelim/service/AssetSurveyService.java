@@ -244,7 +244,8 @@ public class AssetSurveyService {
     //자산 조사 완료
     public boolean completeSurvey(Long assetSurveyNo) {
         try {
-            assetSurveyHistoryRepository.completeSurvey(assetSurveyNo);
+            LocalDate now = LocalDate.now();
+            assetSurveyHistoryRepository.completeSurvey(assetSurveyNo, now);
             return true;
         } catch (Exception e) {
             return false;
