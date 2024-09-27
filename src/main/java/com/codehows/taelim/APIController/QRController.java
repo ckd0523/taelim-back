@@ -2,8 +2,12 @@ package com.codehows.taelim.APIController;
 
 import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.CommonAsset;
+import com.codehows.taelim.entity.Demand;
+import com.codehows.taelim.repository.CommonAssetRepository;
 import com.codehows.taelim.service.AssetService;
 import com.codehows.taelim.service.QRService;
+import com.codehows.taelim.service.RegisterService;
+import com.codehows.taelim.service.UpdateService;
 import com.google.zxing.WriterException;
 import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -20,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -29,6 +34,9 @@ import java.util.zip.ZipOutputStream;
 public class QRController {
 
     private final QRService qrCodeService;
+    private final UpdateService updateService;
+    private final RegisterService registerService;
+    private final CommonAssetRepository commonAssetRepository;
 
     //QR 생성하는곳
     @GetMapping("/generateQRCode")
@@ -152,7 +160,6 @@ public class QRController {
         return assetService.getAssetDetail(assetCode);
     }
 
-
         //상세조회 (공통 및 서브 칼럼)
         //@GetMapping("/asset/{assetCode}")
         // public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
@@ -165,6 +172,17 @@ public class QRController {
             return assetService.getAssetDetail2(assetCode);
 
         }
+
+    //상세조회 (공통 및 서브 칼럼)
+    @GetMapping("/test/{assetNo}")
+    public CommonAsset getAssetDetail3 (@PathVariable("assetNo") Long assetNo){
+        CommonAssetDto commonAssetDto = CommonAssetDto.fromEntity(commonAssetRepository.findById(assetNo).orElseThrow());
+        commonAssetDto.setAssetNo(null);
+        CommonAsset commonAsset = commonAssetDto.toEntity(commonAssetDto);
+        CommonAsset commonAsset1 = commonAssetRepository.save(commonAsset);
+        return commonAsset1;
+
+    }
 
 //    //상세조회 (공통 및 서브 칼럼)
 //    @GetMapping("/asset/{assetCode}")
@@ -214,6 +232,84 @@ public class QRController {
             List<AssetDto> assets = assetService.getLatestAndPreviousAssets(assetNo);
             return ResponseEntity.ok(assets);
         }
+
+        @PostMapping("/allUpdate")
+        public ResponseEntity<String> allUpdate(@RequestBody AllUpdateDto updateToSend){
+            try {
+                List<AssetUpdateDto> assetDtos = updateToSend.getAssetDtos();
+                Demand demand = registerService.UpdateDemand(updateToSend);
+                // 수정 이력 저장
+                for (AssetUpdateDto assetDto : assetDtos) {
+                    updateToSend.setAssetDto(assetDto);
+                    updateToSend.setAssetNo(assetDto.getAssetNo());
+                    Long newAssetNo = registerService.allUpdate(updateToSend, demand);
+                }
+
+                return ResponseEntity.ok("자산 수정 등록완료");
+            } catch (Exception e) {
+                // 예외 메시지 로깅
+                e.printStackTrace();
+                // 클라이언트에게 오류 메시지 전송
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
+            }
+        }
+    @PostMapping("/allUpdateDemand")
+    public ResponseEntity<String> allUpdateDemand(@RequestBody AllUpdateDto updateToSend){
+        try {
+            List<AssetUpdateDto> assetDtos = updateToSend.getAssetDtos();
+            Demand demand = registerService.UpdateDemand(updateToSend);
+            for (AssetUpdateDto assetDto : assetDtos) {
+                updateToSend.setAssetDto(assetDto);
+                updateToSend.setAssetNo(assetDto.getAssetNo());
+                Long newAssetNo = registerService.allUpdateDemand(updateToSend, demand);
+            }
+            return ResponseEntity.ok("자산 수정 등록완료");
+        } catch (Exception e) {
+            // 예외 메시지 로깅
+            e.printStackTrace();
+            // 클라이언트에게 오류 메시지 전송
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/allDelete")
+    public ResponseEntity<String> allDelete(@RequestBody AllDeleteDto disposeToSend){
+        try {
+
+            List<AssetUpdateDto> assetDtos = disposeToSend.getAssetDtos();
+            Demand demand = registerService.DeleteDemand(disposeToSend);
+            for (AssetUpdateDto assetDto : assetDtos) {
+                disposeToSend.setAssetDto(assetDto);
+                disposeToSend.setAssetNo(assetDto.getAssetNo());
+                Long newAssetNo = registerService.allDelete(disposeToSend, demand);
+            }
+            return ResponseEntity.ok("자산 폐기 등록완료");
+        } catch (Exception e) {
+            // 예외 메시지 로깅
+            e.printStackTrace();
+            // 클라이언트에게 오류 메시지 전송
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/allDeleteDemand")
+    public ResponseEntity<String> allDeleteDemand(@RequestBody AllDeleteDto disposeToSend){
+        try {
+            List<AssetUpdateDto> assetDtos = disposeToSend.getAssetDtos();
+            Demand demand = registerService.DeleteDemand(disposeToSend);
+            for (AssetUpdateDto assetDto : assetDtos) {
+                disposeToSend.setAssetDto(assetDto);
+                disposeToSend.setAssetNo(assetDto.getAssetNo());
+                Long newAssetNo = registerService.allDeleteDemamd(disposeToSend, demand);
+            }
+            return ResponseEntity.ok("자산 폐기 등록완료");
+        } catch (Exception e) {
+            // 예외 메시지 로깅
+            e.printStackTrace();
+            // 클라이언트에게 오류 메시지 전송
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
+        }
+    }
 
     }
 

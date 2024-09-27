@@ -1,13 +1,19 @@
 package com.codehows.taelim.service;
 
+import com.codehows.taelim.dto.AllUpdateDto;
 import com.codehows.taelim.dto.AssetUpdateDto;
-import com.codehows.taelim.entity.CommonAsset;
+import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.codehows.taelim.constant.AssetClassification.INFORMATION_PROTECTION_SYSTEM;
 
 @RequiredArgsConstructor
 @Service
@@ -73,4 +79,6 @@ public class UpdateService {
     public List<CommonAsset> findAll() {
         return commonAssetRepository.findAll();
     }
+
+
 }
