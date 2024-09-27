@@ -45,8 +45,8 @@ public class AssetService {
         return commonAssetRepository.findLatestApprovedAsset(assetCode);
     }
 
-     // 자산목록 (자산 공통정보)
-     public List<AssetDto> getApprovedAndNotDisposedAssets() {
+    // 자산목록 (자산 공통정보)
+    public List<AssetDto> getApprovedAndNotDisposedAssets() {
         List<CommonAsset> assets = commonAssetRepository.findApprovedAndNotDisposedAssets();
         return assets.stream()
                 .map(asset -> {
@@ -114,7 +114,6 @@ public class AssetService {
                 })
                 .collect(Collectors.toList());
     }
-    
 
 
     // 자산 상세 조회 - RowDetail 에서 하나의 assetCode 를 들고 오는 동작
@@ -649,14 +648,14 @@ public class AssetService {
     }
 
     // 수정 이력 List 에 담아서 가져오기
-    public List<UpdateHistoryDto> getUpDateHistory(){
+    public List<UpdateHistoryDto> getUpDateHistory() {
         List<DemandDtl> updateList = demandDtlRepository.findUpdateHistory();
 
         List<UpdateHistoryDto> updateHistoryDtoList = new ArrayList<>();
 
         for (DemandDtl demandDtl : updateList) {
             UpdateHistoryDto dto = new UpdateHistoryDto();
-            CommonAsset asset= demandDtl.getAssetNo();
+            CommonAsset asset = demandDtl.getAssetNo();
             Demand demand = demandDtl.getDemandNo();
             dto.setAssetNo(asset.getAssetNo());
             dto.setAssetCode(asset.getAssetCode());
@@ -749,7 +748,7 @@ public class AssetService {
                 }
                 case DOCUMENT -> {
                     Document document = documentRepository.findByAssetNo(asset);
-                    if(document != null) {
+                    if (document != null) {
                         dto.setDocumentGrade(document.getDocumentGrade());
                         dto.setDocumentType(document.getDocumentType());
                         dto.setDocumentLink(document.getDocumentLink());
@@ -812,7 +811,7 @@ public class AssetService {
                 }
                 case FURNITURE -> {
                     Furniture furniture = furnitureRepository.findByAssetNo(asset);
-                    if(furniture != null) {
+                    if (furniture != null) {
                         dto.setFurnitureSize(furniture.getFurnitureSize());
                     }
                 }
@@ -1022,31 +1021,31 @@ public class AssetService {
             }).collect(Collectors.toList());
 
 
-                    assetDto.setFiles(fileDtos);
+            assetDto.setFiles(fileDtos);
 
+// 수정이력을 가져오는 코드
+            List<DemandDtl> updateHistory = demandDtlRepository.findUpdateHistoryByAssetCode(commonAsset.getAssetCode());
 
             //return assetDto;
             // 수정이력을 AssetDto에 추가
             List<UpdateHistoryDto> updateHistoryDtos = updateHistory.stream()
-                            .map(demandDtl -> {
-                                UpdateHistoryDto updateHistoryDto = new UpdateHistoryDto();
-                                updateHistoryDto.setAssetNo(demandDtl.getAssetNo().getAssetNo());
-                                updateHistoryDto.setAssetCode(demandDtl.getAssetNo().getAssetCode());
-                                updateHistoryDto.setAssetName(demandDtl.getAssetNo().getAssetName());
-                                updateHistoryDto.setUpdateDate(demandDtl.getDemandNo().getDemandDate());
-                                //updateHistoryDto.setUpdateBy(demandDtl.getDemandNo().getDemandBy());
-                                updateHistoryDto.setUpdateReason(demandDtl.getDemandNo().getDemandReason());
-                                updateHistoryDto.setUpdateDetail(demandDtl.getDemandNo().getDemandDetail());
+                    .map(demandDtl -> {
+                        UpdateHistoryDto updateHistoryDto = new UpdateHistoryDto();
+                        updateHistoryDto.setAssetNo(demandDtl.getAssetNo().getAssetNo());
+                        updateHistoryDto.setAssetCode(demandDtl.getAssetNo().getAssetCode());
+                        updateHistoryDto.setAssetName(demandDtl.getAssetNo().getAssetName());
+                        updateHistoryDto.setUpdateDate(demandDtl.getDemandNo().getDemandDate());
+                        //updateHistoryDto.setUpdateBy(demandDtl.getDemandNo().getDemandBy());
+                        updateHistoryDto.setUpdateReason(demandDtl.getDemandNo().getDemandReason());
+                        updateHistoryDto.setUpdateDetail(demandDtl.getDemandNo().getDemandDetail());
 
-                                return updateHistoryDto;
-                            }).collect(Collectors.toList());
+                        return updateHistoryDto;
+                    }).collect(Collectors.toList());
             assetDto.setUpdateHistory(updateHistoryDtos);
 
 
             assetDtos.add(assetDto);
         }
-
+        return assetDtos;
     }
-
-
 }
