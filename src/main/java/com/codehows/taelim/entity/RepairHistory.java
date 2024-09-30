@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "repairHistory")
@@ -32,6 +33,7 @@ public class RepairHistory {
     public RepairDto toDto(){
         return RepairDto.builder()
                 .repairNo(repairNo)
+                .assetNo(assetNo.getAssetNo())
                 .assetCode(assetNo.getAssetCode())
                 .assetName(assetNo.getAssetName())
                 .repairResult(repairResult)
