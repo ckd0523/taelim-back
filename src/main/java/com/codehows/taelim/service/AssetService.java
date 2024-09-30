@@ -84,7 +84,7 @@ public class AssetService {
 //                    dto.setAssetUser(asset.getAssetUser().getUName());
 //                    dto.setAssetOwner(asset.getAssetOwner().getUName());
 //                    dto.setAssetSecurityManager(asset.getAssetSecurityManager().getUName());
-                    dto.setUseState(asset.getUseState());
+                    dto.setUsestate(asset.getUseState());
                     dto.setOperationStatus(asset.getOperationStatus());
                     dto.setIntroducedDate(asset.getIntroducedDate());
                     dto.setConfidentiality(asset.getConfidentiality());
@@ -107,7 +107,7 @@ public class AssetService {
                     dto.setApproval(asset.getApproval());
                     dto.setDemandCheck(asset.getDemandCheck());
                     dto.setCreateDate(asset.getCreateDate());
-                    dto.setUseState(asset.getUseState());
+                    dto.setUsestate(asset.getUseState());
                     dto.setAcquisitionRoute(asset.getAcquisitionRoute());
                     dto.setMaintenancePeriod(asset.getMaintenancePeriod());
                     return dto;
@@ -131,7 +131,7 @@ public class AssetService {
         assetDto.setPurpose(commonAsset.getPurpose());
         assetDto.setDepartment(commonAsset.getDepartment());
         assetDto.setAssetLocation(commonAsset.getAssetLocation());
-        assetDto.setUseState(commonAsset.getUseState());
+        assetDto.setUsestate(commonAsset.getUseState());
         assetDto.setOperationStatus(commonAsset.getOperationStatus());
         assetDto.setIntroducedDate(commonAsset.getIntroducedDate());
         assetDto.setQuantity(commonAsset.getQuantity());
@@ -705,7 +705,7 @@ public class AssetService {
                     .depreciationMethod(asset.getDepreciationMethod())
                     .purchaseSource(asset.getPurchaseSource())
                     .contactInformation(asset.getContactInformation())
-                    .useState(asset.getUseState())
+                    .usestate(asset.getUseState())
                     .acquisitionRoute(asset.getAcquisitionRoute())
                     .maintenancePeriod(asset.getMaintenancePeriod())
                     .build(); // 공통필드 builder 하고
@@ -866,7 +866,7 @@ public class AssetService {
             assetDto.setPurpose(commonAsset.getPurpose());
             assetDto.setDepartment(commonAsset.getDepartment());
             assetDto.setAssetLocation(commonAsset.getAssetLocation());
-            assetDto.setUseState(commonAsset.getUseState());
+            assetDto.setUsestate(commonAsset.getUseState());
             assetDto.setOperationStatus(commonAsset.getOperationStatus());
             assetDto.setIntroducedDate(commonAsset.getIntroducedDate());
             assetDto.setQuantity(commonAsset.getQuantity());
