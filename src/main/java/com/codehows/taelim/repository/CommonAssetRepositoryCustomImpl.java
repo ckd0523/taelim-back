@@ -231,8 +231,8 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         CommonAsset latestAsset = queryFactory
                 .selectFrom(commonAsset)
                 .where(commonAsset.assetCode.eq(assetCode))
-                .orderBy(commonAsset.createDate.desc())  // 최신 순으로 정렬
-                .fetchFirst();  // 가장 첫 번째 데이터만 조회
+                .orderBy(commonAsset.assetNo.desc())
+                .fetchFirst(); ;  // 가장 첫 번째 데이터만 조회
 
         // 만약 최신 자산이 없을 경우 null 반환
         return latestAsset != null ? latestAsset.getApproval() : null;

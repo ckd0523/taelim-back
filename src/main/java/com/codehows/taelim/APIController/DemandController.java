@@ -29,7 +29,7 @@ public class DemandController {
     //요청 리스트 가져오기
     @GetMapping("/DemandHistory")
     public List<DemandHistoryDto> getDemandHistory() {
-        return demandService.getAllDemandHistory();
+        return demandService.getAllDemandHistory1();
     }
 
     @PostMapping("/updateAction")
