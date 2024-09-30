@@ -52,7 +52,7 @@ public class AssetDto {
     private Approval approval;
     private Boolean demandCheck;
     private LocalDate createDate;
-    private UseState useState;
+    private UseState usestate;
     private String acquisitionRoute;
     private LocalDate maintenancePeriod;
 
@@ -164,7 +164,7 @@ public class AssetDto {
                 .approval(approval)
                 .demandCheck(demandCheck)
                 .createDate(createDate)
-                .useState(useState)
+                .useState(usestate)
                 .acquisitionRoute(acquisitionRoute)
                 .maintenancePeriod(maintenancePeriod)
                 .build();

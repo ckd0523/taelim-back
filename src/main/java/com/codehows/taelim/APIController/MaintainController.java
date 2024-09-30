@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -62,7 +63,7 @@ public class MaintainController {
         }catch (IllegalArgumentException e) {
             return new ResponseEntity<>("잘못된 파일 유형입니다.", HttpStatus.BAD_REQUEST);
         }
-        RepairFile savedFile = fileService.upload(file, repairHistoryNo,RepairType.AFTER_REPAIR);
+        RepairFile savedFile = fileService.upload(file, repairHistoryNo,type);
         if(savedFile != null) {
             return new ResponseEntity<>(savedFile.getFileName(), HttpStatus.OK);
         }else{
