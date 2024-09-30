@@ -222,4 +222,20 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                .sorted(Comparator.comparing(CommonAsset::getAssetNo)) // assetNo 기준 오름차순 정렬
                .collect(Collectors.toList());
     }
+
+    @Override
+    public Approval findAssetApprovalByAssetCode(String assetCode) {
+
+        QCommonAsset commonAsset = QCommonAsset.commonAsset;
+
+        CommonAsset latestAsset = queryFactory
+                .selectFrom(commonAsset)
+                .where(commonAsset.assetCode.eq(assetCode))
+                .orderBy(commonAsset.createDate.desc())  // 최신 순으로 정렬
+                .fetchFirst();  // 가장 첫 번째 데이터만 조회
+
+        // 만약 최신 자산이 없을 경우 null 반환
+        return latestAsset != null ? latestAsset.getApproval() : null;
+
+    }
 }

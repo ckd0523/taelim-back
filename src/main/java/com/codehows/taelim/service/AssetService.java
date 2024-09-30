@@ -1048,4 +1048,12 @@ public class AssetService {
         }
         return assetDtos;
     }
+
+    public Approval demandCheck(String assetCode){
+
+        commonAssetRepository.findAssetApprovalByAssetCode(assetCode);
+
+        return commonAssetRepository.findAssetApprovalByAssetCode(assetCode);
+    }
+
 }
