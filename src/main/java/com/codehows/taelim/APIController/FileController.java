@@ -16,15 +16,6 @@ public class FileController {
 
     private final FileService fileService;
 
-//    @PostMapping("/upload")
-//    public File upload(@RequestParam("file")MultipartFile file){
-//
-//        File url = fileService.upload(file);
-//
-//        System.out.println("File uploaded successfully : "  + url );
-//        return url;
-//    }
-
     @GetMapping(value = "{fileName}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
     public Resource getImage(@PathVariable("fileName") String fileName) {
         Resource resource = fileService.getImage(fileName);
