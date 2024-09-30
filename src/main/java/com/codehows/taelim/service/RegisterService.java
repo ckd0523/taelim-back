@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Member;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -66,18 +65,20 @@ public class RegisterService {
     //자산 등록
     public Long assetRegister(AssetDto assetDto){
 
-//        Member assetUser = memberRepository.findByEmail(assetDto.getAssetUser());
+//        Member assetUser =memberRepository.findByEmail(assetDto.getAssetUser());
+
 //        Member assetOwner = memberRepository.findByEmail(assetDto.getAssetOwner());
 //        Member assetSecurityManager = memberRepository.findByEmail(assetDto.getAssetSecurityManager());
         CommonAsset commonAsset = assetDto.toEntity();
 //        commonAsset.setAssetUser(assetUser);
-//        commonAsset.setAssetOwner(assetOwner);
-//        commonAsset.setAssetSecurityManager(assetSecurityManager);
+//        commonAsset.setAssetOwner(assetUser);
+//       commonAsset.setAssetSecurityManager(assetUser);
         commonAsset.setApproval(Approval.APPROVE);
         commonAsset.setDisposalStatus(Boolean.FALSE);
         commonAsset.setDemandStatus(Boolean.FALSE);
         commonAsset.setDemandCheck(Boolean.FALSE);
         commonAsset.setCreateDate(LocalDate.now());
+
 
         // 자산코드 생성
         String assetCode = generateAssetCode(commonAsset.getAssetClassification());

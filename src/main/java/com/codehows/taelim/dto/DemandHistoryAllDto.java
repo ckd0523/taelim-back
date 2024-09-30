@@ -1,10 +1,8 @@
 package com.codehows.taelim.dto;
 
-import com.codehows.taelim.entity.DemandDtl;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -12,10 +10,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class DemandHistoryDto {
-
-
-
+public class DemandHistoryAllDto {
     private String assetCode;
     private Long assetNo;
     private List<Long> assetNos;
@@ -25,6 +20,4 @@ public class DemandHistoryDto {
     private Long demandNo;
     private String demandStatus;
     private String demandType;
-    private List<DemandHistoryAllDto> subRows;
-
 }
