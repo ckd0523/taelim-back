@@ -17,7 +17,7 @@ import java.util.UUID;
 @Service
 public class RepairFileService {
 
-    private RepairFileRepository repairFileRepository;
+    private final RepairFileRepository repairFileRepository;
 
     @Value("${file.path}")
     private String filePath;
@@ -25,11 +25,17 @@ public class RepairFileService {
     @Value("${file.url}")
     private String fileUrl;
 
+    public RepairFileService(RepairFileRepository repairFileRepository) {
+        this.repairFileRepository = repairFileRepository;
+    }
+
+
     public RepairFile upload(MultipartFile file, RepairHistory repairHistory, RepairType repairType) {
         if(file.isEmpty()) {
             System.out.println("Empty file");
             return null;
         }
+
         String originalFileName = file.getOriginalFilename();
 
         String extension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) :"";
@@ -41,7 +47,10 @@ public class RepairFileService {
         try{
             File dir = new File(filePath);
             if(!dir.exists()){
-                dir.mkdirs();
+                boolean isMakeFile = dir.mkdirs();
+                if(isMakeFile){
+                    System.out.println("디렉터리 생성 성공");
+                }
             }
             file.transferTo(new File(savePath));
         }catch(Exception exception){
@@ -58,15 +67,19 @@ public class RepairFileService {
                 .repairType(repairType)
                 .build();
 
+
+
+        System.out.println("repairNO:"+toRepairFile.getRepairNo().getRepairNo());
         return repairFileRepository.save(toRepairFile);
     }
+
 
     public Resource getImage(String fileName) {
         Resource resource = null;
 
 
         try{
-            resource = new UrlResource("file: " + filePath );
+            resource = new UrlResource("file: " + filePath + fileName );
         }catch (Exception exception) {
             exception.printStackTrace();
             return null;
