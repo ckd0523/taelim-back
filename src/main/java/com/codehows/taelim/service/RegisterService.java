@@ -262,11 +262,24 @@ public class RegisterService {
         return String.format("%s%s-%05d", prefix, classificationCode, newAssetNumber);
     }
 
-    public Long updateAssetCode(String assetCode, AssetUpdateDto assetDto) {
+    public AssetUpdateResponse updateAssetCode(String assetCode, AssetUpdateDto assetDto) {
 
         // 기존 입력되어있는 assetCode 조회
         CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
                 .orElseThrow(() -> new RuntimeException("자산코드를 찾을수 없음 " + assetCode));
+
+        // 자산 상태가 수정요청일때 Unconfirmed인지 확인
+        if (existAsset.getApproval() == Approval.UNCONFIRMED) {
+            // 자산 상태가 UNCONFIRMED이면 수정 요청 불가 메시지 반환
+            return new AssetUpdateResponse("이미 수정 요청이 들어간 자산입니다.", null);
+        }
+
+        // 자산 상태가 폐기 요청일 떄 Uncofirmed인지 확인
+        else if (existAsset.getApproval() == Approval.UNCONFIRMED && existAsset.getDisposalStatus() == Boolean.TRUE) {
+            //
+            return new AssetUpdateResponse( "이미 폐기 요청이 들어간 자산입니다.", null);
+        }
+        else if (existAsset.getApproval() == Approval.REFUSAL || existAsset.getApproval() == Approval.APPROVE) {
 
         // 기존 자산 정보에 새로운 자산 생성
         CommonAsset updateAsset = new CommonAsset();
@@ -333,15 +346,34 @@ public class RegisterService {
         demandDtl.setDemandNo(demand);
         demandDtlRepository.save(demandDtl);
 
-        return newAssetNo;
+        //자산 수정 성공 메시지 반환
+        return new AssetUpdateResponse("자산 수정 완료 : " + newAssetNo, newAssetNo);
+        }
+
+        // 상태가 다를 경우 기본 응답 (추가할 상태가 있으면 여기서 처리 가능)
+        return new AssetUpdateResponse("알 수 없는 자산 상태입니다.", null);
+        //return newAssetNo;
     }
 
-    public Long updatedemandAssetCode(String assetCode, AssetUpdateDto assetDto) {
+    public AssetUpdateResponse updatedemandAssetCode(String assetCode, AssetUpdateDto assetDto) {
 
         // 기존 입력되어있는 assetCode 조회
         CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
                 .orElseThrow(() -> new RuntimeException("자산코드를 찾을수 없음 " + assetCode));
 
+        // 자산 상태가 수정요청일때 Unconfirmed인지 확인
+        if (existAsset.getApproval() == Approval.UNCONFIRMED) {
+            // 자산 상태가 UNCONFIRMED이면 수정 요청 불가 메시지 반환
+            return new AssetUpdateResponse("이미 수정 요청이 들어간 자산입니다.", null);
+        }
+
+        // 자산 상태가 폐기 요청일 떄 Uncofirmed인지 확인
+        else if (existAsset.getApproval() == Approval.UNCONFIRMED && existAsset.getDisposalStatus() == Boolean.TRUE) {
+            //
+            return new AssetUpdateResponse( "이미 폐기 요청이 들어간 자산입니다.", null);
+        }
+
+        else if (existAsset.getApproval() == Approval.REFUSAL || existAsset.getApproval() == Approval.APPROVE) {
         // 기존 자산 정보에 새로운 자산 생성
         CommonAsset updateAsset = new CommonAsset();
         updateAsset.setAssetCode(existAsset.getAssetCode()); // 코드 동일하게 유지하고
@@ -407,7 +439,11 @@ public class RegisterService {
         demandDtl.setDemandNo(demand);
         demandDtlRepository.save(demandDtl);
 
-        return newAssetNo;
+        // 자산 수정 성공 메시지 반환
+        return new AssetUpdateResponse("자산 수정 등록 완료 : " + newAssetNo, newAssetNo);
+        }
+        // 상태가 다를 경우 기본 응답 (추가할 상태가 있으면 여기서 처리 가능)
+        return new AssetUpdateResponse("알 수 없는 자산 상태입니다.", null);
     }
     private void saveRelatedEntity(AssetUpdateDto assetDto, CommonAsset latestAsset) {
         if (latestAsset.getAssetClassification() == null) {
