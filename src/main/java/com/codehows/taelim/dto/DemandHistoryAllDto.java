@@ -13,8 +13,6 @@ import java.util.List;
 public class DemandHistoryAllDto {
     private String assetCode;
     private Long assetNo;
-    private List<Long> assetNos;
-    private List<String> assetCodes;
     private String demandBy;
     private LocalDate demandDate;
     private Long demandNo;
