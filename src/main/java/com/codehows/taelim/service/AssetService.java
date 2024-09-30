@@ -1023,7 +1023,7 @@ public class AssetService {
 
             assetDto.setFiles(fileDtos);
 
-// 수정이력을 가져오는 코드
+            // 수정이력을 가져오는 코드
             List<DemandDtl> updateHistory = demandDtlRepository.findUpdateHistoryByAssetCode(commonAsset.getAssetCode());
 
             //return assetDto;
