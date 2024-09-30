@@ -558,8 +558,27 @@ public class AssetService {
     }
 
     // 폐기 관리자 처리 (추후에 담당자랑 합칠거임)
-    public CommonAsset DisposeAsset(String assetCode, AssetDisposeDto assetDisposeDto) {
-        CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode).get();
+    public AssetUpdateResponse  DisposeAsset(String assetCode, AssetDisposeDto assetDisposeDto) {
+
+        // 기존 입력되어 있는 assetCode 조회
+        CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode)
+                .orElseThrow(() -> new RuntimeException("자산코드를 찾을 수 없음: " + assetCode));
+
+        // 자산이 수정 요청 상태인지 확인
+        if (commonAsset.getApproval() == Approval.UNCONFIRMED) {
+            return new AssetUpdateResponse("이미 수정 요청이 들어간 자산입니다.", null);
+        }
+
+        // 자산이 이미 폐기 요청 상태인지 확인
+        if (commonAsset.getDisposalStatus() == Boolean.TRUE) {
+            return new AssetUpdateResponse("이미 폐기 요청이 들어간 자산입니다.", null);
+        }
+        // 승인된 자산만 폐기 처리가 가능, 그 외 상태일 경우 동작 차단
+        if (commonAsset.getApproval() != Approval.APPROVE) {
+            return new AssetUpdateResponse("승인된 자산만 폐기 가능합니다.", null);
+        }
+
+        //CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode).get();
         commonAsset.setApproval(Approval.APPROVE);
         commonAsset.setDisposalStatus(Boolean.TRUE);
         commonAssetRepository.save(commonAsset);
@@ -579,7 +598,9 @@ public class AssetService {
         demandDtl.setAssetNo(commonAsset);  // CommonAsset과 연관 설정
         demandDtl.setDemandNo(demand);  // Demand와 연관 설정
         demandDtlRepository.save(demandDtl); // DemandDtl 테이블에 저장
-        return commonAsset;
+        //return commonAsset;
+        // 자산 폐기 성공 메시지 반환
+        return new AssetUpdateResponse("자산 폐기 등록 완료: " + commonAsset.getAssetNo(), commonAsset.getAssetNo());
     }
 
     // 폐기 담당자 처리 (추후에 담당자랑 합칠거임)
@@ -1023,7 +1044,7 @@ public class AssetService {
 
             assetDto.setFiles(fileDtos);
 
-// 수정이력을 가져오는 코드
+            // 수정이력을 가져오는 코드
             List<DemandDtl> updateHistory = demandDtlRepository.findUpdateHistoryByAssetCode(commonAsset.getAssetCode());
 
             //return assetDto;
@@ -1048,4 +1069,8 @@ public class AssetService {
         }
         return assetDtos;
     }
+//    // 특정 분류에 맞는 자산 상세 정보 리스트를 가져오는 새로운 메소드
+//    public List<CommonAsset> getAssetDetailByClassification(AssetClassification assetClassification) {
+//        return commonAssetRepository.findByClassification(assetClassification);
+//    }
 }
