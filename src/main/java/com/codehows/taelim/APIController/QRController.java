@@ -234,6 +234,14 @@ public class QRController {
             return ResponseEntity.ok(assets);
         }
 
+    // 수정요청 상세 가져오기
+    @GetMapping("/updateDetail/{assetNo}")
+    public ResponseEntity<List<AssetDto>> getUpdateDetail(@PathVariable Long assetNo) {
+        System.out.println("Requested assetNo: " + assetNo); // 로그 추가
+        List<AssetDto> assets = assetService.getUpdateDetail(assetNo);
+        return ResponseEntity.ok(assets);
+    }
+
         @PostMapping("/allUpdate")
         public ResponseEntity<String> allUpdate(@RequestBody AllUpdateDto updateToSend){
             try {
