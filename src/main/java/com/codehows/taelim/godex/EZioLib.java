@@ -4,11 +4,16 @@ package com.codehows.taelim.godex;//--------------------------------------------
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 
+import java.util.Objects;
+
 public class EZioLib
 {
 	public interface API extends Library
 	{	
-		String path = API.class.getResource("/").getPath().replaceAll("%20", " ").substring(1) + "Ezio64.dll";
+		//String path = API.class.getResource("/").getPath().replaceAll("%20", " ").substring(1) + "Ezio64.dll";
+		String path = "C:/taelim-back/src/main/resources/Ezio64.dll"; // 절대 경로로 변경
+		//String path = API.class.getClassLoader().getResource("Ezio32.dll").getPath();
+		//String path = API.class.getResource("/Ezio64.dll").getPath();
 		API INSTANCE = (API) Native.loadLibrary(path, API.class);
 		
 		public int openport(String strPort);
