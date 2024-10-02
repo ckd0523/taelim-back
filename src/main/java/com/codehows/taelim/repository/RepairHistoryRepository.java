@@ -9,4 +9,6 @@ import java.util.List;
 
 public interface RepairHistoryRepository extends JpaRepository<RepairHistory, Long> {
     List<RepairHistory> findByAssetNo(CommonAsset assetNo);
+
+    //List<RepairHistory> findByAssetCode(CommonAsset assetCode);
 }

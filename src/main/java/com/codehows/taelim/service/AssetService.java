@@ -1246,6 +1246,8 @@ public class AssetService {
                     }).collect(Collectors.toList());
             assetDto.setUpdateHistory(updateHistoryDtos);
 
+            // 유지보수이력을 가져오는 코드
+            //List<RepairHistory> repairHistory = repairHistoryRepository.findByAssetCode(commonAsset.getAssetCode());
 
             assetDtos.add(assetDto);
         }
