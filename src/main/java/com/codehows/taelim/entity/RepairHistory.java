@@ -30,6 +30,10 @@ public class RepairHistory {
     private String repairResult;
     private Boolean repairStatus;
 
+    // kwon 추가 - repairFile 불러오기위해
+    @OneToMany(mappedBy = "repairNo", fetch = FetchType.LAZY)
+    private List<RepairFile> repairFiles; // RepairFile 리스트 추가
+
     public RepairDto toDto(){
         return RepairDto.builder()
                 .repairNo(repairNo)

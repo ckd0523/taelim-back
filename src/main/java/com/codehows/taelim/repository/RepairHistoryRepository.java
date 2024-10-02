@@ -7,8 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface RepairHistoryRepository extends JpaRepository<RepairHistory, Long> {
+public interface RepairHistoryRepository extends JpaRepository<RepairHistory, Long>, RepairHistoryRepositoryCustom {
     List<RepairHistory> findByAssetNo(CommonAsset assetNo);
 
-    //List<RepairHistory> findByAssetCode(CommonAsset assetCode);
 }
