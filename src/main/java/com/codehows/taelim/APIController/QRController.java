@@ -50,10 +50,10 @@ public class QRController {
 
 
 //    //QR 조회
-    @GetMapping("/{assetCode}")
-    public ResponseEntity<String> getQRCode(@PathVariable("assetCode") String assetCode) {
-        assetService.
-    }
+//    @GetMapping("/{assetCode}")
+//    public ResponseEntity<String> getQRCode(@PathVariable("assetCode") String assetCode) {
+//        assetService.
+//    }
 
     private final AssetService assetService;
     
