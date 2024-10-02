@@ -64,6 +64,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.pdfbox/fontbox
     implementation 'org.apache.pdfbox:fontbox:3.0.1'
 
+    // https://mvnrepository.com/artifact/net.java.dev.jna/jna
+    implementation 'net.java.dev.jna:jna:5.14.0'
+
 
 
 }

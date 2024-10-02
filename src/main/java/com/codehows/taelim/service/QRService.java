@@ -1,5 +1,6 @@
 package com.codehows.taelim.service;
 
+import com.codehows.taelim.godex.GodexPrinter;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -34,10 +35,16 @@ public class QRService {
         // ByteArrayOutputStream에 작성합니다.
         MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
 
+
+        GodexPrinter Printer = new GodexPrinter();
+
+
         // ByteArrayOutputStream에서 바이트 배열을 추출하여 반환합니다.
         // 이 바이트 배열은 PNG 형식의 QR 코드 이미지 데이터를 포함합니다.
         return pngOutputStream.toByteArray();
     }
+
+
 
 
 }
