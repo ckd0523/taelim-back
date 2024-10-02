@@ -1,11 +1,10 @@
 package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.AssetLocation;
-import com.codehows.taelim.constant.SurveyStatus;
 import com.codehows.taelim.dto.AssetSurveyDetailDto;
 import com.codehows.taelim.dto.AssetSurveyHistoryDto;
 import com.codehows.taelim.dto.AssetSurveyHistoryRegisterDto;
-import com.codehows.taelim.dto.DeleteRequest;
+import com.codehows.taelim.dto.AssetSurveyUpdateDto;
 import com.codehows.taelim.entity.AssetSurveyDetail;
 import com.codehows.taelim.entity.AssetSurveyHistory;
 import com.codehows.taelim.entity.CommonAsset;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -237,10 +235,6 @@ public class AssetSurveyService {
         return isExistRound.map(assetSurveyHistory -> assetSurveyHistory.getRound() + 1).orElse(1L);
     }
 
-    //자산 조사 상세 수정
-    //자산 조사를 진행할 때 각 자산에 대한 정위치 유무, 파손 유무 등을 실시간으로 처리
-    //public String updateAssetSurveyDetail() {}
-
     //자산 조사 완료
     public boolean completeSurvey(Long assetSurveyNo) {
         try {
@@ -248,6 +242,19 @@ public class AssetSurveyService {
             assetSurveyHistoryRepository.completeSurvey(assetSurveyNo, now);
             return true;
         } catch (Exception e) {
+            return false;
+        }
+    }
+
+    //자산 조사 상세 수정
+    //자산 조사를 진행할 때 각 자산에 대한 정위치 유무, 파손 유무 등을 실시간으로 처리
+    @Transactional
+    public boolean updateAssetSurveyDetail(AssetSurveyUpdateDto updateDto) {
+        try {
+            assetSurveyDetailRepository.updateAssetSurveyDetail(updateDto);
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
             return false;
         }
     }
