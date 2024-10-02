@@ -13,10 +13,7 @@ public enum RepairStatus {
     IN_PROGRESS("진행중");
     private final String description;
 
-//    RepairStatus(String description) {
-//        this.description = description;
-//    }
-//
+
 //    @JsonValue
 //    public String getDescription(){
 //        return description;
@@ -29,6 +26,10 @@ public enum RepairStatus {
 //                return repairStatus;
 //            }
 //        }
-//        throw new IllegalArgumentException("잘못된 값: " + value);
+//        try{
+//            return RepairStatus.valueOf(value);
+//        }catch(IllegalArgumentException e) {
+//            throw new IllegalArgumentException("잘못된 값: " + value);
+//        }
 //    }
 }
