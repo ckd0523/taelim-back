@@ -246,14 +246,14 @@ public class QRController {
         public ResponseEntity<String> allUpdate(@RequestBody AllUpdateDto updateToSend){
             try {
                 List<AssetUpdateDto> assetDtos = updateToSend.getAssetDtos();
-                for (AssetUpdateDto assetDto : assetDtos) {
-                    Approval approval = assetService.demandCheck(assetDto.getAssetCode());
-                    System.out.println("자산의 처리 상태 확인"+approval);
-                    if (approval == Approval.UNCONFIRMED){
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                .body("자산 코드 " + assetDto.getAssetCode() + "의 상태가 작업 진행중입니다. 해당 작업은 모두 취소됩니다.");
-                    }
-                }
+//                for (AssetUpdateDto assetDto : assetDtos) {
+//                    Approval approval = assetService.demandCheck(assetDto.getAssetCode());
+//                    System.out.println("자산의 처리 상태 확인"+approval);
+//                    if (approval == Approval.UNCONFIRMED){
+//                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                                .body("자산 코드 " + assetDto.getAssetCode() + "의 상태가 작업 진행중입니다. 해당 작업은 모두 취소됩니다.");
+//                    }
+//                }
                 Demand demand = registerService.UpdateDemand(updateToSend);
                 // 수정 이력 저장
                 for (AssetUpdateDto assetDto : assetDtos) {
@@ -274,13 +274,13 @@ public class QRController {
     public ResponseEntity<String> allUpdateDemand(@RequestBody AllUpdateDto updateToSend){
         try {
             List<AssetUpdateDto> assetDtos = updateToSend.getAssetDtos();
-            for (AssetUpdateDto assetDto : assetDtos) {
-                Approval approval = assetService.demandCheck(assetDto.getAssetCode());
-                if (approval == Approval.UNCONFIRMED){
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body("자산 코드 " + assetDto.getAssetCode() + "의 상태가 작업 진행중입니다. 해당 작업은 모두 취소됩니다.");
-                }
-            }
+//            for (AssetUpdateDto assetDto : assetDtos) {
+//                Approval approval = assetService.demandCheck(assetDto.getAssetCode());
+//                if (approval == Approval.UNCONFIRMED){
+//                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                            .body("자산 코드 " + assetDto.getAssetCode() + "의 상태가 작업 진행중입니다. 해당 작업은 모두 취소됩니다.");
+//                }
+//            }
             Demand demand = registerService.UpdateDemand(updateToSend);
             for (AssetUpdateDto assetDto : assetDtos) {
                 updateToSend.setAssetDto(assetDto);
@@ -301,14 +301,14 @@ public class QRController {
         try {
 
             List<AssetUpdateDto> assetDtos = disposeToSend.getAssetDtos();
-            for (AssetUpdateDto assetDto : assetDtos) {
-                Approval approval = assetService.demandCheck(assetDto.getAssetCode());
-                System.out.println("자산의 처리 상태 확인"+approval);
-                if (approval == Approval.UNCONFIRMED){
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body("자산 코드 " + assetDto.getAssetCode() + "의 상태가 작업 진행중입니다. 해당 작업은 모두 취소됩니다.");
-                }
-            }
+//            for (AssetUpdateDto assetDto : assetDtos) {
+//                Approval approval = assetService.demandCheck(assetDto.getAssetCode());
+//                System.out.println("자산의 처리 상태 확인"+approval);
+//                if (approval == Approval.UNCONFIRMED){
+//                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                            .body("자산 코드 " + assetDto.getAssetCode() + "의 상태가 작업 진행중입니다. 해당 작업은 모두 취소됩니다.");
+//                }
+//            }
             Demand demand = registerService.DeleteDemand(disposeToSend);
             for (AssetUpdateDto assetDto : assetDtos) {
                 disposeToSend.setAssetDto(assetDto);
@@ -328,14 +328,14 @@ public class QRController {
     public ResponseEntity<String> allDeleteDemand(@RequestBody AllDeleteDto disposeToSend){
         try {
             List<AssetUpdateDto> assetDtos = disposeToSend.getAssetDtos();
-            for (AssetUpdateDto assetDto : assetDtos) {
-                Approval approval = assetService.demandCheck(assetDto.getAssetCode());
-                System.out.println("자산의 처리 상태 확인"+approval);
-                if (approval == Approval.UNCONFIRMED){
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                            .body("자산 코드 " + assetDto.getAssetCode() + "의 상태가 작업 진행중입니다. 해당 작업은 모두 취소됩니다.");
-                }
-            }
+//            for (AssetUpdateDto assetDto : assetDtos) {
+//                Approval approval = assetService.demandCheck(assetDto.getAssetCode());
+//                System.out.println("자산의 처리 상태 확인"+approval);
+//                if (approval == Approval.UNCONFIRMED){
+//                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                            .body("자산 코드 " + assetDto.getAssetCode() + "의 상태가 작업 진행중입니다. 해당 작업은 모두 취소됩니다.");
+//                }
+//            }
             Demand demand = registerService.DeleteDemand(disposeToSend);
             for (AssetUpdateDto assetDto : assetDtos) {
                 disposeToSend.setAssetDto(assetDto);

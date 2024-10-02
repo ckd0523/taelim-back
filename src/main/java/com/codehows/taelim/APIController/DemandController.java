@@ -3,6 +3,7 @@ package com.codehows.taelim.APIController;
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.dto.DemandActionDto;
 import com.codehows.taelim.dto.DemandHistoryDto;
+import com.codehows.taelim.dto.UnconfirmedDemandDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Demand;
 import com.codehows.taelim.repository.CommonAssetRepository;
@@ -29,7 +30,13 @@ public class DemandController {
     //요청 리스트 가져오기
     @GetMapping("/DemandHistory")
     public List<DemandHistoryDto> getDemandHistory() {
-        return demandService.getAllDemandHistory1();
+        return demandService.getAllDemandHistory();
+    }
+
+    //요청 리스트 가져오기
+    @GetMapping("/DemandList")
+    public List<UnconfirmedDemandDto> getUnconfirmedDemandHistory() {
+        return demandService.getUnconfirmedDemandHistory();
     }
 
     @PostMapping("/updateAction")
@@ -86,6 +93,67 @@ public class DemandController {
         }
 
         return ResponseEntity.ok("Delete successful");
+    }
+
+    @PostMapping("/demandAction")
+    public ResponseEntity<String> demandAction(@RequestBody List<DemandActionDto> request){
+        for (DemandActionDto demandActionDto : request) {
+
+            DemandHistoryDto actionData = demandActionDto.getDemandAction(); // actionData 배열
+            String reason = demandActionDto.getReason(); // reason 값
+            String actionType = demandActionDto.getActionType();
+
+            if (!actionType.equals("hold")) {
+                if (actionData.getDemandType().equals("update")) {
+
+                    Demand demand = demandRepository.findById(actionData.getDemandNo()).orElse(null);
+                    if (demand != null) {
+                        demand.setDemandReason(reason);
+                        demandRepository.save(demand);
+                    }
+                    CommonAsset commonAsset = commonAssetRepository.findById(actionData.getAssetNo()).orElse(null);
+                    if (commonAsset != null) {
+                        if (Objects.equals(actionType, "approve")) {
+                            commonAsset.setApproval(Approval.APPROVE);
+                            commonAsset.setDemandCheck(true);
+                            commonAssetRepository.save(commonAsset);
+                        } else {
+                            commonAsset.setApproval(Approval.REFUSAL);
+                            commonAsset.setDemandCheck(true);
+                            commonAssetRepository.save(commonAsset);
+                        }
+                    }
+
+                } else if (actionData.getDemandType().equals("delete")) {
+
+                    Demand demand = demandRepository.findById(actionData.getDemandNo()).orElse(null);
+                    if (demand != null) {
+                        demand.setDemandReason(reason);
+                        demandRepository.save(demand);
+                    }
+                    CommonAsset commonAsset = commonAssetRepository.findById(actionData.getAssetNo()).orElse(null);
+                    if (commonAsset != null) {
+                        if (Objects.equals(actionType, "approve")) {
+                            commonAsset.setApproval(Approval.APPROVE);
+                            commonAsset.setDisposalStatus(true);
+                            commonAsset.setDemandCheck(true);
+                            commonAssetRepository.save(commonAsset);
+                        } else {
+                            commonAsset.setApproval(Approval.REFUSAL);
+                            commonAsset.setDemandCheck(true);
+                            commonAssetRepository.save(commonAsset);
+                        }
+                    }
+
+                } else {
+
+                }
+
+            } else {
+
+            }
+        }
+        return ResponseEntity.ok("Action successful");
     }
 
 }
