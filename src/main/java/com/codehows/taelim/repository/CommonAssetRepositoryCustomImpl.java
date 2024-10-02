@@ -223,6 +223,35 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                .collect(Collectors.toList());
     }
 
+    // 자산 수정이력에서 상세정보화면 최신 자산과 그 이전 자산 가져오는 쿼리
+    @Override
+    public CommonAsset findNextAssetByAssetNo(Long assetNo) {
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 주어진 assetNo를 기준으로 자산 코드 가져오기
+        CommonAsset modifiedAsset = queryFactory
+                .selectFrom(ca)
+                .where(ca.assetNo.eq(assetNo)) // 수정된 자산 조회
+                .fetchOne();
+
+        if (modifiedAsset == null) {
+            throw new RuntimeException("해당 assetNo에 대한 자산을 찾을 수 없습니다.");
+        }
+
+        String assetCode = modifiedAsset.getAssetCode();
+
+        // 동일한 assetCode의 자산 중 최신 자산 하나를 내림차순으로 가져옴
+        CommonAsset asset = queryFactory
+                .selectFrom(ca)
+                .where(ca.assetCode.eq(assetCode) // 동일한 assetCode 필터링
+                        .and(ca.approval.eq(Approval.APPROVE)) // 승인된 자산 필터링
+                        .and(ca.assetNo.loe(assetNo))) // 주어진 assetNo보다 작거나 같은 자산
+                .orderBy(ca.assetNo.desc()) // 최신 자산이 먼저 오도록 내림차순 정렬
+                .fetchFirst(); // 하나만 가져오기
+
+        return asset;
+    }
+
     @Override
     public Approval findAssetApprovalByAssetCode(String assetCode) {
 

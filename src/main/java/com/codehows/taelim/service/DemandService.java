@@ -3,6 +3,7 @@ package com.codehows.taelim.service;
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.dto.DemandHistoryAllDto;
 import com.codehows.taelim.dto.DemandHistoryDto;
+import com.codehows.taelim.dto.UnconfirmedDemandDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Demand;
 import com.codehows.taelim.entity.DemandDtl;
@@ -56,6 +57,56 @@ public class DemandService {
         }
 
         return demandHistoryDtos;
+
+    }
+
+    private final AssetService assetService;
+    // 미확인 자산 가져오는 서비스
+    public List<UnconfirmedDemandDto> getUnconfirmedDemandHistory() {
+
+        List<DemandDtl> demandDtls = demandDtlRepository.findAll();
+        List<DemandHistoryDto> demandHistoryDtos = new ArrayList<>();
+        List<UnconfirmedDemandDto> unconfirmedDemandDtos = new ArrayList<>();
+        for(DemandDtl demandDtl : demandDtls){
+            Optional<CommonAsset> commonAsset = commonAssetRepository.findById(demandDtl.getAssetNo().getAssetNo());
+            CommonAsset asset = commonAsset.orElseThrow();
+            DemandHistoryDto demandHistoryDto = new DemandHistoryDto();
+            if(asset.getDemandStatus()) {
+                if (asset.getApproval() == Approval.UNCONFIRMED) {
+                    Optional<Demand> demand = demandRepository.findById(demandDtl.getDemandNo().getDemandNo());
+                    Demand demand1 = demand.orElseThrow();
+                    if (demand1.getDisposeLocation() == null) {
+                        //수정이력
+                        demandHistoryDto.setDemandBy("이창현");
+                        demandHistoryDto.setDemandType("update");
+                    } else {
+                        //폐기이력
+                        demandHistoryDto.setDemandBy("이창현");
+                        demandHistoryDto.setDemandType("delete");
+                    }
+                    demandHistoryDto.setDemandNo(demandDtl.getDemandNo().getDemandNo());
+                    demandHistoryDto.setAssetNo(asset.getAssetNo());
+                    demandHistoryDto.setAssetCode(asset.getAssetCode());
+                    demandHistoryDto.setDemandDate(asset.getCreateDate());
+                    demandHistoryDto.setDemandStatus(asset.getApproval().toString());
+                    demandHistoryDtos.add(demandHistoryDto);
+                }
+            }
+
+        }
+
+        for(DemandHistoryDto demandHistoryDto : demandHistoryDtos){
+            UnconfirmedDemandDto unconfirmedDemandDto = new UnconfirmedDemandDto();
+            if(Objects.equals(demandHistoryDto.getDemandType(), "update")){
+                unconfirmedDemandDto.setAssetDto(assetService.getUpdateDetail(demandHistoryDto.getAssetNo()));
+                unconfirmedDemandDto.setDemandHistoryDto(demandHistoryDto);
+            }else {
+                unconfirmedDemandDto.setDemandHistoryDto(demandHistoryDto);
+            }
+            unconfirmedDemandDtos.add(unconfirmedDemandDto);
+        }
+
+        return unconfirmedDemandDtos;
 
     }
 
