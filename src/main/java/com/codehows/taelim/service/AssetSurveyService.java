@@ -251,7 +251,11 @@ public class AssetSurveyService {
     @Transactional
     public boolean updateAssetSurveyDetail(AssetSurveyUpdateDto updateDto) {
         try {
-            assetSurveyDetailRepository.updateAssetSurveyDetail(updateDto);
+            if(updateDto.getContent() == null) {
+                assetSurveyDetailRepository.updateAssetSurveyDetail(updateDto);
+            } else {
+                assetSurveyDetailRepository.updateAssetSurveyDetail2(updateDto);
+            }
             return true;
         } catch (Exception e) {
             System.out.println(e.getMessage());

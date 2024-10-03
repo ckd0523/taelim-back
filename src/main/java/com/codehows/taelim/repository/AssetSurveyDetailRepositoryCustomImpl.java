@@ -35,4 +35,15 @@ public class AssetSurveyDetailRepositoryCustomImpl implements AssetSurveyDetailR
                     .execute();
         }
     }
+
+    @Override
+    public void updateAssetSurveyDetail2(AssetSurveyUpdateDto updateDto) {
+        JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+        QAssetSurveyDetail assetSurveyDetail = QAssetSurveyDetail.assetSurveyDetail;
+
+        queryFactory.update(assetSurveyDetail)
+                .set(assetSurveyDetail.assetSurveyContent, updateDto.getContent())
+                .where(assetSurveyDetail.infoNo.eq(updateDto.getInfoNo()))
+                .execute();
+    }
 }
