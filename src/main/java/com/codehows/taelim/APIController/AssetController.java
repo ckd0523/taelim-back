@@ -3,6 +3,7 @@ package com.codehows.taelim.APIController;
 import com.codehows.taelim.constant.FileType;
 import com.codehows.taelim.dto.AssetDto;
 import com.codehows.taelim.dto.AssetUpdateDto;
+import com.codehows.taelim.dto.AssetUpdateResponse;
 import com.codehows.taelim.dto.ExcelDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.File;
@@ -53,12 +54,19 @@ public class AssetController {
             @RequestBody AssetUpdateDto assetDto) {
 
         try {
-            Long newAssetNo = registerService.updateAssetCode(assetCode, assetDto);
-            return ResponseEntity.ok("자산 수정 등록완료 : " + newAssetNo);
+            // 서비스 호출
+            AssetUpdateResponse response = registerService.updateAssetCode(assetCode, assetDto);
+
+            // 자산 번호가 null이면 UNCONFIRMED 상태이므로 경고 메시지 반환
+            if (response.getAssetNo() == null) {
+                return ResponseEntity.ok(response.getMessage());  // 메시지 2개 보냄
+            }
+
+            // 정상적으로 자산 번호가 있으면 자산 수정 성공 메시지 반환
+            return ResponseEntity.ok(response.getMessage());
         } catch (Exception e) {
-            // 예외 메시지 로깅
+            // 예외 처리
             e.printStackTrace();
-            // 클라이언트에게 오류 메시지 전송
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
         }
     }
@@ -70,21 +78,25 @@ public class AssetController {
             @RequestBody AssetUpdateDto assetDto) {
 
         try {
-            Long newAssetNo = registerService.updatedemandAssetCode(assetCode, assetDto);
-            return ResponseEntity.ok("자산 수정 등록완료 : " + newAssetNo);
+            // 서비스 호출
+            AssetUpdateResponse response = registerService.updatedemandAssetCode(assetCode, assetDto);
+
+            // 자산 번호가 null이면 UNCONFIRMED 상태이므로 경고 메시지 반환
+            if (response.getAssetNo() == null) {
+                return ResponseEntity.ok(response.getMessage());  // 메시지 2개 보냄
+            }
+
+            // 정상적으로 자산 번호가 있으면 자산 수정 성공 메시지 반환
+            return ResponseEntity.ok(response.getMessage());
         } catch (Exception e) {
-            // 예외 메시지 로깅
+            // 예외 처리
             e.printStackTrace();
-            // 클라이언트에게 오류 메시지 전송
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
         }
     }
     @PostMapping("/file/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("assetNo") String assetId, @RequestParam("fileType") String fileType) {
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("assetNo") Long assetNo, @RequestParam("fileType") String fileType) {
 
-        System.out.println("Received assetId : "+ assetId);
-        Long assetNo = Long.valueOf(assetId);
-        System.out.println("Received assetId : "+ assetNo);
         CommonAsset asset = registerService.findById(assetNo).orElseThrow(() -> new RuntimeException("자산을 찾을 수 없습니다."));
 
         FileType type;

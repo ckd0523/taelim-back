@@ -1,5 +1,6 @@
 package com.codehows.taelim.repository;
 
+import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
 import com.codehows.taelim.constant.AssetLocation;
 import com.codehows.taelim.entity.CommonAsset;
@@ -28,4 +29,9 @@ public interface CommonAssetRepositoryCustom {
 
     // 최신 자산과 그 이전 자산 가져오는 쿼리
     List<CommonAsset> findNextAssetsByAssetNo(Long assetNo);
+
+    // 이전 자산 들고오는 쿼리
+    CommonAsset findNextAssetByAssetNo(Long assetNo);
+
+    Approval findAssetApprovalByAssetCode(String assetCode);
 }

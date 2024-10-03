@@ -13,8 +13,10 @@ import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Repository
@@ -48,34 +50,38 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
 
     // 자산목록 (자산 공통정보) - 조건 : 폐기여부 F and 폐기여부 T + 요청 미확인 and 폐기여부 T + 요청 거절   리스트 조회
     @Override
+
     public List<CommonAsset> findApprovedAndNotDisposedAssets() {
         QCommonAsset ca = QCommonAsset.commonAsset;
 
-        // 서브쿼리: 각 자산 코드별 최대 자산 번호 찾기
-        JPAQuery<Long> subQuery = new JPAQuery<Long>(entityManager);
-        QCommonAsset subCa = QCommonAsset.commonAsset;
+        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
 
-        subQuery.select(subCa.assetNo.max())
+        excludedAssetCodes.select(subCa.assetCode)
                 .from(subCa)
-                .where(subCa.disposalStatus.isFalse()
-                        .and(subCa.approval.eq(Approval.valueOf("APPROVE")))
-                                .or(
-                                        subCa.disposalStatus.isTrue()
-                                                .and(subCa.approval.eq(Approval.valueOf("UNCONFIRMED")))
-                                                  .or(
-                                                     subCa.disposalStatus.isTrue()
-                                                        .and(subCa.approval.eq(Approval.valueOf("REFUSAL")))
-                                        )
-                                )
+                .where(
+                        subCa.approval.eq(Approval.APPROVE)
+                                .and(subCa.disposalStatus.isTrue())
                 )
                 .groupBy(subCa.assetCode);
 
-        // 메인 쿼리: 최신 자산 정보 조회
-        JPAQuery<CommonAsset> query = new JPAQuery<CommonAsset>(entityManager);
+        // 2. 최신 assetNo를 선택하는 서브 쿼리
+        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+        subQuery.select(ca.assetNo.max())
+                .from(ca)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
+                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
+                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
+                )
+                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
 
+        // 3. 최종 쿼리: 최신 assetNo에 해당하는 자산 조회
+        JPAQuery<CommonAsset> query = new JPAQuery<>(entityManager);
         return query.select(ca)
                 .from(ca)
-                .where(ca.assetNo.in(subQuery))
+                .where(ca.assetNo.in(subQuery)) // 서브 쿼리에서 선택된 최신 assetNo
                 .fetch();
     }
 
@@ -199,16 +205,66 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
             throw new RuntimeException("해당 assetNo에 대한 자산을 찾을 수 없습니다.");
         }
 
-        String assetCode = modifiedAsset .getAssetCode();
+        String assetCode = modifiedAsset.getAssetCode();
 
-       // 동일한 assetCode의 자산을 조회 (현재 자산과 그 이전 자산 모두)
-        return queryFactory
+       // 동일한 assetCode의 자산을 조회 (최신 자산 2개를 내림차순으로 가져옴)
+       List<CommonAsset> assets = queryFactory
+               .selectFrom(ca)
+               .where(ca.assetCode.eq(assetCode) // 동일한 assetCode 필터링
+                       .and(ca.approval.eq(Approval.APPROVE)) // 주어진 assetCode 에서 approve 인 자산 필터
+                       .and(ca.assetNo.loe(assetNo))) // 주어진 assetNo보다 작은 자산 필터링
+               .orderBy(ca.assetNo.desc()) // 내림차순 정렬 (최신 자산이 먼저 오도록)
+               .limit(2) // 최신 자산과 그 직전 자산만 가져오기
+               .fetch();
+
+       // 리스트를 오름차순으로 정렬 (assetNo 기준으로)
+       return assets.stream()
+               .sorted(Comparator.comparing(CommonAsset::getAssetNo)) // assetNo 기준 오름차순 정렬
+               .collect(Collectors.toList());
+    }
+
+    // 자산 수정이력에서 상세정보화면 최신 자산과 그 이전 자산 가져오는 쿼리
+    @Override
+    public CommonAsset findNextAssetByAssetNo(Long assetNo) {
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 주어진 assetNo를 기준으로 자산 코드 가져오기
+        CommonAsset modifiedAsset = queryFactory
                 .selectFrom(ca)
-                .where(ca.assetCode.eq(assetCode) // 동일한 assetCode 필털링
-                        .and(ca.assetNo.loe(assetNo)) // 주어진 assetNo보다 작은 값 필터링
-                )
-                .orderBy(ca.assetNo.asc()) // 오름차순 정렬 (이후 자산이 먼저 오도록)
-                .limit(2) // 최대 2개만 가져오기 (현재 자산과 그 이전 자산)
-                .fetch();
+                .where(ca.assetNo.eq(assetNo)) // 수정된 자산 조회
+                .fetchOne();
+
+        if (modifiedAsset == null) {
+            throw new RuntimeException("해당 assetNo에 대한 자산을 찾을 수 없습니다.");
+        }
+
+        String assetCode = modifiedAsset.getAssetCode();
+
+        // 동일한 assetCode의 자산 중 최신 자산 하나를 내림차순으로 가져옴
+        CommonAsset asset = queryFactory
+                .selectFrom(ca)
+                .where(ca.assetCode.eq(assetCode) // 동일한 assetCode 필터링
+                        .and(ca.approval.eq(Approval.APPROVE)) // 승인된 자산 필터링
+                        .and(ca.assetNo.loe(assetNo))) // 주어진 assetNo보다 작거나 같은 자산
+                .orderBy(ca.assetNo.desc()) // 최신 자산이 먼저 오도록 내림차순 정렬
+                .fetchFirst(); // 하나만 가져오기
+
+        return asset;
+    }
+
+    @Override
+    public Approval findAssetApprovalByAssetCode(String assetCode) {
+
+        QCommonAsset commonAsset = QCommonAsset.commonAsset;
+
+        CommonAsset latestAsset = queryFactory
+                .selectFrom(commonAsset)
+                .where(commonAsset.assetCode.eq(assetCode))
+                .orderBy(commonAsset.assetNo.desc())
+                .fetchFirst(); ;  // 가장 첫 번째 데이터만 조회
+
+        // 만약 최신 자산이 없을 경우 null 반환
+        return latestAsset != null ? latestAsset.getApproval() : null;
+
     }
 }

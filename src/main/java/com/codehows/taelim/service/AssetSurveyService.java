@@ -1,11 +1,10 @@
 package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.AssetLocation;
-import com.codehows.taelim.constant.SurveyStatus;
 import com.codehows.taelim.dto.AssetSurveyDetailDto;
 import com.codehows.taelim.dto.AssetSurveyHistoryDto;
 import com.codehows.taelim.dto.AssetSurveyHistoryRegisterDto;
-import com.codehows.taelim.dto.DeleteRequest;
+import com.codehows.taelim.dto.AssetSurveyUpdateDto;
 import com.codehows.taelim.entity.AssetSurveyDetail;
 import com.codehows.taelim.entity.AssetSurveyHistory;
 import com.codehows.taelim.entity.CommonAsset;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -71,9 +69,12 @@ public class AssetSurveyService {
             createAssetSurveyHistory(member, round, location);
         }*/
 
-        createAssetSurveyHistory(member, round, location);
-
-        return true;
+        try {
+            createAssetSurveyHistory(member, round, location);
+            return true;
+        } catch(Exception e) {
+            return false;
+        }
     }
 
     public void createAssetSurveyHistory(Member member, long round, AssetLocation location) {
@@ -87,6 +88,7 @@ public class AssetSurveyService {
         //자산 조사 등록
         AssetSurveyHistory savedAssetSurveyHistory = assetSurveyHistoryRepository.save(assetSurveyHistory);
         //자산 조사 상세 등록
+        //자산 조사 등록에서 반환된 entity를 그대로 다시 넣어줌, 연관매핑이 되어있어서 가능한듯
         assetSurveyDetailRegister(location ,savedAssetSurveyHistory);
     }
 
@@ -129,22 +131,18 @@ public class AssetSurveyService {
     //이유는 deleteByAssetSurveyNoIn이 메서드가 네이티브 쿼리로 작성되었기 때문
     //Jpa에서 제공하는 기본 crud는 붙일 필요 없음
     @Transactional
-    public String deleteAssetSurveyHistory(List<Long> assetSurveyNo) {
-        //조사 상태가 미완료(false)인 것만 삭제 가능
-        //프론트에서 처리 완료
-        /*
-        if(surveyStatus){
-            System.out.println("자산 조사 상태가 미완료인 것만 삭제 가능");
-            return "완료된 자산 조사는 삭제 불가";
+    public boolean deleteAssetSurveyHistory(List<Long> assetSurveyNo) {
+        try {
+            //자산 조사 번호가 fk로 연결되어있기 때문에 자산 조사 상세를 먼저 삭제해야함
+            assetSurveyDetailRepository.deleteByAssetSurveyNoIn(assetSurveyNo);
+
+            //그 다음 자산 조사 삭제
+            assetSurveyHistoryRepository.deleteByAssetSurveyNoIn(assetSurveyNo);
+
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        */
-        //자산 조사 번호가 fk로 연결되어있기 때문에 자산 조사 상세를 먼저 삭제해야함
-        assetSurveyDetailRepository.deleteByAssetSurveyNoIn(assetSurveyNo);
-
-        //그 다음 자산 조사 삭제
-        assetSurveyHistoryRepository.deleteByAssetSurveyNoIn(assetSurveyNo);
-
-        return "자산 조사 삭제 성공";
     }
 
     /*
@@ -183,6 +181,7 @@ public class AssetSurveyService {
     }
     */
 
+    //자산 조사를 위한 자산 조사 상세 이력
     public List<AssetSurveyDetailDto> getAssetSurveyDetail(Long assetSurveyNo) {
         // 자산 조사 이력 조회
         AssetSurveyHistory assetSurveyHistory = assetSurveyHistoryRepository.findByAssetSurveyNo(assetSurveyNo);
@@ -211,10 +210,6 @@ public class AssetSurveyService {
                 .collect(Collectors.toList());
     }
 
-    //자산 조사 상세 수정
-    //자산 조사를 진행할 때 각 자산에 대한 정위치 유무, 파손 유무 등을 실시간으로 처리
-    //public String updateAssetSurveyDetail() {}
-
     //자산 조사 등록 시 해당 위치에 대해 진행 중인 조사가 있는지 확인
     public boolean checkLocation(AssetLocation location) {
         //AssetLocation assetLocation = AssetLocation.valueOf(location);
@@ -238,6 +233,34 @@ public class AssetSurveyService {
             return isExistRound.get().getRound() + 1L;
         }*/
         return isExistRound.map(assetSurveyHistory -> assetSurveyHistory.getRound() + 1).orElse(1L);
+    }
+
+    //자산 조사 완료
+    public boolean completeSurvey(Long assetSurveyNo) {
+        try {
+            LocalDate now = LocalDate.now();
+            assetSurveyHistoryRepository.completeSurvey(assetSurveyNo, now);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    //자산 조사 상세 수정
+    //자산 조사를 진행할 때 각 자산에 대한 정위치 유무, 파손 유무 등을 실시간으로 처리
+    @Transactional
+    public boolean updateAssetSurveyDetail(AssetSurveyUpdateDto updateDto) {
+        try {
+            if(updateDto.getContent() == null) {
+                assetSurveyDetailRepository.updateAssetSurveyDetail(updateDto);
+            } else {
+                assetSurveyDetailRepository.updateAssetSurveyDetail2(updateDto);
+            }
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
     }
 }
 

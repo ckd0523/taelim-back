@@ -10,6 +10,8 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.codehows.taelim.entity.File;
+
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -70,17 +72,53 @@ public class FileServiceImpl implements FileService {
         return fileRepository.save(toFile);
     }
 
+//    @Override
+//    public Resource getImage(String fileName) {
+//
+//        Resource resource = null;
+//
+//        try{
+//            resource = new UrlResource("file:" + filePath + fileName);
+//        }catch (Exception exception) {
+//            exception.printStackTrace();
+//            return null;
+//        }
+//        return resource;
+//    }
+@Override
+public Resource getImage(String fileName) {
+    Resource resource = null;
+
+    // fileName을 사용하여 파일 정보를 데이터베이스에서 조회 (Optional 사용)
+    Optional<File> optionalFile = fileRepository.findByFileName(fileName);
+
+    // 파일이 존재하지 않을 경우 예외 처리
+    File file = optionalFile.orElseThrow(() ->
+            new RuntimeException("File not found with fileName: " + fileName)
+    );
+
+    // 파일 경로 생성
+    String fullPath = filePath + file.getFileName();
+    // Java의 File 클래스를 사용하여 물리적인 파일 객체를 생성
+    java.io.File physicalFile = new java.io.File(fullPath);
+
+    // 실제 파일이 존재하는지 확인
+    if (!physicalFile.exists()) {
+        throw new RuntimeException("File not found on disk: " + fullPath);
+    }
+
+    // UrlResource 생성
+    try {
+        resource = new UrlResource("file:" + fullPath);
+    } catch (Exception exception) {
+        exception.printStackTrace();
+        return null;
+    }
+
+    return resource;
+    }
     @Override
-    public Resource getImage(String fileName) {
-
-        Resource resource = null;
-
-        try{
-            resource = new UrlResource("file:" + filePath + fileName);
-        }catch (Exception exception) {
-            exception.printStackTrace();
-            return null;
-        }
-        return resource;
+    public Optional<File> getFileByFileName(String fileName) {
+        return fileRepository.findByFileName(fileName);  // Repository에서 파일 조회
     }
 }
