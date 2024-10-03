@@ -60,9 +60,11 @@ public class DemandService {
 
     }
 
-    public List<DemandHistoryDto> getAssetDemandHistory(List<CommonAsset>commonAssets) {
+    public List<DemandHistoryDto> getAssetDemandHistory(String assetCode) {
 
-        List<DemandDtl> demandDtls = demandDtlRepository.findAll();
+
+        List<DemandDtl> demandDtls = demandDtlRepository.findUpdateHistoryByAssetCode(assetCode);
+
         List<DemandHistoryDto> demandHistoryDtos = new ArrayList<>();
         for(DemandDtl demandDtl : demandDtls){
             Optional<CommonAsset> commonAsset = commonAssetRepository.findById(demandDtl.getAssetNo().getAssetNo());

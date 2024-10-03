@@ -39,6 +39,8 @@ public class AssetService {
     private final DemandRepository demandRepository;
     private final DemandDtlRepository demandDtlRepository;
     private final EmailServcie emailService;
+    private final DemandService demandService;
+    private final AssetSurveyDetailRepository assetSurveyDetailRepository;
 
     //자산코드로 하나의 자산 공통정보 가져오기
     public Optional<CommonAsset> getCommonAsset(String assetCode) {
@@ -512,28 +514,25 @@ public class AssetService {
         List<File> fileList = fileRepository.findByAssetNo(commonAsset);
         //유지보수
         List<RepairHistory> repairList = new ArrayList<>();
-
+        List<AssetSurveyDetail> assetSurveyList = new ArrayList<>();
         List<CommonAsset> commonAssetList = commonAssetRepository.findApprovedAssetsByAssetCode(assetCode);
         for (CommonAsset commonAsset1 : commonAssetList) {
             //유지보수
-            List<RepairHistory> repairList1 = repairHistoryRepository.findByAssetNo(commonAsset);
+            List<RepairHistory> repairList1 = repairHistoryRepository.findByAssetNo(commonAsset1);
             repairList.addAll(repairList1);
-
+            //자산조사이력
+            List<AssetSurveyDetail> assetSurveyList1 = assetSurveyDetailRepository.findByAssetNo(commonAsset1);
+            assetSurveyList.addAll(assetSurveyList1);
         }
 
-
         //수정이력
-        List<CommonAsset> updateList = commonAssetRepository.findApprovedAssetsByCodeExceptLatest(assetCode);
-        //자산조사이력
-        //List<AssetSurvey> assetSurveyList = assetSurveyService.getAssetSurveysByAssetNo(commonAsset);
-
+        List<DemandHistoryDto> updateList = demandService.getAssetDemandHistory(assetCode);
 
         result.put("fileList", fileList != null ? fileList : Collections.emptyList());
         result.put("repairList", repairList);
-        result.put("commonAssetList", updateList != null ? updateList : Collections.emptyList());
-        //result.put("assetSurveyList", assetSurveyList != null ? assetSurveyList : Collections.emptyList());
+        result.put("updateList", updateList != null ? updateList : Collections.emptyList());
+        result.put("assetSurveyList", assetSurveyList);
         result.put("assetDto", assetDto);
-
         return result;
     }
 

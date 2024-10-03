@@ -67,7 +67,7 @@ public class QRService {
     // 자산 라벨 출력
     public void PrintAssetLabel(Long assetNo) {
         CommonAsset commonAsset = commonAssetRepository.findById(assetNo).orElseThrow();
-        String url = "http://localhost:8080/asset/" + commonAsset.getAssetCode();
+        String url = "http://localhost:8080/asset1/" + commonAsset.getAssetCode();
         // 프린터 열기 (USB 포트 6번 사용)
         Open("","");
 
