@@ -34,4 +34,7 @@ public interface CommonAssetRepositoryCustom {
     CommonAsset findNextAssetByAssetNo(Long assetNo);
 
     Approval findAssetApprovalByAssetCode(String assetCode);
+
+    // 코드가 같은 승인된 자산가져오기
+    List<CommonAsset> findApprovedAssetsByAssetCode(String assetCode);
 }

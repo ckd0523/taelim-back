@@ -511,7 +511,17 @@ public class AssetService {
         //파일
         List<File> fileList = fileRepository.findByAssetNo(commonAsset);
         //유지보수
-        List<RepairHistory> repairList = repairHistoryRepository.findByAssetNo(commonAsset);
+        List<RepairHistory> repairList = new ArrayList<>();
+
+        List<CommonAsset> commonAssetList = commonAssetRepository.findApprovedAssetsByAssetCode(assetCode);
+        for (CommonAsset commonAsset1 : commonAssetList) {
+            //유지보수
+            List<RepairHistory> repairList1 = repairHistoryRepository.findByAssetNo(commonAsset);
+            repairList.addAll(repairList1);
+
+        }
+
+
         //수정이력
         List<CommonAsset> updateList = commonAssetRepository.findApprovedAssetsByCodeExceptLatest(assetCode);
         //자산조사이력
@@ -519,7 +529,7 @@ public class AssetService {
 
 
         result.put("fileList", fileList != null ? fileList : Collections.emptyList());
-        result.put("repairList", repairList != null ? repairList : Collections.emptyList());
+        result.put("repairList", repairList);
         result.put("commonAssetList", updateList != null ? updateList : Collections.emptyList());
         //result.put("assetSurveyList", assetSurveyList != null ? assetSurveyList : Collections.emptyList());
         result.put("assetDto", assetDto);

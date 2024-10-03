@@ -267,4 +267,14 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         return latestAsset != null ? latestAsset.getApproval() : null;
 
     }
+
+    @Override
+    public List<CommonAsset> findApprovedAssetsByAssetCode(String assetCode) {
+        QCommonAsset commonAsset = QCommonAsset.commonAsset;
+        return queryFactory
+                .selectFrom(commonAsset)
+                .where(commonAsset.assetCode.eq(assetCode)
+                        .and(commonAsset.approval.eq(Approval.APPROVE)))
+                .fetch();
+    }
 }

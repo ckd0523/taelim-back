@@ -60,6 +60,40 @@ public class DemandService {
 
     }
 
+    public List<DemandHistoryDto> getAssetDemandHistory(List<CommonAsset>commonAssets) {
+
+        List<DemandDtl> demandDtls = demandDtlRepository.findAll();
+        List<DemandHistoryDto> demandHistoryDtos = new ArrayList<>();
+        for(DemandDtl demandDtl : demandDtls){
+            Optional<CommonAsset> commonAsset = commonAssetRepository.findById(demandDtl.getAssetNo().getAssetNo());
+            CommonAsset asset = commonAsset.orElseThrow();
+            DemandHistoryDto demandHistoryDto = new DemandHistoryDto();
+            if(asset.getDemandStatus()){
+                Optional<Demand> demand = demandRepository.findById(demandDtl.getDemandNo().getDemandNo());
+                Demand demand1 = demand.orElseThrow();
+                if(demand1.getDisposeLocation() == null){
+                    //수정이력
+                    demandHistoryDto.setDemandBy("이창현");
+                    demandHistoryDto.setDemandType("update");
+                }else {
+                    //폐기이력
+                    demandHistoryDto.setDemandBy("이창현");
+                    demandHistoryDto.setDemandType("delete");
+                }
+                demandHistoryDto.setDemandNo(demandDtl.getDemandNo().getDemandNo());
+                demandHistoryDto.setAssetNo(asset.getAssetNo());
+                demandHistoryDto.setAssetCode(asset.getAssetCode());
+                demandHistoryDto.setDemandDate(asset.getCreateDate());
+                demandHistoryDto.setDemandStatus(asset.getApproval().toString());
+                demandHistoryDtos.add(demandHistoryDto);
+            }
+
+        }
+
+        return demandHistoryDtos;
+
+    }
+
     private final AssetService assetService;
     // 미확인 자산 가져오는 서비스
     public List<UnconfirmedDemandDto> getUnconfirmedDemandHistory() {
