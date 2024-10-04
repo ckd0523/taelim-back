@@ -1029,18 +1029,19 @@ public class AssetService {
 
             }
 
-            List<File> files = fileRepository.findByAssetNo(commonAsset);
+            List<File> files = fileRepository.findByAssetCode(commonAsset.getAssetCode());
 
-            List<FileDto> fileDtos = files.stream().map(file -> {
-                FileDto fileDto = new FileDto();
-                fileDto.setOriFileName(file.getOriFileName());
-                fileDto.setFileName(file.getFileName());
-                fileDto.setFileSize(file.getFileSize());
-                fileDto.setFileURL(file.getFileURL());
-                fileDto.setFileExt(file.getFileExt());
-                fileDto.setFileType(file.getFileType());
-                return fileDto;
-            }).collect(Collectors.toList());
+            List<FileDto> fileDtos = files.stream()
+                    .map(file -> {
+                        FileDto fileDto = new FileDto();
+                        fileDto.setOriFileName(file.getOriFileName());
+                        fileDto.setFileName(file.getFileName());
+                        fileDto.setFileSize(file.getFileSize());
+                        fileDto.setFileURL(file.getFileURL());
+                        fileDto.setFileExt(file.getFileExt());
+                        fileDto.setFileType(file.getFileType());
+                        return fileDto;
+                    }).collect(Collectors.toList());
 
 
             assetDto.setFiles(fileDtos);
