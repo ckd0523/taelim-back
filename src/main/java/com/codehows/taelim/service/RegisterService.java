@@ -219,7 +219,7 @@ public class RegisterService {
     }
 
     // 자산 코드 생성
-    private String generateAssetCode(AssetClassification classification) {
+    public String generateAssetCode(AssetClassification classification) {
         String prefix = "";
         String classificationCode = "";
 
@@ -302,6 +302,8 @@ public class RegisterService {
         updateAsset.setUseState(assetDto.getUseState() != null ? assetDto.getUseState() : existAsset.getUseState());
         updateAsset.setOperationStatus(assetDto.getOperationStatus() != null ? assetDto.getOperationStatus() : existAsset.getOperationStatus());
         updateAsset.setIntroducedDate(assetDto.getIntroducedDate() != null ? assetDto.getIntroducedDate() : existAsset.getIntroducedDate());
+        updateAsset.setOwnership(assetDto.getOwnership() != null ? assetDto.getOwnership() : existAsset.getOwnership()); // 소유 enum 추가
+        updateAsset.setQuantity(assetDto.getQuantity() != null ? assetDto.getQuantity() : existAsset.getQuantity());  // 수량 추가
         // int 필드에 대해 기본값 처리
         updateAsset.setConfidentiality(assetDto.getConfidentiality() != 0 ? assetDto.getConfidentiality() : existAsset.getConfidentiality());
         updateAsset.setIntegrity(assetDto.getIntegrity() != 0 ? assetDto.getIntegrity() : existAsset.getIntegrity());
@@ -316,6 +318,8 @@ public class RegisterService {
         updateAsset.setContactInformation(assetDto.getContactInformation() != null ? assetDto.getContactInformation() : existAsset.getContactInformation());
         updateAsset.setAcquisitionRoute(assetDto.getAcquisitionRoute() != null ? assetDto.getAcquisitionRoute() : existAsset.getAcquisitionRoute());
         updateAsset.setMaintenancePeriod(assetDto.getMaintenancePeriod() != null ? assetDto.getMaintenancePeriod() : existAsset.getMaintenancePeriod());
+        updateAsset.setAttachment(assetDto.getAttachment() != null ? assetDto.getAttachment() : existAsset.getAttachment()); // 첨부파일 추가
+        updateAsset.setWarrantyDetails(assetDto.getWarrantyDetails() != null ? assetDto.getWarrantyDetails() : existAsset.getWarrantyDetails()); // 보증서 추사
 
         updateAsset.setAssetClassification(assetDto.getAssetClassification() != null ? assetDto.getAssetClassification() : existAsset.getAssetClassification() // 기본값 설정
         );
@@ -395,10 +399,13 @@ public class RegisterService {
         updateAsset.setUseState(assetDto.getUseState() != null ? assetDto.getUseState() : existAsset.getUseState());
         updateAsset.setOperationStatus(assetDto.getOperationStatus() != null ? assetDto.getOperationStatus() : existAsset.getOperationStatus());
         updateAsset.setIntroducedDate(assetDto.getIntroducedDate() != null ? assetDto.getIntroducedDate() : existAsset.getIntroducedDate());
+        updateAsset.setOwnership(assetDto.getOwnership() != null ? assetDto.getOwnership() : existAsset.getOwnership()); // 소유 enum 추가
+        updateAsset.setQuantity(assetDto.getQuantity() != null ? assetDto.getQuantity() : existAsset.getQuantity());  // 수량 추가
         // int 필드에 대해 기본값 처리
         updateAsset.setConfidentiality(assetDto.getConfidentiality() != 0 ? assetDto.getConfidentiality() : existAsset.getConfidentiality());
         updateAsset.setIntegrity(assetDto.getIntegrity() != 0 ? assetDto.getIntegrity() : existAsset.getIntegrity());
         updateAsset.setAvailability(assetDto.getAvailability() != 0 ? assetDto.getAvailability() : existAsset.getAvailability());
+
         // 다시
         updateAsset.setNote(assetDto.getNote() != null ? assetDto.getNote() : existAsset.getNote());
         updateAsset.setPurchaseCost(assetDto.getPurchaseCost() != null ? assetDto.getPurchaseCost() : existAsset.getPurchaseCost());
@@ -409,6 +416,8 @@ public class RegisterService {
         updateAsset.setContactInformation(assetDto.getContactInformation() != null ? assetDto.getContactInformation() : existAsset.getContactInformation());
         updateAsset.setAcquisitionRoute(assetDto.getAcquisitionRoute() != null ? assetDto.getAcquisitionRoute() : existAsset.getAcquisitionRoute());
         updateAsset.setMaintenancePeriod(assetDto.getMaintenancePeriod() != null ? assetDto.getMaintenancePeriod() : existAsset.getMaintenancePeriod());
+        updateAsset.setAttachment(assetDto.getAttachment() != null ? assetDto.getAttachment() : existAsset.getAttachment()); // 첨부파일 추가
+        updateAsset.setWarrantyDetails(assetDto.getWarrantyDetails() != null ? assetDto.getWarrantyDetails() : existAsset.getWarrantyDetails()); // 보증서 추사
 
         updateAsset.setAssetClassification(assetDto.getAssetClassification() != null ? assetDto.getAssetClassification() : existAsset.getAssetClassification() // 기본값 설정
         );
