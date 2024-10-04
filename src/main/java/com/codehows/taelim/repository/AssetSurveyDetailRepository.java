@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface AssetSurveyDetailRepository extends JpaRepository<AssetSurveyDetail, Long> {
+public interface AssetSurveyDetailRepository extends JpaRepository<AssetSurveyDetail, Long> , AssetSurveyDetailRepositoryCustom {
 
     //gpt가 List<Long>으로 받아 처리하려면 jpa 형식 메서드 뒤에 In을 붙이면 된다고 했는데
     //잘 안되서 네이티브 쿼리로 해결
@@ -30,4 +30,6 @@ public interface AssetSurveyDetailRepository extends JpaRepository<AssetSurveyDe
     //자산 조사를 위한 자산 조사 상세 이력
     List<AssetSurveyDetail> findAllByAssetSurveyNo(AssetSurveyHistory assetSurveyHistory);
     List<AssetSurveyDetail> findByAssetNo(CommonAsset assetNo);
+
+
 }

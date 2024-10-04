@@ -79,7 +79,7 @@ public class RepairFileService {
 
 
         try{
-            resource = new UrlResource("file: " + filePath + fileName );
+            resource = new UrlResource("file:" + filePath + fileName );
         }catch (Exception exception) {
             exception.printStackTrace();
             return null;

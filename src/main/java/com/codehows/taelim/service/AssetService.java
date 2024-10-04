@@ -39,6 +39,7 @@ public class AssetService {
     private final DemandRepository demandRepository;
     private final DemandDtlRepository demandDtlRepository;
     private final EmailServcie emailService;
+    private final AssetSurveyDetailRepository assetSurveyDetailRepository;
 
     //자산코드로 하나의 자산 공통정보 가져오기
     public Optional<CommonAsset> getCommonAsset(String assetCode) {
@@ -1088,7 +1089,26 @@ public class AssetService {
             assetDto.setRepairHistory(repairHistoryDtos);
 
             // 자산조사 이력를 가져오는 코드
+            List<AssetSurveyDetail> surveyDetailList = assetSurveyDetailRepository.findByAssetCode(commonAsset.getAssetCode());
 
+            List<SurveyHistoryDto> surveyHistoryDtos = surveyDetailList.stream()
+                            .map(assetSurveyDetail -> {
+                                SurveyHistoryDto surveyHistoryDto = new SurveyHistoryDto();
+                                surveyHistoryDto.setAssetNo(assetSurveyDetail.getAssetNo().getAssetNo());
+                                surveyHistoryDto.setAssetSurveyDetailNo(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyNo());
+                                surveyHistoryDto.setAssetCode(assetSurveyDetail.getAssetNo().getAssetCode());
+                                surveyHistoryDto.setAssetName(assetSurveyDetail.getAssetNo().getAssetName());
+                                surveyHistoryDto.setRound(assetSurveyDetail.getAssetSurveyNo().getRound());
+                                surveyHistoryDto.setAssetSurveyLocation(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyLocation());
+                                surveyHistoryDto.setAssetSurveyStartDate(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyStartDate());
+                                surveyHistoryDto.setAssetSurveyEndDate(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyEndDate());
+                                surveyHistoryDto.setAssetSurveyBy(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyBy().getUName());
+                                surveyHistoryDto.setExactLocation(assetSurveyDetail.getExactLocation());
+                                surveyHistoryDto.setAssetStatus(assetSurveyDetail.getAssetStatus());
+                                surveyHistoryDto.setAssetSurveyContent(assetSurveyDetail.getAssetSurveyContent());
+                                return surveyHistoryDto;
+                            }).collect(Collectors.toList());
+            assetDto.setSurveyHistory(surveyHistoryDtos);
 
             assetDtos.add(assetDto);
         }
