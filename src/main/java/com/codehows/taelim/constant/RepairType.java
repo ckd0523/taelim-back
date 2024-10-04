@@ -13,22 +13,23 @@ public enum RepairType {
     AFTER_REPAIR("보수후");
     private final String description;
 
-//    RepairType(String description) {
-//        this.description = description;
-//    }
-//
-//    @JsonValue
-//    public String getDescription(){
-//        return description;
-//    }
-//
-//    @JsonCreator
-//    public static RepairType from(String value){
-//        for(RepairType repairType : RepairType.values()) {
-//            if(repairType.description.equals(value)) {
-//                return repairType;
-//            }
-//        }
-//        throw new IllegalArgumentException("잘못된 값: " + value);
-//    }
+
+    @JsonValue
+    public String getDescription(){
+        return description;
+    }
+
+    @JsonCreator
+    public static RepairType from(String value){
+        for(RepairType repairType : RepairType.values()) {
+            if(repairType.description.equals(value)) {
+                return repairType;
+            }
+        }
+        try{
+            return RepairType.valueOf(value);
+        }catch(IllegalArgumentException e) {
+            throw new IllegalArgumentException("잘못된 값: " + value);
+        }
+    }
 }

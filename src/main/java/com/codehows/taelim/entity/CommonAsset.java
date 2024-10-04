@@ -1,6 +1,7 @@
 package com.codehows.taelim.entity;
 
 import com.codehows.taelim.constant.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,14 +40,17 @@ public class CommonAsset {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetUser")
+    @JsonIgnore
     private Member assetUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetOwner")
+    @JsonIgnore
     private Member assetOwner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assetSecurityManager")
+    @JsonIgnore
     private Member assetSecurityManager;
     
     @Enumerated(EnumType.STRING)
