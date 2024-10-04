@@ -1256,7 +1256,49 @@ public class AssetService {
             assetDto.setUpdateHistory(updateHistoryDtos);
 
             // 유지보수이력을 가져오는 코드
-            //List<RepairHistory> repairHistory = repairHistoryRepository.findByAssetCode(commonAsset.getAssetCode());
+            List<RepairHistory> repairHistory1 = repairHistoryRepository.findByAssetCode(commonAsset.getAssetCode());
+
+            List<RepairHistoryDto> repairHistoryDtos = repairHistory1.stream()
+                            .map(repairHistory -> {
+                                RepairHistoryDto repairHistoryDto = new RepairHistoryDto();
+                                repairHistoryDto.setAssetNo(repairHistory.getAssetNo().getAssetNo());
+                                repairHistoryDto.setRepairBy(repairHistory.getRepairBy());
+                                repairHistoryDto.setRepairStartDate(repairHistory.getRepairStartDate());
+                                repairHistoryDto.setRepairEnDate(repairHistory.getRepairEndDate());
+                                repairHistoryDto.setRepairResult(repairHistory.getRepairResult());
+
+                                // RepairFile 리스트를 가져와서 RepairFileDto 리스트로 변환
+                                List<RepairFileDto> repairFileDtos = repairHistory.getRepairFiles().stream()
+                                        .map(RepairFile::toRepairFile) // RepairFile 객체를 RepairFileDto로 변환
+                                        .collect(Collectors.toList());
+
+                                repairHistoryDto.setRepairFileDtos(repairFileDtos); // 리스트 설정
+                                return repairHistoryDto;
+                            }).collect(Collectors.toList());
+
+            assetDto.setRepairHistory(repairHistoryDtos);
+
+            // 자산조사 이력를 가져오는 코드
+            List<AssetSurveyDetail> surveyDetailList = assetSurveyDetailRepository.findByAssetCode(commonAsset.getAssetCode());
+
+            List<SurveyHistoryDto> surveyHistoryDtos = surveyDetailList.stream()
+                            .map(assetSurveyDetail -> {
+                                SurveyHistoryDto surveyHistoryDto = new SurveyHistoryDto();
+                                surveyHistoryDto.setAssetNo(assetSurveyDetail.getAssetNo().getAssetNo());
+                                surveyHistoryDto.setAssetSurveyDetailNo(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyNo());
+                                surveyHistoryDto.setAssetCode(assetSurveyDetail.getAssetNo().getAssetCode());
+                                surveyHistoryDto.setAssetName(assetSurveyDetail.getAssetNo().getAssetName());
+                                surveyHistoryDto.setRound(assetSurveyDetail.getAssetSurveyNo().getRound());
+                                surveyHistoryDto.setAssetSurveyLocation(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyLocation());
+                                surveyHistoryDto.setAssetSurveyStartDate(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyStartDate());
+                                surveyHistoryDto.setAssetSurveyEndDate(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyEndDate());
+                                surveyHistoryDto.setAssetSurveyBy(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyBy().getUName());
+                                surveyHistoryDto.setExactLocation(assetSurveyDetail.getExactLocation());
+                                surveyHistoryDto.setAssetStatus(assetSurveyDetail.getAssetStatus());
+                                surveyHistoryDto.setAssetSurveyContent(assetSurveyDetail.getAssetSurveyContent());
+                                return surveyHistoryDto;
+                            }).collect(Collectors.toList());
+            assetDto.setSurveyHistory(surveyHistoryDtos);
 
             assetDtos.add(assetDto);
         }

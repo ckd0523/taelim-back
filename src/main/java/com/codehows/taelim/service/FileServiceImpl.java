@@ -22,7 +22,7 @@ public class FileServiceImpl implements FileService {
     @Value("${file.path}")
     private String filePath;
 
-    @Value("${file.url}")
+    @Value("${file.url}files/")
     private String fileUrl;
 
     public FileServiceImpl(FileRepository fileRepository) {
