@@ -94,7 +94,7 @@ public Resource getImage(String fileName) {
 
     // 파일이 존재하지 않을 경우 예외 처리
     File file = optionalFile.orElseThrow(() ->
-            new RuntimeException("File not found with fileName: " + fileName)
+            new RuntimeException("File not found with fileName:" + fileName)
     );
 
     // 파일 경로 생성
@@ -104,7 +104,7 @@ public Resource getImage(String fileName) {
 
     // 실제 파일이 존재하는지 확인
     if (!physicalFile.exists()) {
-        throw new RuntimeException("File not found on disk: " + fullPath);
+        throw new RuntimeException("File not found on disk:" + fullPath);
     }
 
     // UrlResource 생성

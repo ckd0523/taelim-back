@@ -29,7 +29,6 @@ public class RepairHistory {
     private LocalDate repairEndDate;
     private String repairBy;
     private String repairResult;
-
     private String repairStatus;
 
     // kwon 추가 - repairFile 불러오기위해

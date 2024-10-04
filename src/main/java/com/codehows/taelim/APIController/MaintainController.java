@@ -85,6 +85,7 @@ public class MaintainController {
 
                 repairHistory.setRepairStartDate(repairDto.getRepairStartDate());
                 repairHistory.setRepairEndDate(repairDto.getRepairEndDate());
+                System.out.println(repairDto.getRepairStatus());
                 repairHistory.setRepairResult(repairDto.getRepairResult());
                 repairHistory.setRepairStatus(repairDto.getRepairStatus());
                 if(repairDto.getAssetNo() != null) {
