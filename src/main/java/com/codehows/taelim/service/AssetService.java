@@ -1087,6 +1087,8 @@ public class AssetService {
 
             assetDto.setRepairHistory(repairHistoryDtos);
 
+            // 자산조사 이력를 가져오는 코드
+
 
             assetDtos.add(assetDto);
         }
