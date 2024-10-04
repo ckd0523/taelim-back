@@ -29,7 +29,6 @@ public class RepairHistory {
     private LocalDate repairEndDate;
     private String repairBy;
     private String repairResult;
-
     private String repairStatus;
 
     public RepairDto toDto(){

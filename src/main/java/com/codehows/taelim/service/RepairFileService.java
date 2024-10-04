@@ -22,7 +22,7 @@ public class RepairFileService {
     @Value("${file.path}")
     private String filePath;
 
-    @Value("${file.url}")
+    @Value("http://localhost:8080/maintain/")
     private String fileUrl;
 
     public RepairFileService(RepairFileRepository repairFileRepository) {
@@ -79,7 +79,7 @@ public class RepairFileService {
 
 
         try{
-            resource = new UrlResource("file: " + filePath + fileName );
+            resource = new UrlResource("file:" + filePath + fileName );
         }catch (Exception exception) {
             exception.printStackTrace();
             return null;
