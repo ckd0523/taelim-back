@@ -512,26 +512,75 @@ public class AssetService {
 
         //파일
         List<File> fileList = fileRepository.findByAssetNo(commonAsset);
-        //유지보수
-        List<RepairHistory> repairList = new ArrayList<>();
-        List<AssetSurveyDetail> assetSurveyList = new ArrayList<>();
-        List<CommonAsset> commonAssetList = commonAssetRepository.findApprovedAssetsByAssetCode(assetCode);
-        for (CommonAsset commonAsset1 : commonAssetList) {
-            //유지보수
-            List<RepairHistory> repairList1 = repairHistoryRepository.findByAssetNo(commonAsset1);
-            repairList.addAll(repairList1);
-            //자산조사이력
-            List<AssetSurveyDetail> assetSurveyList1 = assetSurveyDetailRepository.findByAssetNo(commonAsset1);
-            assetSurveyList.addAll(assetSurveyList1);
-        }
 
-        //수정이력
-        List<DemandHistoryDto> updateList = demandService.getAssetDemandHistory(assetCode);
+
+        // 유지보수이력을 가져오는 코드
+        List<RepairHistory> repairHistory1 = repairHistoryRepository.findByAssetCode(commonAsset.getAssetCode());
+
+        List<RepairHistoryDto> repairHistoryDtos = repairHistory1.stream()
+                .map(repairHistory -> {
+                    RepairHistoryDto repairHistoryDto = new RepairHistoryDto();
+                    repairHistoryDto.setAssetNo(repairHistory.getAssetNo().getAssetNo());
+                    repairHistoryDto.setRepairBy(repairHistory.getRepairBy());
+                    repairHistoryDto.setRepairStartDate(repairHistory.getRepairStartDate());
+                    repairHistoryDto.setRepairEnDate(repairHistory.getRepairEndDate());
+                    repairHistoryDto.setRepairResult(repairHistory.getRepairResult());
+
+                    // RepairFile 리스트를 가져와서 RepairFileDto 리스트로 변환
+                    List<RepairFileDto> repairFileDtos = repairHistory.getRepairFiles().stream()
+                            .map(RepairFile::toRepairFile) // RepairFile 객체를 RepairFileDto로 변환
+                            .collect(Collectors.toList());
+
+                    repairHistoryDto.setRepairFileDtos(repairFileDtos); // 리스트 설정
+                    return repairHistoryDto;
+                }).collect(Collectors.toList());
+
+        // 자산조사 이력를 가져오는 코드
+        List<AssetSurveyDetail> surveyDetailList = assetSurveyDetailRepository.findByAssetCode(commonAsset.getAssetCode());
+
+        List<SurveyHistoryDto> surveyHistoryDtos = surveyDetailList.stream()
+                .map(assetSurveyDetail -> {
+                    SurveyHistoryDto surveyHistoryDto = new SurveyHistoryDto();
+                    surveyHistoryDto.setAssetNo(assetSurveyDetail.getAssetNo().getAssetNo());
+                    surveyHistoryDto.setAssetSurveyDetailNo(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyNo());
+                    surveyHistoryDto.setAssetCode(assetSurveyDetail.getAssetNo().getAssetCode());
+                    surveyHistoryDto.setAssetName(assetSurveyDetail.getAssetNo().getAssetName());
+                    surveyHistoryDto.setRound(assetSurveyDetail.getAssetSurveyNo().getRound());
+                    surveyHistoryDto.setAssetSurveyLocation(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyLocation());
+                    surveyHistoryDto.setAssetSurveyStartDate(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyStartDate());
+                    surveyHistoryDto.setAssetSurveyEndDate(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyEndDate());
+                    surveyHistoryDto.setAssetSurveyBy(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyBy().getUName());
+                    surveyHistoryDto.setExactLocation(assetSurveyDetail.getExactLocation());
+                    surveyHistoryDto.setAssetStatus(assetSurveyDetail.getAssetStatus());
+                    surveyHistoryDto.setAssetSurveyContent(assetSurveyDetail.getAssetSurveyContent());
+                    return surveyHistoryDto;
+                }).collect(Collectors.toList());
+
+
+        // 수정이력을 가져오는 코드
+        List<DemandDtl> updateHistory = demandDtlRepository.findUpdateHistoryByAssetCode(commonAsset.getAssetCode());
+
+        //return assetDto;
+        // 수정이력을 AssetDto에 추가
+        List<UpdateHistoryDto> updateHistoryDtos = updateHistory.stream()
+                .map(demandDtl -> {
+                    UpdateHistoryDto updateHistoryDto = new UpdateHistoryDto();
+                    updateHistoryDto.setAssetNo(demandDtl.getAssetNo().getAssetNo());
+                    updateHistoryDto.setAssetCode(demandDtl.getAssetNo().getAssetCode());
+                    updateHistoryDto.setAssetName(demandDtl.getAssetNo().getAssetName());
+                    updateHistoryDto.setUpdateDate(demandDtl.getDemandNo().getDemandDate());
+                    //updateHistoryDto.setUpdateBy(demandDtl.getDemandNo().getDemandBy());
+                    updateHistoryDto.setUpdateReason(demandDtl.getDemandNo().getDemandReason());
+                    updateHistoryDto.setUpdateDetail(demandDtl.getDemandNo().getDemandDetail());
+
+                    return updateHistoryDto;
+                }).collect(Collectors.toList());
+
 
         result.put("fileList", fileList != null ? fileList : Collections.emptyList());
-        result.put("repairList", repairList);
-        result.put("updateList", updateList != null ? updateList : Collections.emptyList());
-        result.put("assetSurveyList", assetSurveyList);
+        result.put("repairList", repairHistoryDtos);
+        result.put("updateList", updateHistoryDtos);
+        result.put("assetSurveyList", surveyHistoryDtos);
         result.put("assetDto", assetDto);
         return result;
     }
