@@ -5,10 +5,7 @@ import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Furniture;
 import com.codehows.taelim.entity.Member;
 import com.codehows.taelim.entity.Software;
-import com.codehows.taelim.repository.CommonAssetRepository;
-import com.codehows.taelim.repository.FurnitureRepository;
-import com.codehows.taelim.repository.MemberRepository;
-import com.codehows.taelim.repository.SoftwareRepository;
+import com.codehows.taelim.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +21,13 @@ public class DataInitializerService {
     private final CommonAssetRepository commonAssetRepository;
     private final SoftwareRepository softwareRepository;
     private final FurnitureRepository furnitureRepository;
+    private final AmountSetRepository amountSetRepository;
 
     @Transactional
     public void insertDummyData() {
+        //자산 기준 금액 설정 초기값 설정
+        amountSetRepository.updateAmountSet(0L, 0L);
+
         // Member 데이터 삽입
         for (int i = 1; i <= 40; i++) {
             Member member = new Member();
