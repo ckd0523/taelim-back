@@ -330,6 +330,8 @@ public class RegisterService {
         updateAsset.setDemandCheck(Boolean.FALSE);
         updateAsset.setCreateDate(LocalDate.now());  // 등록일 갱신
 
+        if(assetDto.getFile)
+
         commonAssetRepository.save(updateAsset);
 
         // 새로운 자산 번호 생성

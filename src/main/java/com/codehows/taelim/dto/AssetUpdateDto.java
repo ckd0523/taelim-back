@@ -134,6 +134,16 @@ public class AssetUpdateDto {
     private String updateBy;
     private LocalDate updateDate;
 
+    // 파일 리스트 등록하는 부분
+    private Long fileNo;
+    private String oriFileName;
+    private String fileName;
+    private Long fileSize;
+    private String fileExt;
+    private String fileURL;
+
+    private FileType fileType;
+
 //    public CommonAsset toEntity() {
 //
 //        return CommonAsset.builder()
@@ -311,4 +321,6 @@ public class AssetUpdateDto {
                 .usageFrequency(usageFrequency)
                 .build();
     }
+
+
 }
