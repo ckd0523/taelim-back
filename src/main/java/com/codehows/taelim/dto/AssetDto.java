@@ -41,6 +41,7 @@ public class AssetDto {
     private LocalDate purchaseDate;
     private Long usefulLife;
     private DepreciationMethod depreciationMethod;
+
     private String warrantyDetails;
     private String attachment;
     private String purchaseSource;
@@ -122,6 +123,8 @@ public class AssetDto {
     private Long modelYear;
 
     private String furnitureSize;
+
+
 
     private String otherDescription;
     private String usageFrequency;
