@@ -6,6 +6,7 @@ import com.codehows.taelim.entity.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Getter
@@ -133,6 +134,8 @@ public class AssetUpdateDto {
     private String updateDetail;
     private String updateBy;
     private LocalDate updateDate;
+
+    private List<FileDto> files;
 
 //    public CommonAsset toEntity() {
 //
