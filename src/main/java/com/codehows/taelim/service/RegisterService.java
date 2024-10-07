@@ -1054,6 +1054,91 @@ public class RegisterService {
         otherAssetsRepository.save(otherAssetsDto.toEntity()); // 저장
     }
 
+    // 파일 수정 및 등록 서비스 메서드
+    public void updateAssetFiles(String assetCode, List<FileDto> fileDtos) {
+
+        // 1. assetCode에 해당하는 CommonAsset 객체 조회
+        CommonAsset asset = commonAssetRepository.findByAssetCode(assetCode)
+                .orElseThrow(() -> new EntityNotFoundException("Asset not found"));
+
+        // 2. 기존 파일 목록 가져오기
+        List<File> existingFiles = fileRepository.findByAssetCode(assetCode);
+
+        // 3. 파일 수정 또는 유지
+        for (FileDto fileDto : fileDtos) {
+            // 파일번호가 null이 아니면 기존 파일을 수정하는 로직
+            if (fileDto.getFileNo() != null) {
+                File existingFile = existingFiles.stream()
+                        .filter(file -> file.getFileNo().equals(fileDto.getFileNo()))
+                        .findFirst()
+                        .orElseThrow(() -> new EntityNotFoundException("File not found"));
+
+                // 필요한 정보만 업데이트
+                existingFile.setOriFileName(fileDto.getOriFileName());
+                existingFile.setFileSize(fileDto.getFileSize());
+                existingFile.setFileType(fileDto.getFileType());
+
+                // 필요한 경우 추가 정보 수정
+
+                // 파일 엔티티 저장 (수정 후)
+                fileRepository.save(existingFile);
+            } else {
+                // 새로운 파일 추가 로직
+                File newFile = new File();
+                newFile.setAssetNo(asset);
+
+                // 기존 파일 이름에서 확장자 추출
+                String originalFileName = fileDto.getOriFileName();
+                String extension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
+
+                // 새로운 UUID로 파일 이름 생성
+                String uuid = UUID.randomUUID().toString();
+                String saveFileName = uuid + extension;
+                String savePath = filePath + saveFileName;
+
+                // 새로운 URL 생성
+                String url = fileUrl + saveFileName;
+                newFile.setFileURL(url);
+                newFile.setOriFileName(originalFileName);
+                newFile.setFileName(saveFileName);
+                newFile.setFileExt(extension);
+                newFile.setFileSize(fileDto.getFileSize());
+                newFile.setFileType(fileDto.getFileType());
+
+                // 파일 복사 또는 저장
+                try {
+                    java.io.File dir = new java.io.File(filePath);
+                    if (!dir.exists()) {
+                        dir.mkdirs();
+                    }
+
+                    String existingFileName = fileDto.getFileURL().substring(fileDto.getFileURL().lastIndexOf('/') + 1);
+                    java.io.File existingFile = new java.io.File(filePath + existingFileName);
+
+                    try (FileInputStream fis = new FileInputStream(existingFile);
+                         FileOutputStream fos = new FileOutputStream(savePath)) {
+                        byte[] buffer = new byte[1024];
+                        int length;
+                        while ((length = fis.read(buffer)) > 0) {
+                            fos.write(buffer, 0, length);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        continue;
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    continue;
+                }
+
+                // 새로운 파일 저장
+                fileRepository.save(newFile);
+            }
+        }
+    }
+}
+
 //    public AssetUpdateResponse updateAssetWithFiles(String assetCode, AssetUpdateDto assetDto) {
 //        // 기존 입력되어있는 assetCode 조회
 //        CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
@@ -1112,4 +1197,4 @@ public class RegisterService {
 //        return fileList;
 //    }
 
-}
+

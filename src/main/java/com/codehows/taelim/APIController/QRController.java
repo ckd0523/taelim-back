@@ -10,6 +10,7 @@ import com.codehows.taelim.service.QRService;
 import com.codehows.taelim.service.RegisterService;
 import com.codehows.taelim.service.UpdateService;
 import com.google.zxing.WriterException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -292,5 +293,23 @@ public class QRController {
         public List<AssetDto> test() {
             return assetService.getAssetDetail3();
         }
+
+
+    // 개별 파일 수정 및 추가 API
+    @PostMapping("/{assetCode}/files")
+    public ResponseEntity<String> updateAssetFiles(@PathVariable String assetCode,
+                                                   @RequestBody List<FileDto> fileDtos) {
+        try {
+            // 파일 수정 및 추가 서비스 호출
+            registerService.updateAssetFiles(assetCode, fileDtos);
+            return ResponseEntity.ok("Files updated successfully.");
+        } catch (EntityNotFoundException e) {
+            // 해당 assetCode 또는 파일이 없는 경우
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            // 기타 예외 처리
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating files.");
+        }
+    }
     }
 
