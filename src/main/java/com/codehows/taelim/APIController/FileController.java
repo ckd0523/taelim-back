@@ -3,6 +3,7 @@ package com.codehows.taelim.APIController;
 
 import com.codehows.taelim.entity.File;
 import com.codehows.taelim.service.FileService;
+import com.codehows.taelim.service.RepairFileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -21,18 +22,19 @@ public class FileController {
 
     private final FileService fileService;
 
-    @GetMapping(value = "/files/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+
+    @GetMapping(value = "/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<Resource> getImage(@PathVariable("fileName") String fileName) {
 //        Resource resource = fileService.getImage(fileName);
 //        return resource;
         // 데이터베이스에서 fileName으로 파일 정보 조회
         // Optional에서 File 추출
         File file = fileService.getFileByFileName(fileName)
-                .orElseThrow(() -> new RuntimeException("File not found with fileName: " + fileName));
+                .orElseThrow(() -> new RuntimeException("File not found with fileName:" + fileName));
 
 
         if (file == null) {
-            throw new RuntimeException("File not found with fileName: " + fileName);
+            throw new RuntimeException("File not found with fileName:" + fileName);
         }
         // 원본 파일 이름을 가져옴
         String oriFileName = file.getOriFileName();

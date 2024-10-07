@@ -30,5 +30,11 @@ public interface CommonAssetRepositoryCustom {
     // 최신 자산과 그 이전 자산 가져오는 쿼리
     List<CommonAsset> findNextAssetsByAssetNo(Long assetNo);
 
+    // 이전 자산 들고오는 쿼리
+    CommonAsset findNextAssetByAssetNo(Long assetNo);
+
     Approval findAssetApprovalByAssetCode(String assetCode);
+
+    // 코드가 같은 승인된 자산가져오기
+    List<CommonAsset> findApprovedAssetsByAssetCode(String assetCode);
 }

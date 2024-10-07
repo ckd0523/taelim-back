@@ -14,7 +14,8 @@ public class DatabaseBackupScheduler { //백업 스크립트를 실행할 스케
     private final BackupService backupService;
 
     //@Scheduled(cron = "0 0 2 * * ?") // 매일 새벽 2시에 실행
-    @Scheduled(cron = "0 * * * * ?") // 1분 마다 작업 실행
+    //@Scheduled(cron = "0 * * * * ?") // 1분 마다 작업 실행
+    @Scheduled(cron = "0 */5 * * * ?") // 5분마다 작업 실행
     public void backupDatabase() {
         try {
             // 백업 스크립트 경로를 지정
@@ -49,7 +50,9 @@ public class DatabaseBackupScheduler { //백업 스크립트를 실행할 스케
         }
     }
 
-    @Scheduled(cron = "0 * * * * ?") // 1분 마다 작업 실행
+    //DB에 레코드 추가하는 작업
+    //@Scheduled(cron = "0 * * * * ?") // 1분 마다 작업 실행
+    @Scheduled(cron = "0 */5 * * * ?") // 5분마다 작업 실행
     public void backupDatabaseTest() {
         backupService.backup();
     }

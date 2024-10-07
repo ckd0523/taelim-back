@@ -50,6 +50,13 @@ public class RepairService {
         return repairHistories;
     }
 
+    public Long save(RepairHistory repairHistory) {
+
+        repairHistoryRepository.save(repairHistory);
+
+        return repairHistory.getRepairNo();
+    }
+
     public Optional<RepairHistory> findById(Long id) {
         return repairHistoryRepository.findById(id);
     }

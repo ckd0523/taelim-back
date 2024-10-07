@@ -18,6 +18,7 @@ public class AssetSurveyDetailDto {
     private String assetSecurityManager;
     private boolean exactLocation;
     private boolean assetStatus;
+    private Long infoNo;
     private String assetSurveyContent;
 
     public AssetSurveyDetailDto(CommonAsset commonAsset, AssetSurveyDetail assetSurveyDetail) {
@@ -27,6 +28,7 @@ public class AssetSurveyDetailDto {
         this.assetSecurityManager = commonAsset.getAssetSecurityManager().getUName();
         this.exactLocation = assetSurveyDetail.getExactLocation();
         this.assetStatus = assetSurveyDetail.getAssetStatus();
+        this.infoNo = assetSurveyDetail.getInfoNo();
         this.assetSurveyContent = assetSurveyDetail.getAssetSurveyContent();
     }
 

@@ -1,8 +1,10 @@
 package com.codehows.taelim.APIController;
 
 
+import com.codehows.taelim.constant.RepairStatus;
 import com.codehows.taelim.constant.RepairType;
 import com.codehows.taelim.dto.RepairDto;
+import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.RepairFile;
 import com.codehows.taelim.entity.RepairHistory;
 import com.codehows.taelim.service.RepairFileService;
@@ -58,18 +60,43 @@ public class MaintainController {
 
         RepairHistory repairHistoryNo = repairService.findById(repairNo).orElseThrow(()->new RuntimeException("유지보수 번호를 찾을 수 없습니다."));
         RepairType type;
+
         try{
             type = RepairType.valueOf(repairType);
         }catch (IllegalArgumentException e) {
             return new ResponseEntity<>("잘못된 파일 유형입니다.", HttpStatus.BAD_REQUEST);
         }
         RepairFile savedFile = fileService.upload(file, repairHistoryNo,type);
+
+
         if(savedFile != null) {
             return new ResponseEntity<>(savedFile.getFileName(), HttpStatus.OK);
         }else{
             return new ResponseEntity<>("파일 업로드에 실패함", HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @PostMapping("/update/{repairNo}")
+    public ResponseEntity<?> updateRepair(@PathVariable Long repairNo, @RequestBody RepairDto repairDto){
+
+
+        RepairHistory repairHistory = repairService.findById(repairNo).orElseThrow(()-> new RuntimeException("해당 유지보수 내역이 존재하지 않음"));
+
+                repairHistory.setRepairStartDate(repairDto.getRepairStartDate());
+                repairHistory.setRepairEndDate(repairDto.getRepairEndDate());
+                System.out.println(repairDto.getRepairStatus());
+                repairHistory.setRepairResult(repairDto.getRepairResult());
+                repairHistory.setRepairStatus(repairDto.getRepairStatus());
+                if(repairDto.getAssetNo() != null) {
+                    CommonAsset assetNo = new CommonAsset();
+                    assetNo.setAssetNo(repairDto.getAssetNo());
+                    repairHistory.setAssetNo(assetNo);
+                }
+
+        repairService.save(repairHistory);
+
+        return new ResponseEntity<>(repairNo, HttpStatus.OK);
     }
 
 

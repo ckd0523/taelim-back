@@ -1,6 +1,7 @@
 package com.codehows.taelim.dto;
 
 
+import com.codehows.taelim.constant.RepairStatus;
 import com.codehows.taelim.constant.RepairType;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.RepairFile;
@@ -26,6 +27,7 @@ public class RepairDto {
     private String repairBy;
     private String repairResult;
     private List<RepairFileDto> repairFiles;
+    private String repairStatus;
 
 
     public CommonAsset toAssetNo() {
@@ -39,6 +41,7 @@ public class RepairDto {
                 .repairEndDate(repairEndDate)
                 .repairBy(repairBy)
                 .repairResult(repairResult)
+                .repairStatus(repairStatus)
                 .build();
     }
 

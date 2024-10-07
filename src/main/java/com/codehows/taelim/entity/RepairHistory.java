@@ -1,5 +1,6 @@
 package com.codehows.taelim.entity;
 
+import com.codehows.taelim.constant.RepairStatus;
 import com.codehows.taelim.dto.RepairDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,7 +29,7 @@ public class RepairHistory {
     private LocalDate repairEndDate;
     private String repairBy;
     private String repairResult;
-    private Boolean repairStatus;
+    private String repairStatus;
 
     // kwon 추가 - repairFile 불러오기위해
     @OneToMany(mappedBy = "repairNo", fetch = FetchType.LAZY)
@@ -43,6 +44,7 @@ public class RepairHistory {
                 .repairResult(repairResult)
                 .repairStartDate(repairStartDate)
                 .repairEndDate(repairEndDate)
+                .repairStatus(repairStatus)
         .build();
     }
 
