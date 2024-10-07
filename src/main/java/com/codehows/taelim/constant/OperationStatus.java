@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 //가동여부
 public enum OperationStatus {
     OPERATING("가동중"),
-    NOT_OPERATING("미가동"),
+    NOT_OPERATING("비가동"),
     MALFUNCTION("고장");
     private String description;
 
