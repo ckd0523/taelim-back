@@ -59,7 +59,7 @@ public class RegisterService {
     private final MemberRepository memberRepository;
     private final DemandRepository demandRepository;
     private final DemandDtlRepository demandDtlRepository;
-
+    private final FileRepository fileRepository;
 
 
     //자산 등록
@@ -719,6 +719,20 @@ public class RegisterService {
         // 기존자산과 똑같은 서브컬럼 복사
         updateAssetBasedOnClassification(updateAsset, existAsset);
 
+        //파일 복사
+        List<FileDto> files = allUpdateDto.getAssetDto().getFiles();
+        for (FileDto fileDto : files) {
+            File file = new File();
+            file.setAssetNo(updateAsset);
+            file.setFileName(fileDto.getFileName());
+            file.setFileExt(fileDto.getFileExt());
+            file.setFileSize(fileDto.getFileSize());
+            file.setFileType(fileDto.getFileType());
+            file.setFileURL(fileDto.getFileURL());
+            file.setOriFileName(fileDto.getOriFileName());
+            fileRepository.save(file);
+        }
+
         // DemandDtl 테이블 저장
         DemandDtl demandDtl = new DemandDtl();
         demandDtl.setAssetNo(updateAsset);
@@ -762,6 +776,20 @@ public class RegisterService {
         // 기존자산과 똑같은 서브컬럼 복사
         updateAssetBasedOnClassification(updateAsset, existAsset);
 
+        //파일 복사
+        List<FileDto> files = allUpdateDto.getAssetDto().getFiles();
+        for (FileDto fileDto : files) {
+            File file = new File();
+            file.setAssetNo(updateAsset);
+            file.setFileName(fileDto.getFileName());
+            file.setFileExt(fileDto.getFileExt());
+            file.setFileSize(fileDto.getFileSize());
+            file.setFileType(fileDto.getFileType());
+            file.setFileURL(fileDto.getFileURL());
+            file.setOriFileName(fileDto.getOriFileName());
+            fileRepository.save(file);
+        }
+
         // DemandDtl 테이블 저장
         DemandDtl demandDtl = new DemandDtl();
         demandDtl.setAssetNo(updateAsset);
@@ -785,6 +813,20 @@ public class RegisterService {
         CommonAsset updateAsset = commonAssetRepository.save(commonAsset);
 
         updateAssetBasedOnClassification(updateAsset, existAsset);
+
+        //파일 복사
+        List<FileDto> files = allDeleteDto.getAssetDto().getFiles();
+        for (FileDto fileDto : files) {
+            File file = new File();
+            file.setAssetNo(updateAsset);
+            file.setFileName(fileDto.getFileName());
+            file.setFileExt(fileDto.getFileExt());
+            file.setFileSize(fileDto.getFileSize());
+            file.setFileType(fileDto.getFileType());
+            file.setFileURL(fileDto.getFileURL());
+            file.setOriFileName(fileDto.getOriFileName());
+            fileRepository.save(file);
+        }
 
         // DemandDtl 테이블에 저장
         DemandDtl demandDtl = new DemandDtl();
@@ -830,6 +872,20 @@ public class RegisterService {
         CommonAsset updateAsset = commonAssetRepository.save(commonAsset);
 
         updateAssetBasedOnClassification(updateAsset, existAsset);
+
+        //파일 복사
+        List<FileDto> files = allDeleteDto.getAssetDto().getFiles();
+        for (FileDto fileDto : files) {
+            File file = new File();
+            file.setAssetNo(updateAsset);
+            file.setFileName(fileDto.getFileName());
+            file.setFileExt(fileDto.getFileExt());
+            file.setFileSize(fileDto.getFileSize());
+            file.setFileType(fileDto.getFileType());
+            file.setFileURL(fileDto.getFileURL());
+            file.setOriFileName(fileDto.getOriFileName());
+            fileRepository.save(file);
+        }
 
         // DemandDtl 테이블에 저장
         DemandDtl demandDtl = new DemandDtl();
