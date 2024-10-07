@@ -3,6 +3,7 @@ package com.codehows.taelim.dto;
 import com.codehows.taelim.constant.*;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.MemberRepository;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +31,7 @@ public class AssetDto {
     private String assetOwner;
     private String assetSecurityManager;
     private OperationStatus operationStatus;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate introducedDate;
     private int confidentiality;
     private int integrity;
@@ -38,6 +40,7 @@ public class AssetDto {
     private String manufacturingCompany;
     private Ownership ownership;
     private Long purchaseCost;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate purchaseDate;
     private Long usefulLife;
     private DepreciationMethod depreciationMethod;
@@ -52,9 +55,11 @@ public class AssetDto {
     
     private Approval approval;
     private Boolean demandCheck;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate createDate;
     private UseState usestate;
     private String acquisitionRoute;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate maintenancePeriod;
 
     private String serviceScope;
@@ -73,9 +78,11 @@ public class AssetDto {
     private DocumentGrade documentGrade;
     private DocumentType documentType;
     private String documentLink;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate applicationDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate registrationDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate expirationDate;
     private PatentTrademarkStatus patentTrademarkStatus;
     private CountryApplication countryApplication;
@@ -104,9 +111,13 @@ public class AssetDto {
 
     private String productSerialNumber;
     private SecurityControl securityControl;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate kaitsKeeper;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate V3OfficeSecurity;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate appCheckPro;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate tgate;
 
     private String deviceType;

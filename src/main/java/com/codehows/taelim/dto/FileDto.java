@@ -3,6 +3,7 @@ package com.codehows.taelim.dto;
 
 import com.codehows.taelim.constant.FileType;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -21,4 +22,6 @@ public class FileDto {
 
     private FileType fileType;
 
+    private byte[] fileData; // 실제 파일 데이터
+    private MultipartFile multipartFile; // 파일 업로드 처리를 위한 필
 }

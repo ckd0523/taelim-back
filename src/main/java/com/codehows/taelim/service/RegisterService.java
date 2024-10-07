@@ -1,27 +1,30 @@
 package com.codehows.taelim.service;
 
-import com.codehows.taelim.constant.Approval;
-import com.codehows.taelim.constant.AssetClassification;
+import com.codehows.taelim.constant.*;
 import com.codehows.taelim.dto.AssetDisposeDto;
 import com.codehows.taelim.dto.AssetUpdateDto;
 import com.codehows.taelim.dto.ExcelDto;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
-import com.codehows.taelim.constant.AssetLocation;
-import com.codehows.taelim.constant.Department;
 import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
@@ -29,10 +32,10 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,7 +64,18 @@ public class RegisterService {
     private final DemandDtlRepository demandDtlRepository;
     private final FileRepository fileRepository;
 
+    @Value("${file.path}")
+    private String filePath;
 
+    @Value("http://localhost:8080/file/")
+    private String fileUrl;
+
+    // URL에서 파일 시스템 경로를 추출하는 메서드
+    private String extractFilePathFromUrl(String fileUrl) {
+        // 실제 파일 경로를 반환하는 로직 구현
+        // 예: http://localhost:8080/file/파일이름.jpg를 C:\file\파일이름.jpg로 변환
+        return "C:\\file\\" + fileUrl.substring(fileUrl.lastIndexOf('/') + 1);
+    }
     //자산 등록
     public Long assetRegister(AssetDto assetDto){
 
@@ -263,7 +277,7 @@ public class RegisterService {
         return String.format("%s%s-%05d", prefix, classificationCode, newAssetNumber);
     }
 
-    public AssetUpdateResponse updateAssetCode(String assetCode, AssetUpdateDto assetDto) {
+    public AssetUpdateResponse updateAssetCode(String assetCode, AssetUpdateDto assetDto, List<MultipartFile> file) {
 
         // 기존 입력되어있는 assetCode 조회
         CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
@@ -330,7 +344,22 @@ public class RegisterService {
         updateAsset.setDemandCheck(Boolean.FALSE);
         updateAsset.setCreateDate(LocalDate.now());  // 등록일 갱신
 
-        if(assetDto.getFile)
+        // 기존 자산의 파일 목록 가져오기
+        List<File> existingFiles = fileRepository.findByAssetCode(assetCode);
+
+        // assetDto에서 새로 업로드된 파일 목록 가져오기
+        List<FileDto> uploadedFilesDto = assetDto.getFiles(); // 여기에서 uploadedFilesDto를 정의합니다.
+        List<File> uploadedFiles = convertToFileList(uploadedFilesDto);
+
+            // 기존 파일 유지 및 새로 업로드된 파일 추가
+            if (uploadedFiles != null && !uploadedFiles.isEmpty()) {
+                existingFiles.clear(); // 기존 파일을 비우고 새로 업로드된 파일만 추가
+                existingFiles.addAll(uploadedFiles);
+            }
+
+            // 파일 목록을 데이터베이스에 저장
+            fileRepository.saveAll(existingFiles);
+
 
         commonAssetRepository.save(updateAsset);
 
@@ -724,12 +753,55 @@ public class RegisterService {
         for (FileDto fileDto : files) {
             File file = new File();
             file.setAssetNo(updateAsset);
-            file.setFileName(fileDto.getFileName());
-            file.setFileExt(fileDto.getFileExt());
-            file.setFileSize(fileDto.getFileSize());
-            file.setFileType(fileDto.getFileType());
-            file.setFileURL(fileDto.getFileURL());
-            file.setOriFileName(fileDto.getOriFileName());
+
+            // 기존 파일 이름에서 확장자 추출
+            String originalFileName = fileDto.getOriFileName();
+            String extension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
+
+            // 새로운 UUID로 파일 이름 생성
+            String uuid = UUID.randomUUID().toString();
+            String saveFileName = uuid + extension;
+            String savePath = filePath + saveFileName;
+
+            // 새로운 URL 생성
+            String url = fileUrl + saveFileName; // 저장한 파일의 URL 생성
+            file.setFileURL(url);
+            file.setOriFileName(originalFileName);
+            file.setFileName(saveFileName);
+            file.setFileExt(extension);
+            file.setFileSize(fileDto.getFileSize()); // 기존 파일 크기 사용
+            file.setFileType(fileDto.getFileType()); // 기존 파일 타입 사용
+
+            // 실제 파일 저장 경로 생성
+            try {
+                java.io.File dir = new java.io.File(filePath);  // filePath 에 해당하는 경로를 File 객체로 생성
+                if (!dir.exists()) {
+                    dir.mkdirs(); // 경로가 존재하지 않으면 생성
+                }
+
+                // 기존 URL에서 파일 이름 추출
+                String existingFileName = fileDto.getFileURL().substring(fileDto.getFileURL().lastIndexOf('/') + 1);
+                java.io.File existingFile = new java.io.File(filePath + existingFileName); // 기존 파일 경로
+
+                // 파일 복사
+                try (FileInputStream fis = new FileInputStream(existingFile);
+                     FileOutputStream fos = new FileOutputStream(savePath)) {
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = fis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, length);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace(); // 예외 처리
+                    continue; // 다음 파일로 진행
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace(); // 예외 처리
+                continue; // 다음 파일로 진행
+            }
+
+            // 파일 엔티티 저장
             fileRepository.save(file);
         }
 
@@ -1006,4 +1078,28 @@ public class RegisterService {
         otherAssetsRepository.save(otherAssetsDto.toEntity()); // 저장
     }
 
+
+    // 수정 메서드 관련 새 파일 업로드 메서드
+    // FileDto를 File로 변환하는 메서드
+    private List<File> convertToFileList(List<FileDto> fileDtos) {
+        if (fileDtos == null || fileDtos.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<File> files = new ArrayList<>();
+        for (FileDto fileDto : fileDtos) {
+            File file = new File();
+            // FileDto의 속성에 따라 File 객체의 속성을 설정합니다.
+            file.setOriFileName(fileDto.getOriFileName());
+            file.setFileName(fileDto.getFileName());
+            file.setFileSize(fileDto.getFileSize());
+            file.setFileExt(fileDto.getFileExt());
+            file.setFileURL(fileDto.getFileURL());
+            file.setFileType(fileDto.getFileType());
+            // 필요 시 나머지 속성도 설정
+            files.add(file);
+        }
+        return files;
+
+    }
 }

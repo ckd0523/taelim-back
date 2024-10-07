@@ -135,55 +135,16 @@ public class AssetUpdateDto {
     private String updateBy;
     private LocalDate updateDate;
 
-    // 파일 리스트 등록하는 부분
-    private Long fileNo;
-    private String oriFileName;
-    private String fileName;
-    private Long fileSize;
-    private String fileExt;
-    private String fileURL;
-
-    private FileType fileType;
-    private List<FileDto> files;
-
-//    public CommonAsset toEntity() {
+//    // 파일 리스트 등록하는 부분
+//    private Long fileNo;
+//    private String oriFileName;
+//    private String fileName;
+//    private Long fileSize;
+//    private String fileExt;
+//    private String fileURL;
 //
-//        return CommonAsset.builder()
-//                .assetNo(assetNo)
-//                .assetClassification(assetClassification)
-//                .assetBasis(assetBasis)
-//                .assetCode(assetCode)
-//                .assetName(assetName)
-//                .purpose(purpose)
-//                .quantity(quantity)
-//                .department(department)
-//                .assetLocation(assetLocation)
-//                .operationStatus(operationStatus)
-//                .introducedDate(introducedDate)
-//                .confidentiality(confidentiality)
-//                .integrity(integrity)
-//                .availability(availability)
-//                .note(note)
-//                .manufacturingCompany(manufacturingCompany)
-//                .ownership(ownership)
-//                .purchaseCost(purchaseCost)
-//                .purchaseDate(purchaseDate)
-//                .usefulLife(usefulLife)
-//                .depreciationMethod(depreciationMethod)
-//                .warrantyDetails(warrantyDetails)
-//                .attachment(attachment)
-//                .purchaseSource(purchaseSource)
-//                .contactInformation(contactInformation)
-//                .disposalStatus(disposalStatus)
-//                .demandStatus(demandStatus)
-//                .approval(approval)
-//                .demandCheck(demandCheck)
-//                .createDate(createDate)
-//                .useState(useState)
-//                .acquisitionRoute(acquisitionRoute)
-//                .maintenancePeriod(maintenancePeriod)
-//                .build();
-//    }
+//    private FileType fileType;
+    private List<FileDto> files; // 파일 정보 리스트 추가
 
     public InformationProtectionSystem toInformationProtectionSystem() {
         return InformationProtectionSystem.builder()

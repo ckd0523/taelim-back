@@ -10,6 +10,7 @@ import com.codehows.taelim.entity.File;
 import com.codehows.taelim.service.AssetService;
 import com.codehows.taelim.service.FileService;
 import com.codehows.taelim.service.RegisterService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,14 +49,22 @@ public class AssetController {
     }
 
     // 자산 수정등록
-    @PostMapping("/update/{assetCode}")
-    public ResponseEntity<String> updateAsset(
+    @PostMapping( "/update/{assetCode}", consumes = { "multipart/form-data" })
+    public ResponseEntity<?> updateAsset(
             @PathVariable String assetCode,
-            @RequestBody AssetUpdateDto assetDto) {
+            @RequestParam("files") List<MultipartFile> files,
+            @RequestParam("assetDto") String assetDtoJson) {
+        System.out.println("Asset Code: " + assetCode);
+        System.out.println("Number of files received: " + (files != null ? files.size() : 0));
+        System.out.println("Asset DTO: " + assetDtoJson);
 
         try {
+            // JSON 문자열을 AssetUpdateDto 객체로 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+            AssetUpdateDto assetDto = objectMapper.readValue(assetDtoJson, AssetUpdateDto.class);
+
             // 서비스 호출
-            AssetUpdateResponse response = registerService.updateAssetCode(assetCode, assetDto);
+            AssetUpdateResponse response = registerService.updateAssetCode(assetCode, assetDto, files); // 파일 리스트도 서비스에 전달
 
             // 자산 번호가 null이면 UNCONFIRMED 상태이므로 경고 메시지 반환
             if (response.getAssetNo() == null) {
