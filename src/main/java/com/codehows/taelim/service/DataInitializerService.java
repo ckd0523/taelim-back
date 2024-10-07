@@ -26,7 +26,7 @@ public class DataInitializerService {
     @Transactional
     public void insertDummyData() {
         //자산 기준 금액 설정 초기값 설정
-        amountSetRepository.updateAmountSet(0L, 0L);
+        amountSetRepository.insertAmountSet(0L, 0L);
 
         // Member 데이터 삽입
         for (int i = 1; i <= 40; i++) {
