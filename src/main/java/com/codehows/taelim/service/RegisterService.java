@@ -1054,4 +1054,62 @@ public class RegisterService {
         otherAssetsRepository.save(otherAssetsDto.toEntity()); // 저장
     }
 
+//    public AssetUpdateResponse updateAssetWithFiles(String assetCode, AssetUpdateDto assetDto) {
+//        // 기존 입력되어있는 assetCode 조회
+//        CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
+//                .orElseThrow(() -> new RuntimeException("자산코드를 찾을수 없음 " + assetCode));
+//
+//        // 자산 상태가 수정요청일때 Unconfirmed인지 확인
+//        if (existAsset.getApproval() == Approval.UNCONFIRMED) {
+//            return new AssetUpdateResponse("이미 수정 요청이 들어간 자산입니다.", null);
+//        } else if (existAsset.getApproval() == Approval.UNCONFIRMED && existAsset.getDisposalStatus() == Boolean.TRUE) {
+//            return new AssetUpdateResponse("이미 폐기 요청이 들어간 자산입니다.", null);
+//        } else if (existAsset.getApproval() == Approval.REFUSAL || existAsset.getApproval() == Approval.APPROVE) {
+//
+//            // 자산 정보를 업데이트하기 위한 새로운 객체 생성
+//            CommonAsset updateAsset = new CommonAsset();
+//            updateAsset.setAssetCode(existAsset.getAssetCode());
+//            updateAsset.setAssetName(existAsset.getAssetName());
+//            // ... (다른 필드들 업데이트)
+//
+//            // 파일 목록 처리
+//            // 기존 자산의 파일 목록 가져오기
+//            List<File> existingFiles = fileRepository.findByAssetCode(assetCode);
+//
+//            // assetDto에서 새로 업로드된 파일 목록 가져오기
+//            List<FileDto> uploadedFilesDto = assetDto.getFiles(); // 여기에서 uploadedFilesDto를 정의합니다.
+//            List<File> uploadedFiles = convertToFileList(uploadedFilesDto); // DTO를 File 객체로 변환하는 메서드
+//
+//            // 기존 파일 유지 및 새로 업로드된 파일 추가
+//            if (uploadedFiles != null && !uploadedFiles.isEmpty()) {
+//                existingFiles.clear(); // 기존 파일을 비우고 새로 업로드된 파일만 추가
+//                existingFiles.addAll(uploadedFiles);
+//            }
+//
+//            // 파일 목록을 데이터베이스에 저장
+//            fileRepository.saveAll(existingFiles);
+//
+//            // 업데이트된 자산 정보를 저장
+//            commonAssetRepository.save(updateAsset);
+//
+//            // 자산 수정 성공 메시지 반환
+//            return new AssetUpdateResponse("자산 수정 완료 : " + updateAsset.getAssetCode(), updateAsset.getAssetCode());
+//        }
+//
+//        // 상태가 다를 경우 기본 응답
+//        return new AssetUpdateResponse("알 수 없는 자산 상태입니다.", null);
+//    }
+//
+//    // FileDto를 File 객체로 변환하는 메서드
+//    private List<File> convertToFileList(List<FileDto> uploadedFilesDto) {
+//        List<File> fileList = new ArrayList<>();
+//        for (FileDto fileDto : uploadedFilesDto) {
+//            File file = new File();
+//            // 파일 정보 설정 (예: file.setFileName(fileDto.getFileName()); 등)
+//            // ...
+//            fileList.add(file);
+//        }
+//        return fileList;
+//    }
+
 }
