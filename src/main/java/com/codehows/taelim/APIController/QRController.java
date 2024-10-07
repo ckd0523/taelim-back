@@ -40,13 +40,13 @@ public class QRController {
     private final CommonAssetRepository commonAssetRepository;
 
     //QR 생성하는곳
-    @PostMapping("/generateQRCode")
-    public ResponseEntity<String> generateQRCode(@RequestBody List<Long> assetNo) {
-        for(Long id : assetNo) {
-            qrCodeService.PrintAssetLabel(id);
-        }
-        return ResponseEntity.ok("");
-    }
+//    @PostMapping("/generateQRCode")
+//    public ResponseEntity<String> generateQRCode(@RequestBody List<Long> assetNo) {
+//        for(Long id : assetNo) {
+//            qrCodeService.PrintAssetLabel(id);
+//        }
+//        return ResponseEntity.ok("");
+//    }
 
 
 //    //QR 조회
