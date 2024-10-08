@@ -5,6 +5,8 @@ import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Furniture;
 import com.codehows.taelim.entity.Member;
 import com.codehows.taelim.entity.Software;
+import com.codehows.taelim.loginEntity.TestMember;
+import com.codehows.taelim.loginRepository.TestMemberRepository;
 import com.codehows.taelim.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +24,19 @@ public class DataInitializerService {
     private final SoftwareRepository softwareRepository;
     private final FurnitureRepository furnitureRepository;
     private final AmountSetRepository amountSetRepository;
+    private final TestMemberRepository testMemberRepository;
 
     @Transactional
     public void insertDummyData() {
         //자산 기준 금액 설정 초기값 설정
         amountSetRepository.insertAmountSet(0L, 0L);
+
+        //두 번째 DB 테스트
+        TestMember testMember = new TestMember();
+        testMember.toEntity("user1@example.com", "1234" ,
+                "testUser1", Department.IT_DEPARTMENT, Role.ADMIN);
+        testMemberRepository.save(testMember);
+
 
         // Member 데이터 삽입
         for (int i = 1; i <= 40; i++) {
@@ -105,6 +115,8 @@ public class DataInitializerService {
                 furnitureRepository.save(furniture);
             }
         }
+
+
 
         //수정
 //        for (int i = 1; i <= 10; i++) {
