@@ -1,13 +1,13 @@
 package com.codehows.taelim.service;
 
-import com.codehows.taelim.constant.Approval;
-import com.codehows.taelim.constant.AssetClassification;
+import com.codehows.taelim.constant.*;
 import com.codehows.taelim.dto.AssetDisposeDto;
 import com.codehows.taelim.dto.AssetUpdateDto;
 import com.codehows.taelim.dto.ExcelDto;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -22,8 +25,6 @@ import java.util.stream.Collectors;
 
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
-import com.codehows.taelim.constant.AssetLocation;
-import com.codehows.taelim.constant.Department;
 import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
@@ -31,6 +32,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -66,7 +68,6 @@ public class RegisterService {
 
     @Value("${file.url}")
     private String fileUrl;
-
 
     //자산 등록
     public Long assetRegister(AssetDto assetDto){
@@ -1096,4 +1097,134 @@ public class RegisterService {
         otherAssetsRepository.save(otherAssetsDto.toEntity()); // 저장
     }
 
+    // 파일 수정 및 등록 서비스 메서드
+    public void updateAssetFiles(String assetCode, List<MultipartFile> newFiles, FileType fileType) {
+        // 1. assetCode로 CommonAsset 조회
+        Optional<CommonAsset> optionalAsset = commonAssetRepository.findByAssetCode(assetCode);
+
+        // 2. Asset이 존재하지 않을 경우 처리
+        CommonAsset asset = optionalAsset.orElseThrow(() ->
+                new IllegalArgumentException("해당 assetCode에 대한 자산을 찾을 수 없습니다: " + assetCode));
+
+        // 3. 기존 파일 정보 조회 (assetCode로 파일 리스트를 가져옴)
+        List<File> existingFiles = fileRepository.findByAssetCode(assetCode);
+
+        // 4. 새롭게 사용할 FileDto 리스트 생성
+        List<FileDto> updatedFileDtos = new ArrayList<>();
+
+        // 5. 기존 파일을 Map으로 변환하여 최신 파일 관리
+        Map<FileType, File> latestFilesMap = new HashMap<>();
+        for (File existingFile : existingFiles) {
+            latestFilesMap.put(existingFile.getFileType(), existingFile);
+        }
+
+        // 6. 새롭게 추가할 파일 정보 처리
+        for (MultipartFile newFile : newFiles) {
+            // 원본 파일 이름 가져오기
+            String originalFileName = newFile.getOriginalFilename();
+
+            // 확장자 가져오기
+            String extension = originalFileName != null && originalFileName.contains(".") ?
+                    originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
+
+            // UUID 생성 및 파일 저장 경로 설정
+            String uuid = UUID.randomUUID().toString();
+            String saveFileName = uuid + extension;
+            String url = fileUrl + saveFileName; // fileUrl은 파일 접근 URL
+            String savePath = filePath + saveFileName; // c드라이브 fileUpload에 저장
+
+            // 새롭게 추가된 파일에 대한 FileDto 생성
+            FileDto newFileDto = new FileDto();
+            newFileDto.setAssetNo(asset.getAssetNo());
+            newFileDto.setFileNo(null); // 새 파일이기 때문에 fileNo는 null
+            newFileDto.setFileName(saveFileName);
+            newFileDto.setOriFileName(originalFileName);
+            newFileDto.setFileSize(newFile.getSize()); // 파일의 실제 크기 설정
+            newFileDto.setFileExt(extension);
+            newFileDto.setFileURL(url);
+            newFileDto.setFileType(fileType);
+
+            // 기존 파일과 새 파일을 비교하여 최신 파일 유지
+            if (!latestFilesMap.containsKey(fileType) ||
+                    (newFileDto.getFileNo() == null && !existingFiles.isEmpty())) { // 새 파일이 존재하고 기존 파일이 있는 경우
+                updatedFileDtos.add(newFileDto);
+            } else {
+                // 기존 파일이 있는 경우 최신 파일 비교
+                File existingFile = latestFilesMap.get(fileType);
+                // fileNo를 비교하여 최신 파일 결정
+                if (existingFile.getFileNo() > (newFileDto.getFileNo() == null ? -1 : newFileDto.getFileNo())) {
+                    // 기존 파일이 최신인 경우
+                    FileDto existingFileDto = new FileDto();
+                    existingFileDto.setAssetNo(existingFile.getAssetNo().getAssetNo());
+                    existingFileDto.setFileNo(existingFile.getFileNo());
+                    existingFileDto.setOriFileName(existingFile.getOriFileName());
+                    existingFileDto.setFileName(existingFile.getFileName());
+                    existingFileDto.setFileSize(existingFile.getFileSize());
+                    existingFileDto.setFileExt(existingFile.getFileExt());
+                    existingFileDto.setFileURL(existingFile.getFileURL());
+                    existingFileDto.setFileType(existingFile.getFileType());
+
+                    updatedFileDtos.add(existingFileDto);
+                } else {
+                    // 새 파일이 최신인 경우
+                    updatedFileDtos.add(newFileDto);
+                }
+            }
+
+            // 파일 저장
+            java.io.File saveFile = new java.io.File(savePath); // Java File 클래스를 사용하여 저장
+            try {
+                newFile.transferTo(saveFile); // 파일을 지정한 경로에 저장
+            } catch (IOException e) {
+                e.printStackTrace(); // 에러 로그 출력
+            }
+        }
+
+        // 7. 업데이트된 파일 리스트 저장
+        List<File> filesToSave = updatedFileDtos.stream()
+                .map(this::convertToFile) // FileDto를 File로 변환
+                .collect(Collectors.toList());
+
+        System.out.println("Number of files to save: " + filesToSave.size()); // 저장할 파일 개수 로그 출력
+
+        try {
+            fileRepository.saveAll(filesToSave);
+        } catch (Exception e) {
+            e.printStackTrace(); // 에러 로그 출력
+        }
+    }
+
+
+
+    // FileDto를 File로 변환하는 메서드
+    private File convertToFile(FileDto fileDto) {
+        File file = new File();
+        file.setFileNo(fileDto.getFileNo());
+
+        // assetNo 설정
+        CommonAsset asset = commonAssetRepository.findById(fileDto.getAssetNo())
+                .orElseThrow(() -> new IllegalArgumentException("해당 Asset을 찾을 수 없습니다: " + fileDto.getAssetNo()));
+        file.setAssetNo(asset); // assetNo를 FK로 설정
+
+        file.setOriFileName(fileDto.getOriFileName());
+        file.setFileName(fileDto.getFileName());
+        file.setFileSize(fileDto.getFileSize());
+        file.setFileExt(fileDto.getFileExt());
+        file.setFileURL(fileDto.getFileURL());
+        file.setFileType(fileDto.getFileType());
+
+        return file;
+    }
+
+
+    // 파일 확장자 가져오기
+    private String getFileExtension(MultipartFile file) {
+        String filename = file.getOriginalFilename();
+        if (filename != null && filename.contains(".")) {
+            return filename.substring(filename.lastIndexOf('.'));
+        }
+        return "";
+    }
 }
+
+
