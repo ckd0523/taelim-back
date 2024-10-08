@@ -2,6 +2,12 @@ package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.*;
 import com.codehows.taelim.entity.*;
+import com.codehows.taelim.entity.CommonAsset;
+import com.codehows.taelim.entity.Furniture;
+import com.codehows.taelim.entity.Member;
+import com.codehows.taelim.entity.Software;
+import com.codehows.taelim.loginEntity.TestMember;
+import com.codehows.taelim.loginRepository.TestMemberRepository;
 import com.codehows.taelim.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +36,21 @@ public class DataInitializerService {
     private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
     private final InformationProtectionSystemRepository informationProtectionSystemRepository;
     private final RegisterService registerService;
+    private final AmountSetRepository amountSetRepository;
+    private final TestMemberRepository testMemberRepository;
+
     @Transactional
     public void insertDummyData() {
+        //자산 기준 금액 설정 초기값 설정
+        amountSetRepository.insertAmountSet(0L, 0L);
+
+        //두 번째 DB 테스트
+        TestMember testMember = new TestMember();
+        testMember.toEntity("user1@example.com", "1234" ,
+                "testUser1", Department.IT_DEPARTMENT, Role.ADMIN);
+        testMemberRepository.save(testMember);
+
+
         // Member 데이터 삽입
         for (int i = 1; i <= 40; i++) {
             Member member = new Member();
