@@ -7,6 +7,7 @@ import com.codehows.taelim.godex.GodexPrinter;
 import com.codehows.taelim.godex.clsPrinterCommand;
 import com.codehows.taelim.godex.clsPrinterConfig;
 import com.codehows.taelim.repository.CommonAssetRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class QRService {
+
+    @Value("${qr.url}")
+    private String QRurl;
 
     EZioLib.API API = EZioLib.API.INSTANCE;
     clsPrinterConfig Config = new clsPrinterConfig();
@@ -67,7 +71,7 @@ public class QRService {
     // 자산 라벨 출력
     public void PrintAssetLabel(Long assetNo) {
         CommonAsset commonAsset = commonAssetRepository.findById(assetNo).orElseThrow();
-        String url = "http://localhost:5173/asset1/" + commonAsset.getAssetCode();
+        String url = QRurl + commonAsset.getAssetCode();
         //String url = "http://125.6.38.5:5173/jsx/" + commonAsset.getAssetCode();
         // 프린터 열기
         Open("","");
