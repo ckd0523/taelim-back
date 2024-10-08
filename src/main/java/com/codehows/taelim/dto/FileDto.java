@@ -2,6 +2,7 @@ package com.codehows.taelim.dto;
 
 
 import com.codehows.taelim.constant.FileType;
+import com.codehows.taelim.entity.CommonAsset;
 import lombok.*;
 
 @Getter
@@ -12,6 +13,7 @@ import lombok.*;
 @Builder
 public class FileDto {
 
+    private Long assetNo;
     private Long fileNo;
     private String oriFileName;
     private String fileName;

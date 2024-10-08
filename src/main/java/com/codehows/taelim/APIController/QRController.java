@@ -1,6 +1,7 @@
 package com.codehows.taelim.APIController;
 
 import com.codehows.taelim.constant.Approval;
+import com.codehows.taelim.constant.FileType;
 import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Demand;
@@ -10,6 +11,7 @@ import com.codehows.taelim.service.QRService;
 import com.codehows.taelim.service.RegisterService;
 import com.codehows.taelim.service.UpdateService;
 import com.google.zxing.WriterException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -18,6 +20,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import javax.imageio.ImageIO;
@@ -40,13 +43,13 @@ public class QRController {
     private final CommonAssetRepository commonAssetRepository;
 
     //QR 생성하는곳
-    @PostMapping("/generateQRCode")
-    public ResponseEntity<String> generateQRCode(@RequestBody List<Long> assetNo) {
-        for(Long id : assetNo) {
-            qrCodeService.PrintAssetLabel(id);
-        }
-        return ResponseEntity.ok("");
-    }
+//    @PostMapping("/generateQRCode")
+//    public ResponseEntity<String> generateQRCode(@RequestBody List<Long> assetNo) {
+//        for(Long id : assetNo) {
+//            qrCodeService.PrintAssetLabel(id);
+//        }
+//        return ResponseEntity.ok("");
+//    }
 
 
 //    //QR 조회
@@ -292,5 +295,23 @@ public class QRController {
         public List<AssetDto> test() {
             return assetService.getAssetDetail3();
         }
+
+
+    // 파일 업데이트 API
+    @PostMapping("/{assetCode}/files")
+    public ResponseEntity<String> updateAssetFiles(
+            @PathVariable String assetCode,
+            @RequestParam("files") List<MultipartFile> newFiles,
+            @RequestParam("fileType") FileType fileType) {
+
+        try {
+            // 파일 업데이트 서비스 호출
+            registerService.updateAssetFiles(assetCode, newFiles, fileType);
+            return ResponseEntity.ok("파일이 성공적으로 업데이트되었습니다.");
+        } catch (Exception e) {
+            // 오류 발생 시
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업데이트 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
+}
 

@@ -10,10 +10,10 @@ public class EZioLib
 {
 	public interface API extends Library
 	{	
-		//String path = API.class.getResource("/").getPath().replaceAll("%20", " ").substring(1) + "Ezio64.dll";
-		String path = "C:/taelim-back/src/main/resources/Ezio64.dll"; // 절대 경로로 변경
-		//String path = API.class.getClassLoader().getResource("Ezio32.dll").getPath();
-		//String path = API.class.getResource("/Ezio64.dll").getPath();
+		//String path = API.class.getResource("classpath:").getPath().replaceAll("%20", " ").substring(1) + "EZio64.dll";
+		String path = "C:/taelim-back/build/resources/main/Ezio64.dll"; // 절대 경로
+		//String path = Objects.requireNonNull(API.class.getResource("classpath:EZio64.dll")).getPath();
+		//String path = API.class.getClassLoader().getResource("classpath:EZio64.dll").getPath().replaceAll("%20", " ");;
 		API INSTANCE = (API) Native.loadLibrary(path, API.class);
 		
 		public int openport(String strPort);
