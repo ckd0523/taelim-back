@@ -1,13 +1,13 @@
 package com.codehows.taelim.service;
 
-import com.codehows.taelim.constant.Approval;
-import com.codehows.taelim.constant.AssetClassification;
+import com.codehows.taelim.constant.*;
 import com.codehows.taelim.dto.AssetDisposeDto;
 import com.codehows.taelim.dto.AssetUpdateDto;
 import com.codehows.taelim.dto.ExcelDto;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -22,8 +25,6 @@ import java.util.stream.Collectors;
 
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
-import com.codehows.taelim.constant.AssetLocation;
-import com.codehows.taelim.constant.Department;
 import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
@@ -31,6 +32,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -724,7 +726,6 @@ public class RegisterService {
         updateAssetBasedOnClassification(updateAsset, existAsset);
 
         //파일 복사
-        //파일 복사
         List<FileDto> files = allUpdateDto.getAssetDto().getFiles();
         for (FileDto fileDto : files) {
             File file = new File();
@@ -1055,146 +1056,133 @@ public class RegisterService {
     }
 
     // 파일 수정 및 등록 서비스 메서드
-    public void updateAssetFiles(String assetCode, List<FileDto> fileDtos) {
+    public void updateAssetFiles(String assetCode, List<MultipartFile> newFiles, FileType fileType) {
+        // 1. assetCode로 CommonAsset 조회
+        Optional<CommonAsset> optionalAsset = commonAssetRepository.findByAssetCode(assetCode);
 
-        // 1. assetCode에 해당하는 CommonAsset 객체 조회
-        CommonAsset asset = commonAssetRepository.findByAssetCode(assetCode)
-                .orElseThrow(() -> new EntityNotFoundException("Asset not found"));
+        // 2. Asset이 존재하지 않을 경우 처리
+        CommonAsset asset = optionalAsset.orElseThrow(() ->
+                new IllegalArgumentException("해당 assetCode에 대한 자산을 찾을 수 없습니다: " + assetCode));
 
-        // 2. 기존 파일 목록 가져오기
+        // 3. 기존 파일 정보 조회 (assetCode로 파일 리스트를 가져옴)
         List<File> existingFiles = fileRepository.findByAssetCode(assetCode);
 
-        // 3. 파일 수정 또는 유지
-        for (FileDto fileDto : fileDtos) {
-            // 파일번호가 null이 아니면 기존 파일을 수정하는 로직
-            if (fileDto.getFileNo() != null) {
-                File existingFile = existingFiles.stream()
-                        .filter(file -> file.getFileNo().equals(fileDto.getFileNo()))
-                        .findFirst()
-                        .orElseThrow(() -> new EntityNotFoundException("File not found"));
+        // 4. 새롭게 사용할 FileDto 리스트 생성
+        List<FileDto> updatedFileDtos = new ArrayList<>();
 
-                // 필요한 정보만 업데이트
-                existingFile.setOriFileName(fileDto.getOriFileName());
-                existingFile.setFileSize(fileDto.getFileSize());
-                existingFile.setFileType(fileDto.getFileType());
+        // 5. 기존 파일을 Map으로 변환하여 최신 파일 관리
+        Map<FileType, File> latestFilesMap = new HashMap<>();
+        for (File existingFile : existingFiles) {
+            latestFilesMap.put(existingFile.getFileType(), existingFile);
+        }
 
-                // 필요한 경우 추가 정보 수정
+        // 6. 새롭게 추가할 파일 정보 처리
+        for (MultipartFile newFile : newFiles) {
+            // 원본 파일 이름 가져오기
+            String originalFileName = newFile.getOriginalFilename();
 
-                // 파일 엔티티 저장 (수정 후)
-                fileRepository.save(existingFile);
+            // 확장자 가져오기
+            String extension = originalFileName != null && originalFileName.contains(".") ?
+                    originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
+
+            // UUID 생성 및 파일 저장 경로 설정
+            String uuid = UUID.randomUUID().toString();
+            String saveFileName = uuid + extension;
+            String url = fileUrl + saveFileName; // fileUrl은 파일 접근 URL
+            String savePath = filePath + saveFileName; // c드라이브 fileUpload에 저장
+
+            // 새롭게 추가된 파일에 대한 FileDto 생성
+            FileDto newFileDto = new FileDto();
+            newFileDto.setAssetNo(asset.getAssetNo());
+            newFileDto.setFileNo(null); // 새 파일이기 때문에 fileNo는 null
+            newFileDto.setFileName(saveFileName);
+            newFileDto.setOriFileName(originalFileName);
+            newFileDto.setFileSize(newFile.getSize()); // 파일의 실제 크기 설정
+            newFileDto.setFileExt(extension);
+            newFileDto.setFileURL(url);
+            newFileDto.setFileType(fileType);
+
+            // 기존 파일과 새 파일을 비교하여 최신 파일 유지
+            if (!latestFilesMap.containsKey(fileType) ||
+                    (newFileDto.getFileNo() == null && !existingFiles.isEmpty())) { // 새 파일이 존재하고 기존 파일이 있는 경우
+                updatedFileDtos.add(newFileDto);
             } else {
-                // 새로운 파일 추가 로직
-                File newFile = new File();
-                newFile.setAssetNo(asset);
+                // 기존 파일이 있는 경우 최신 파일 비교
+                File existingFile = latestFilesMap.get(fileType);
+                // fileNo를 비교하여 최신 파일 결정
+                if (existingFile.getFileNo() > (newFileDto.getFileNo() == null ? -1 : newFileDto.getFileNo())) {
+                    // 기존 파일이 최신인 경우
+                    FileDto existingFileDto = new FileDto();
+                    existingFileDto.setAssetNo(existingFile.getAssetNo().getAssetNo());
+                    existingFileDto.setFileNo(existingFile.getFileNo());
+                    existingFileDto.setOriFileName(existingFile.getOriFileName());
+                    existingFileDto.setFileName(existingFile.getFileName());
+                    existingFileDto.setFileSize(existingFile.getFileSize());
+                    existingFileDto.setFileExt(existingFile.getFileExt());
+                    existingFileDto.setFileURL(existingFile.getFileURL());
+                    existingFileDto.setFileType(existingFile.getFileType());
 
-                // 기존 파일 이름에서 확장자 추출
-                String originalFileName = fileDto.getOriFileName();
-                String extension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
-
-                // 새로운 UUID로 파일 이름 생성
-                String uuid = UUID.randomUUID().toString();
-                String saveFileName = uuid + extension;
-                String savePath = filePath + saveFileName;
-
-                // 새로운 URL 생성
-                String url = fileUrl + saveFileName;
-                newFile.setFileURL(url);
-                newFile.setOriFileName(originalFileName);
-                newFile.setFileName(saveFileName);
-                newFile.setFileExt(extension);
-                newFile.setFileSize(fileDto.getFileSize());
-                newFile.setFileType(fileDto.getFileType());
-
-                // 파일 복사 또는 저장
-                try {
-                    java.io.File dir = new java.io.File(filePath);
-                    if (!dir.exists()) {
-                        dir.mkdirs();
-                    }
-
-                    String existingFileName = fileDto.getFileURL().substring(fileDto.getFileURL().lastIndexOf('/') + 1);
-                    java.io.File existingFile = new java.io.File(filePath + existingFileName);
-
-                    try (FileInputStream fis = new FileInputStream(existingFile);
-                         FileOutputStream fos = new FileOutputStream(savePath)) {
-                        byte[] buffer = new byte[1024];
-                        int length;
-                        while ((length = fis.read(buffer)) > 0) {
-                            fos.write(buffer, 0, length);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        continue;
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    continue;
+                    updatedFileDtos.add(existingFileDto);
+                } else {
+                    // 새 파일이 최신인 경우
+                    updatedFileDtos.add(newFileDto);
                 }
+            }
 
-                // 새로운 파일 저장
-                fileRepository.save(newFile);
+            // 파일 저장
+            java.io.File saveFile = new java.io.File(savePath); // Java File 클래스를 사용하여 저장
+            try {
+                newFile.transferTo(saveFile); // 파일을 지정한 경로에 저장
+            } catch (IOException e) {
+                e.printStackTrace(); // 에러 로그 출력
             }
         }
+
+        // 7. 업데이트된 파일 리스트 저장
+        List<File> filesToSave = updatedFileDtos.stream()
+                .map(this::convertToFile) // FileDto를 File로 변환
+                .collect(Collectors.toList());
+
+        System.out.println("Number of files to save: " + filesToSave.size()); // 저장할 파일 개수 로그 출력
+
+        try {
+            fileRepository.saveAll(filesToSave);
+        } catch (Exception e) {
+            e.printStackTrace(); // 에러 로그 출력
+        }
+    }
+
+
+
+    // FileDto를 File로 변환하는 메서드
+    private File convertToFile(FileDto fileDto) {
+        File file = new File();
+        file.setFileNo(fileDto.getFileNo());
+
+        // assetNo 설정
+        CommonAsset asset = commonAssetRepository.findById(fileDto.getAssetNo())
+                .orElseThrow(() -> new IllegalArgumentException("해당 Asset을 찾을 수 없습니다: " + fileDto.getAssetNo()));
+        file.setAssetNo(asset); // assetNo를 FK로 설정
+
+        file.setOriFileName(fileDto.getOriFileName());
+        file.setFileName(fileDto.getFileName());
+        file.setFileSize(fileDto.getFileSize());
+        file.setFileExt(fileDto.getFileExt());
+        file.setFileURL(fileDto.getFileURL());
+        file.setFileType(fileDto.getFileType());
+
+        return file;
+    }
+
+
+    // 파일 확장자 가져오기
+    private String getFileExtension(MultipartFile file) {
+        String filename = file.getOriginalFilename();
+        if (filename != null && filename.contains(".")) {
+            return filename.substring(filename.lastIndexOf('.'));
+        }
+        return "";
     }
 }
-
-//    public AssetUpdateResponse updateAssetWithFiles(String assetCode, AssetUpdateDto assetDto) {
-//        // 기존 입력되어있는 assetCode 조회
-//        CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
-//                .orElseThrow(() -> new RuntimeException("자산코드를 찾을수 없음 " + assetCode));
-//
-//        // 자산 상태가 수정요청일때 Unconfirmed인지 확인
-//        if (existAsset.getApproval() == Approval.UNCONFIRMED) {
-//            return new AssetUpdateResponse("이미 수정 요청이 들어간 자산입니다.", null);
-//        } else if (existAsset.getApproval() == Approval.UNCONFIRMED && existAsset.getDisposalStatus() == Boolean.TRUE) {
-//            return new AssetUpdateResponse("이미 폐기 요청이 들어간 자산입니다.", null);
-//        } else if (existAsset.getApproval() == Approval.REFUSAL || existAsset.getApproval() == Approval.APPROVE) {
-//
-//            // 자산 정보를 업데이트하기 위한 새로운 객체 생성
-//            CommonAsset updateAsset = new CommonAsset();
-//            updateAsset.setAssetCode(existAsset.getAssetCode());
-//            updateAsset.setAssetName(existAsset.getAssetName());
-//            // ... (다른 필드들 업데이트)
-//
-//            // 파일 목록 처리
-//            // 기존 자산의 파일 목록 가져오기
-//            List<File> existingFiles = fileRepository.findByAssetCode(assetCode);
-//
-//            // assetDto에서 새로 업로드된 파일 목록 가져오기
-//            List<FileDto> uploadedFilesDto = assetDto.getFiles(); // 여기에서 uploadedFilesDto를 정의합니다.
-//            List<File> uploadedFiles = convertToFileList(uploadedFilesDto); // DTO를 File 객체로 변환하는 메서드
-//
-//            // 기존 파일 유지 및 새로 업로드된 파일 추가
-//            if (uploadedFiles != null && !uploadedFiles.isEmpty()) {
-//                existingFiles.clear(); // 기존 파일을 비우고 새로 업로드된 파일만 추가
-//                existingFiles.addAll(uploadedFiles);
-//            }
-//
-//            // 파일 목록을 데이터베이스에 저장
-//            fileRepository.saveAll(existingFiles);
-//
-//            // 업데이트된 자산 정보를 저장
-//            commonAssetRepository.save(updateAsset);
-//
-//            // 자산 수정 성공 메시지 반환
-//            return new AssetUpdateResponse("자산 수정 완료 : " + updateAsset.getAssetCode(), updateAsset.getAssetCode());
-//        }
-//
-//        // 상태가 다를 경우 기본 응답
-//        return new AssetUpdateResponse("알 수 없는 자산 상태입니다.", null);
-//    }
-//
-//    // FileDto를 File 객체로 변환하는 메서드
-//    private List<File> convertToFileList(List<FileDto> uploadedFilesDto) {
-//        List<File> fileList = new ArrayList<>();
-//        for (FileDto fileDto : uploadedFilesDto) {
-//            File file = new File();
-//            // 파일 정보 설정 (예: file.setFileName(fileDto.getFileName()); 등)
-//            // ...
-//            fileList.add(file);
-//        }
-//        return fileList;
-//    }
 
 

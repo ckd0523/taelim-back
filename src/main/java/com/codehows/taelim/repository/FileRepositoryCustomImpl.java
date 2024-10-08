@@ -1,5 +1,6 @@
 package com.codehows.taelim.repository;
 
+import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.File;
 import com.codehows.taelim.entity.QCommonAsset;
 import com.codehows.taelim.entity.QFile;
@@ -33,15 +34,17 @@ public class FileRepositoryCustomImpl implements FileRepositoryCustom{
                 .orderBy(commonAsset.assetNo.desc()) // 최신 assetNo 기준으로 정렬
                 .fetchFirst(); // 최신 assetNo 하나 가져오기
 
-        if (latestAssetNo != null) {
-            // 최신 assetNo에 해당하는 파일을 조회
-            return new JPAQuery<>(entityManager)
-                    .select(file)
-                    .from(file)
-                    .where(file.assetNo.assetNo.eq(latestAssetNo)) // assetNo로 조건 설정
-                    .fetch(); // 모든 파일 결과 반환
+        // latestAssetNo가 null인 경우 빈 리스트를 반환
+        if (latestAssetNo == null) {
+            return Collections.emptyList();
         }
 
-        return Collections.emptyList(); // 파일이 없으면 빈 리스트 반환
+        // 최신 assetNo에 해당하는 파일을 조회
+        return new JPAQuery<>(entityManager)
+                .select(file)
+                .from(file)
+                .where(file.assetNo.assetNo.eq(latestAssetNo)) // assetNo로 조건 설정
+                .fetch(); // 모든 파일 결과 반환
     }
+
 }

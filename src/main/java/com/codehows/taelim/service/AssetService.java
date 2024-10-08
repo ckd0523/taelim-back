@@ -1273,6 +1273,8 @@ public class AssetService {
             List<FileDto> fileDtos = files.stream()
                     .map(file -> {
                         FileDto fileDto = new FileDto();
+                        fileDto.setAssetNo(file.getAssetNo().getAssetNo());
+                        fileDto.setFileNo(file.getFileNo());
                         fileDto.setOriFileName(file.getOriFileName());
                         fileDto.setFileName(file.getFileName());
                         fileDto.setFileSize(file.getFileSize());

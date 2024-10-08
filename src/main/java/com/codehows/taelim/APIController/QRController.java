@@ -1,6 +1,7 @@
 package com.codehows.taelim.APIController;
 
 import com.codehows.taelim.constant.Approval;
+import com.codehows.taelim.constant.FileType;
 import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Demand;
@@ -19,6 +20,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import javax.imageio.ImageIO;
@@ -295,21 +297,21 @@ public class QRController {
         }
 
 
-    // 개별 파일 수정 및 추가 API
+    // 파일 업데이트 API
     @PostMapping("/{assetCode}/files")
-    public ResponseEntity<String> updateAssetFiles(@PathVariable String assetCode,
-                                                   @RequestBody List<FileDto> fileDtos) {
+    public ResponseEntity<String> updateAssetFiles(
+            @PathVariable String assetCode,
+            @RequestParam("files") List<MultipartFile> newFiles,
+            @RequestParam("fileType") FileType fileType) {
+
         try {
-            // 파일 수정 및 추가 서비스 호출
-            registerService.updateAssetFiles(assetCode, fileDtos);
-            return ResponseEntity.ok("Files updated successfully.");
-        } catch (EntityNotFoundException e) {
-            // 해당 assetCode 또는 파일이 없는 경우
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            // 파일 업데이트 서비스 호출
+            registerService.updateAssetFiles(assetCode, newFiles, fileType);
+            return ResponseEntity.ok("파일이 성공적으로 업데이트되었습니다.");
         } catch (Exception e) {
-            // 기타 예외 처리
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating files.");
+            // 오류 발생 시
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업데이트 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
-    }
+}
 
