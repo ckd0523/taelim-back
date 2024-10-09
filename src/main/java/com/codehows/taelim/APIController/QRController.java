@@ -43,6 +43,7 @@ public class QRController {
     private final RegisterService registerService;
     private final CommonAssetRepository commonAssetRepository;
 
+    
     //QR 생성하는곳
 //    @PostMapping("/generateQRCode")
 //    public ResponseEntity<String> generateQRCode(@RequestBody List<Long> assetNo) {
