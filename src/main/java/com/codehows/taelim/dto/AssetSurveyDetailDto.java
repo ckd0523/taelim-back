@@ -21,11 +21,12 @@ public class AssetSurveyDetailDto {
     private Long infoNo;
     private String assetSurveyContent;
 
+    //여기 수정함
     public AssetSurveyDetailDto(CommonAsset commonAsset, AssetSurveyDetail assetSurveyDetail) {
         this.assetCode = commonAsset.getAssetCode();
         this.assetName = commonAsset.getAssetName();
-        this.assetOwner = commonAsset.getAssetOwner().getUName();
-        this.assetSecurityManager = commonAsset.getAssetSecurityManager().getUName();
+        //this.assetOwner = commonAsset.getAssetOwner().getUName();
+        //this.assetSecurityManager = commonAsset.getAssetSecurityManager().getUName();
         this.exactLocation = assetSurveyDetail.getExactLocation();
         this.assetStatus = assetSurveyDetail.getAssetStatus();
         this.infoNo = assetSurveyDetail.getInfoNo();
