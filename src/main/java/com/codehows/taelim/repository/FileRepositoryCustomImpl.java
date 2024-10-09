@@ -28,11 +28,10 @@ public class FileRepositoryCustomImpl implements FileRepositoryCustom{
 
         // 가장 최신 assetNo를 가진 CommonAsset을 먼저 조회
         Long latestAssetNo = new JPAQuery<>(entityManager)
-                .select(commonAsset.assetNo) // assetNo만 선택
+                .select(commonAsset.assetNo.max()) // 가장 큰 assetNo 선택
                 .from(commonAsset)
                 .where(commonAsset.assetCode.eq(assetCode))
-                .orderBy(commonAsset.assetNo.desc()) // 최신 assetNo 기준으로 정렬
-                .fetchFirst(); // 최신 assetNo 하나 가져오기
+                .fetchOne(); // 단일 결과 반환
 
         // latestAssetNo가 null인 경우 빈 리스트를 반환
         if (latestAssetNo == null) {

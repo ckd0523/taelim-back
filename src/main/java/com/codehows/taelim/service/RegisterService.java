@@ -1058,14 +1058,26 @@ public class RegisterService {
     // 파일 수정 및 등록 서비스 메서드
     public void updateAssetFiles(String assetCode, List<MultipartFile> newFiles, FileType fileType) {
         // 1. assetCode로 CommonAsset 조회
-        Optional<CommonAsset> optionalAsset = commonAssetRepository.findByAssetCode(assetCode);
+        Optional<CommonAsset> optionalAsset = commonAssetRepository.findLatestAssetCode(assetCode);
 
+        // Optional의 값 출력
+        if (optionalAsset.isPresent()) {
+            System.out.println("Found asset: " + optionalAsset.get());
+        } else {
+            System.out.println("No asset found for assetCode: " + assetCode);
+        }
         // 2. Asset이 존재하지 않을 경우 처리
         CommonAsset asset = optionalAsset.orElseThrow(() ->
                 new IllegalArgumentException("해당 assetCode에 대한 자산을 찾을 수 없습니다: " + assetCode));
 
         // 3. 기존 파일 정보 조회 (assetCode로 파일 리스트를 가져옴)
         List<File> existingFiles = fileRepository.findByAssetCode(assetCode);
+
+        // 파일 리스트 출력
+        System.out.println("Number of existing files for assetCode " + assetCode + ": " + existingFiles.size());
+        for (File file : existingFiles) {
+            System.out.println("File No: " + file.getFileNo() + ", File Name: " + file.getFileName());
+        }
 
         // 4. 새롭게 사용할 FileDto 리스트 생성
         List<FileDto> updatedFileDtos = new ArrayList<>();

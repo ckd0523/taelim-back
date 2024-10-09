@@ -4,6 +4,8 @@ import com.codehows.taelim.constant.AssetClassification;
 import com.codehows.taelim.dto.AssetDto;
 import com.codehows.taelim.entity.CommonAsset;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
