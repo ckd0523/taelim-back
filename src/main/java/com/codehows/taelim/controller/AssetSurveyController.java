@@ -115,7 +115,7 @@ public class AssetSurveyController {
         //System.out.println("자산 조사 상세 타입 : " + updateDto.isRequestType());
         //System.out.println("자산 조사 상세 값 : " + updateDto.isUpdateValue());
         //System.out.println("자산 조사 상세 번호 잘 오나 : " + updateDto.getInfoNo());
-        System.out.println("자산 조사 상세 내용 : " + updateDto.getContent());
+        //System.out.println("자산 조사 상세 내용 : " + updateDto.getContent());
 
         boolean confirm = assetSurveyService.updateAssetSurveyDetail(updateDto);
         if(confirm) {
@@ -128,10 +128,10 @@ public class AssetSurveyController {
     @PutMapping("/updateAssetSurveyDetail2")
     public ResponseEntity<Void> updateAssetSurveyDetail2(@RequestBody AssetSurveyUpdateDto updateDto) {
         //dto에 있는 lombok이 boolean은 get으로 안하고 is...으로 함 레전드 처음 알았네
-        System.out.println("자산 조사 상세 타입 : " + updateDto.isRequestType());
-        System.out.println("자산 조사 상세 값 : " + updateDto.isUpdateValue());
-        System.out.println("자산 조사 상세 번호 잘 오나 : " + updateDto.getInfoNo());
-        System.out.println("자산 조사 상세 내용 : " + updateDto.getContent());
+        //System.out.println("자산 조사 상세 타입 : " + updateDto.isRequestType());
+        //System.out.println("자산 조사 상세 값 : " + updateDto.isUpdateValue());
+        //System.out.println("자산 조사 상세 번호 잘 오나 : " + updateDto.getInfoNo());
+        //System.out.println("자산 조사 상세 내용 : " + updateDto.getContent());
 
         boolean confirm = assetSurveyService.updateAssetSurveyDetail(updateDto);
         if(confirm) {

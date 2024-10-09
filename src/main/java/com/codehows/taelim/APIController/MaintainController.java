@@ -56,7 +56,7 @@ public class MaintainController {
 
     }
     @PostMapping("/file/upload/{repairNo}")
-    public ResponseEntity<String> uploadFile2(@PathVariable("repairNo") Long repairNo, @RequestParam MultipartFile file,   @RequestParam("repairType") String repairType){
+    public ResponseEntity<String> uploadFile2(@PathVariable("repairNo") Long repairNo, @RequestParam MultipartFile file,   @RequestParam("repairType") String repairType, @RequestParam(value = "deleteExisting", required = false) String deleteExisting){
 
         RepairHistory repairHistoryNo = repairService.findById(repairNo).orElseThrow(()->new RuntimeException("유지보수 번호를 찾을 수 없습니다."));
         RepairType type;
@@ -66,7 +66,21 @@ public class MaintainController {
         }catch (IllegalArgumentException e) {
             return new ResponseEntity<>("잘못된 파일 유형입니다.", HttpStatus.BAD_REQUEST);
         }
+
+
+        if ("true".equals(deleteExisting)) {
+            RepairFile existingFile = fileService.findByRepairNoAndType(repairHistoryNo, type);
+            System.out.println("existingFile " + existingFile);
+            if(existingFile != null) {
+                fileService.delete(existingFile);
+            }else{
+                System.out.println("No file found");
+            }
+        } else {
+            System.out.println("deleteExisting is false or not provided ");
+        }
         RepairFile savedFile = fileService.upload(file, repairHistoryNo,type);
+
 
 
         if(savedFile != null) {
@@ -85,6 +99,7 @@ public class MaintainController {
 
                 repairHistory.setRepairStartDate(repairDto.getRepairStartDate());
                 repairHistory.setRepairEndDate(repairDto.getRepairEndDate());
+                System.out.println(repairDto.getRepairStatus());
                 repairHistory.setRepairResult(repairDto.getRepairResult());
                 repairHistory.setRepairStatus(repairDto.getRepairStatus());
                 if(repairDto.getAssetNo() != null) {

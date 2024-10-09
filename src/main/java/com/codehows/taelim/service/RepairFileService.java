@@ -22,7 +22,7 @@ public class RepairFileService {
     @Value("${file.path}")
     private String filePath;
 
-    @Value("${file.url}")
+    @Value("http://localhost:8080/maintain/")
     private String fileUrl;
 
     public RepairFileService(RepairFileRepository repairFileRepository) {
@@ -73,13 +73,28 @@ public class RepairFileService {
         return repairFileRepository.save(toRepairFile);
     }
 
+    public void delete(RepairFile file) {
+        try{
+            File deleteFile = new File(filePath + file.getFileName());
+            if(deleteFile.exists()) {
+                deleteFile.delete();
+            }
+            repairFileRepository.delete(file);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public RepairFile findByRepairNoAndType(RepairHistory repairHistory, RepairType type) {
+        return repairFileRepository.findByRepairNoAndRepairType(repairHistory, type);
+    }
+
 
     public Resource getImage(String fileName) {
         Resource resource = null;
 
 
         try{
-            resource = new UrlResource("file: " + filePath + fileName );
+            resource = new UrlResource("file:" + filePath + fileName );
         }catch (Exception exception) {
             exception.printStackTrace();
             return null;
