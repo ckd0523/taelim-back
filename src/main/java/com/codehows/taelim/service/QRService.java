@@ -7,6 +7,7 @@ import com.codehows.taelim.godex.GodexPrinter;
 import com.codehows.taelim.godex.clsPrinterCommand;
 import com.codehows.taelim.godex.clsPrinterConfig;
 import com.codehows.taelim.repository.CommonAssetRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +21,17 @@ public class QRService {
     @Value("${qr.url}")
     private String QRurl;
 
-    EZioLib.API API = EZioLib.API.INSTANCE;
-    clsPrinterConfig Config = new clsPrinterConfig();
-    clsPrinterCommand Command = new clsPrinterCommand();
+    //EZioLib.API API = EZioLib.API.INSTANCE;
+    private final EZioLib.API API;
+    @Autowired
+    public QRService(CommonAssetRepository commonAssetRepository) {
+        this.commonAssetRepository = commonAssetRepository;
+        this.API = EZioLib.API.INSTANCE;
+        // ... (나머지 초기화 코드)
+    }
+
+//    clsPrinterConfig Config = new clsPrinterConfig();
+//    clsPrinterCommand Command = new clsPrinterCommand();
 
 
     private final CommonAssetRepository commonAssetRepository;
