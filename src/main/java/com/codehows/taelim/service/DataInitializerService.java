@@ -134,7 +134,7 @@ public class DataInitializerService {
             amountSetRepository.insertAmountSet(0L, 0L);
 
             // Member 데이터 삽입
-            for (int i = 1; i <= 195; i++) {
+            for (int i = 1; i <= 39; i++) {
                 Member member = new Member();
                 member.setEmail("user" + i + "@example.com");
                 member.setPassword("password" + i);
@@ -148,7 +148,7 @@ public class DataInitializerService {
             int assetCountPerClassification = 15;  // 각 분류당 15개씩 생
 
             // CommonAsset 첫번째 데이터 삽입
-            for (int i = 1; i <= 195; i++) {
+            for (int i = 1; i <= 39; i++) {
 
                 Member member = new Member();
                 member.setEmail("user" + i + "@example.com");
@@ -163,31 +163,31 @@ public class DataInitializerService {
                 String assetCode = registerService.generateAssetCode(classification);
                 asset.setAssetCode(assetCode);
 
-                if (i <= 15) {
+                if (i <= 3) {
                     asset.setAssetClassification(AssetClassification.INFORMATION_PROTECTION_SYSTEM);
-                }else if (i <= 30) {
+                }else if (i <= 6) {
                     asset.setAssetClassification(AssetClassification.APPLICATION_PROGRAM);
-                } else if (i <= 45) {
+                } else if (i <= 9) {
                     asset.setAssetClassification(AssetClassification.SOFTWARE);
-                } else if (i <= 60) {
+                } else if (i <= 12) {
                     asset.setAssetClassification(AssetClassification.ELECTRONIC_INFORMATION);
-                } else if (i <= 75) {
+                } else if (i <= 15) {
                     asset.setAssetClassification(AssetClassification.DOCUMENT);
-                } else if (i <= 90) {
+                } else if (i <= 18) {
                     asset.setAssetClassification(AssetClassification.PATENTS_AND_TRADEMARKS);
-                } else if (i <= 105) {
+                } else if (i <= 21) {
                     asset.setAssetClassification(AssetClassification.ITSYSTEM_EQUIPMENT);
-                } else if (i <= 120) {
+                } else if (i <= 24) {
                     asset.setAssetClassification(AssetClassification.ITNETWORK_EQUIPMENT);
-                } else if (i <= 135) {
+                } else if (i <= 27) {
                     asset.setAssetClassification(AssetClassification.TERMINAL);
-                } else if (i <= 150) {
+                } else if (i <= 30) {
                     asset.setAssetClassification(AssetClassification.FURNITURE);
-                } else if (i <= 165) {
+                } else if (i <= 33) {
                     asset.setAssetClassification(AssetClassification.DEVICES);
-                } else if (i <= 180) {
+                } else if (i <= 36) {
                     asset.setAssetClassification(AssetClassification.CAR);
-                } else if (i <= 195) {
+                } else {
                     asset.setAssetClassification(AssetClassification.OTHERASSETS);
                 }
                 asset.setAssetBasis(AssetBasis.COMMON);
