@@ -277,18 +277,18 @@ public class RegisterService {
         CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
                 .orElseThrow(() -> new RuntimeException("자산코드를 찾을수 없음 " + assetCode));
 
-        // 자산 상태가 수정요청일때 Unconfirmed인지 확인
-        if (existAsset.getApproval() == Approval.UNCONFIRMED) {
-            // 자산 상태가 UNCONFIRMED이면 수정 요청 불가 메시지 반환
-            return new AssetUpdateResponse("이미 수정 요청이 들어간 자산입니다.", null);
-        }
-
-        // 자산 상태가 폐기 요청일 떄 Uncofirmed인지 확인
-        else if (existAsset.getApproval() == Approval.UNCONFIRMED && existAsset.getDisposalStatus() == Boolean.TRUE) {
-            //
-            return new AssetUpdateResponse( "이미 폐기 요청이 들어간 자산입니다.", null);
-        }
-        else if (existAsset.getApproval() == Approval.REFUSAL || existAsset.getApproval() == Approval.APPROVE) {
+//        // 자산 상태가 수정요청일때 Unconfirmed인지 확인
+//        if (existAsset.getApproval() == Approval.UNCONFIRMED) {
+//            // 자산 상태가 UNCONFIRMED이면 수정 요청 불가 메시지 반환
+//            return new AssetUpdateResponse("이미 수정 요청이 들어간 자산입니다.", null);
+//        }
+//
+//        // 자산 상태가 폐기 요청일 떄 Uncofirmed인지 확인
+//        else if (existAsset.getApproval() == Approval.UNCONFIRMED && existAsset.getDisposalStatus() == Boolean.TRUE) {
+//            //
+//            return new AssetUpdateResponse( "이미 폐기 요청이 들어간 자산입니다.", null);
+//        }
+//        else if (existAsset.getApproval() == Approval.REFUSAL || existAsset.getApproval() == Approval.APPROVE) {
 
         // 기존 자산 정보에 새로운 자산 생성
         CommonAsset updateAsset = new CommonAsset();
@@ -346,6 +346,63 @@ public class RegisterService {
         // 자산 분류에 따라 관련된 데이터베이스 저장
         saveRelatedEntity(assetDto, latestAsset);
 
+            //파일 복사
+            List<FileDto> files = assetDto.getFiles();
+            for (FileDto fileDto : files) {
+                File file = new File();
+                file.setAssetNo(updateAsset);
+
+                // 기존 파일 이름에서 확장자 추출
+                String originalFileName = fileDto.getOriFileName();
+                String extension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
+
+                // 새로운 UUID로 파일 이름 생성
+                String uuid = UUID.randomUUID().toString();
+                String saveFileName = uuid + extension;
+                String savePath = filePath + saveFileName;
+
+                // 새로운 URL 생성
+                String url = fileUrl + saveFileName; // 저장한 파일의 URL 생성
+                file.setFileURL(url);
+                file.setOriFileName(originalFileName);
+                file.setFileName(saveFileName);
+                file.setFileExt(extension);
+                file.setFileSize(fileDto.getFileSize()); // 기존 파일 크기 사용
+                file.setFileType(fileDto.getFileType()); // 기존 파일 타입 사용
+
+                // 실제 파일 저장 경로 생성
+                try {
+                    java.io.File dir = new java.io.File(filePath);  // filePath 에 해당하는 경로를 File 객체로 생성
+                    if (!dir.exists()) {
+                        dir.mkdirs(); // 경로가 존재하지 않으면 생성
+                    }
+
+                    // 기존 URL에서 파일 이름 추출
+                    String existingFileName = fileDto.getFileURL().substring(fileDto.getFileURL().lastIndexOf('/') + 1);
+                    java.io.File existingFile = new java.io.File(filePath + existingFileName); // 기존 파일 경로
+
+                    // 파일 복사
+                    try (FileInputStream fis = new FileInputStream(existingFile);
+                         FileOutputStream fos = new FileOutputStream(savePath)) {
+                        byte[] buffer = new byte[1024];
+                        int length;
+                        while ((length = fis.read(buffer)) > 0) {
+                            fos.write(buffer, 0, length);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace(); // 예외 처리
+                        continue; // 다음 파일로 진행
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace(); // 예외 처리
+                    continue; // 다음 파일로 진행
+                }
+
+                // 파일 엔티티 저장
+                fileRepository.save(file);
+            }
+
         // 수정 이력 저장
         Demand demand = new Demand();
         //demand.setDemandBy(); 추후 사람
@@ -361,10 +418,10 @@ public class RegisterService {
 
         //자산 수정 성공 메시지 반환
         return new AssetUpdateResponse("자산 수정 완료 : " + newAssetNo, newAssetNo);
-        }
+        //}
 
         // 상태가 다를 경우 기본 응답 (추가할 상태가 있으면 여기서 처리 가능)
-        return new AssetUpdateResponse("알 수 없는 자산 상태입니다.", null);
+       // return new AssetUpdateResponse("알 수 없는 자산 상태입니다.", null);
         //return newAssetNo;
     }
 
@@ -374,19 +431,19 @@ public class RegisterService {
         CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
                 .orElseThrow(() -> new RuntimeException("자산코드를 찾을수 없음 " + assetCode));
 
-        // 자산 상태가 수정요청일때 Unconfirmed인지 확인
-        if (existAsset.getApproval() == Approval.UNCONFIRMED) {
-            // 자산 상태가 UNCONFIRMED이면 수정 요청 불가 메시지 반환
-            return new AssetUpdateResponse("이미 수정 요청이 들어간 자산입니다.", null);
-        }
-
-        // 자산 상태가 폐기 요청일 떄 Uncofirmed인지 확인
-        else if (existAsset.getApproval() == Approval.UNCONFIRMED && existAsset.getDisposalStatus() == Boolean.TRUE) {
-            //
-            return new AssetUpdateResponse( "이미 폐기 요청이 들어간 자산입니다.", null);
-        }
-
-        else if (existAsset.getApproval() == Approval.REFUSAL || existAsset.getApproval() == Approval.APPROVE) {
+//        // 자산 상태가 수정요청일때 Unconfirmed인지 확인
+//        if (existAsset.getApproval() == Approval.UNCONFIRMED) {
+//            // 자산 상태가 UNCONFIRMED이면 수정 요청 불가 메시지 반환
+//            return new AssetUpdateResponse("이미 수정 요청이 들어간 자산입니다.", null);
+//        }
+//
+//        // 자산 상태가 폐기 요청일 떄 Uncofirmed인지 확인
+//        else if (existAsset.getApproval() == Approval.UNCONFIRMED && existAsset.getDisposalStatus() == Boolean.TRUE) {
+//            //
+//            return new AssetUpdateResponse( "이미 폐기 요청이 들어간 자산입니다.", null);
+//        }
+//
+//        else if (existAsset.getApproval() == Approval.REFUSAL || existAsset.getApproval() == Approval.APPROVE) {
         // 기존 자산 정보에 새로운 자산 생성
         CommonAsset updateAsset = new CommonAsset();
         updateAsset.setAssetCode(existAsset.getAssetCode()); // 코드 동일하게 유지하고
@@ -459,9 +516,9 @@ public class RegisterService {
 
         // 자산 수정 성공 메시지 반환
         return new AssetUpdateResponse("자산 수정 등록 완료 : " + newAssetNo, newAssetNo);
-        }
+        //}
         // 상태가 다를 경우 기본 응답 (추가할 상태가 있으면 여기서 처리 가능)
-        return new AssetUpdateResponse("알 수 없는 자산 상태입니다.", null);
+        //return new AssetUpdateResponse("알 수 없는 자산 상태입니다.", null);
     }
     private void saveRelatedEntity(AssetUpdateDto assetDto, CommonAsset latestAsset) {
         if (latestAsset.getAssetClassification() == null) {
@@ -1056,7 +1113,7 @@ public class RegisterService {
     }
 
     // 파일 수정 및 등록 서비스 메서드
-    public void updateAssetFiles(String assetCode, List<MultipartFile> newFiles, FileType fileType) {
+    public void updateAssetFiles(String assetCode, List<MultipartFile> newFiles, List<FileType> fileTypes) {
         // 1. assetCode로 CommonAsset 조회
         Optional<CommonAsset> optionalAsset = commonAssetRepository.findLatestAssetCode(assetCode);
 
@@ -1064,39 +1121,21 @@ public class RegisterService {
         CommonAsset asset = optionalAsset.orElseThrow(() ->
                 new IllegalArgumentException("해당 assetCode에 대한 자산을 찾을 수 없습니다: " + assetCode));
 
-        // 3. 기존 파일 정보 조회 (assetCode로 파일 리스트를 가져옴)
-        List<File> existingFiles = fileRepository.findByAssetCode(assetCode);
+        Map<FileType, List<MultipartFile>> newFilesByType = new HashMap<>();
+        for (int i = 0; i < newFiles.size(); i++) {
+            MultipartFile file = newFiles.get(i);
+            FileType fileType = fileTypes.get(i); // 각 파일에 해당하는 fileType을 가져옴
 
-        // 4. 기존 파일을 fileType으로 구분하기 위한 Map 생성
-        Map<FileType, List<File>> filesByType = existingFiles.stream()
-                .collect(Collectors.groupingBy(File::getFileType));
+            newFilesByType.computeIfAbsent(fileType, k -> new ArrayList<>()).add(file); // fileType으로 새 파일 분류
+        }
 
-        // 5. 새로운 파일만 처리
-        for (MultipartFile newFile : newFiles) {
-            if (newFile != null && !newFile.isEmpty()) {
-                List<File> existingFilesForType = filesByType.get(fileType);
-
-                switch (fileType) {
-                    case PHOTO:
-                    case WARRANTY_DETAILS:
-                        // 해당 fileType에 대한 로직
-                        if (existingFilesForType != null && !existingFilesForType.isEmpty()) {
-                            // 기존 파일이 존재하면 업데이트
-                            updateExistingFile(existingFilesForType.get(0), newFile); // 첫 번째 파일만 업데이트 (필요에 따라 수정 가능)
-                        } else {
-                            // 기존 파일이 없으면 새로 추가
-                            saveNewFile(asset, newFile, fileType);
-                        }
-                        break;
-
-                    // 다른 파일 타입이 있을 경우 추가
-                    default:
-                        throw new IllegalArgumentException("지원하지 않는 파일 타입: " + fileType);
+        // 6. fileType에 맞는 처리
+        for (FileType type : newFilesByType.keySet()) {
+            List<MultipartFile> filesForType = newFilesByType.get(type);  // 해당 타입의 파일 리스트
+                // 기존 파일이 없으면 새로 추가
+                for (MultipartFile newFile : filesForType) {
+                    saveNewFile(asset, newFile, type);
                 }
-            } else {
-                // newFile이 null이거나 비어 있는 경우, 기존 파일은 유지
-                System.out.println("새 파일이 제공되지 않았으므로 기존 파일을 유지합니다: " + fileType);
-            }
         }
     }
 
@@ -1126,6 +1165,7 @@ public class RegisterService {
         try {
             newFile.transferTo(saveFile); // 파일 저장
             fileRepository.save(convertToFile(newFileDto)); // 파일 정보를 DB에 저장
+            System.out.println("파일 저장됨: " + originalFileName + " (저장 경로: " + savePath + ")");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1158,11 +1198,6 @@ public class RegisterService {
             e.printStackTrace();
         }
     }
-
-
-
-
-
 
     // FileDto를 File로 변환하는 메서드
     private File convertToFile(FileDto fileDto) {
