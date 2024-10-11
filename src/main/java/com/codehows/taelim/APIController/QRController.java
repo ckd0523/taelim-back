@@ -7,7 +7,7 @@ import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Demand;
 import com.codehows.taelim.repository.CommonAssetRepository;
 import com.codehows.taelim.service.AssetService;
-import com.codehows.taelim.service.QRService;
+//import com.codehows.taelim.service.QRService;
 import com.codehows.taelim.service.RegisterService;
 import com.codehows.taelim.service.UpdateService;
 import com.google.zxing.WriterException;
@@ -37,7 +37,7 @@ import java.util.zip.ZipOutputStream;
 @RestController
 public class QRController {
 
-    private final QRService qrCodeService;
+//    private final QRService qrCodeService;
     private final UpdateService updateService;
     private final RegisterService registerService;
     private final CommonAssetRepository commonAssetRepository;

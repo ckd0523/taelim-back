@@ -9,6 +9,7 @@ import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -180,22 +181,30 @@ public class RegisterService {
         CommonAsset commonAsset = excelDto.toExcel();
 //        commonAsset.setAssetOwner(assetOwner);
 //        commonAsset.setAssetUser(assetUser);
-//
+
+        commonAsset.setApproval(Approval.APPROVE);
+        commonAsset.setDisposalStatus(Boolean.FALSE);
+        commonAsset.setDemandStatus(Boolean.FALSE);
+        commonAsset.setDemandCheck(Boolean.FALSE);
+        commonAsset.setCreateDate(LocalDate.now());
 //        commonAsset.setAssetSecurityManager(assetSecurityManager);
         commonAssetRepository.save(commonAsset);
-
+        System.out.println("excel commonAsset : " + commonAsset);
         CommonAsset commonAsset1 = commonAssetRepository.findTopByOrderByAssetNoDesc();
 
         InformationProtectionSystem informationProtectionSystem = excelDto.toExcelInfo();
         informationProtectionSystem.setAssetNo(commonAsset1);
 
         informationProtectionSystemRepository.save(informationProtectionSystem);
+        System.out.println("excel information : " + informationProtectionSystem);
 
     }
     @Transactional
     public void excelRegisterAll(List<ExcelDto> excelDtos) {
+
         for (ExcelDto excelDto : excelDtos) {
             excelRegister(excelDto);
+            System.out.println(excelDto);
         }
     }
     public Optional<CommonAsset> findById(Long id) {
