@@ -622,19 +622,19 @@ public class AssetService {
         CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode)
                 .orElseThrow(() -> new RuntimeException("자산코드를 찾을 수 없음: " + assetCode));
 
-//        // 자산이 수정 요청 상태인지 확인
-//        if (commonAsset.getApproval() == Approval.UNCONFIRMED) {
-//            return new AssetUpdateResponse("이미 수정 요청이 들어간 자산입니다.", null);
-//        }
-//
-//        // 자산이 이미 폐기 요청 상태인지 확인
-//        if (commonAsset.getDisposalStatus() == Boolean.TRUE) {
-//            return new AssetUpdateResponse("이미 폐기 요청이 들어간 자산입니다.", null);
-//        }
-//        // 승인된 자산만 폐기 처리가 가능, 그 외 상태일 경우 동작 차단
-//        if (commonAsset.getApproval() != Approval.APPROVE) {
-//            return new AssetUpdateResponse("승인된 자산만 폐기 가능합니다.", null);
-//        }
+        // 자산이 수정 요청 상태인지 확인
+        if (commonAsset.getApproval() == Approval.UNCONFIRMED) {
+            return new AssetUpdateResponse("이미 수정 요청이 들어간 자산입니다.", null);
+        }
+
+        // 자산이 이미 폐기 요청 상태인지 확인
+        if (commonAsset.getDisposalStatus() == Boolean.TRUE) {
+            return new AssetUpdateResponse("이미 폐기 요청이 들어간 자산입니다.", null);
+        }
+        // 승인된 자산만 폐기 처리가 가능, 그 외 상태일 경우 동작 차단
+        if (commonAsset.getApproval() != Approval.APPROVE) {
+            return new AssetUpdateResponse("승인된 자산만 폐기 가능합니다.", null);
+        }
 
         //CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode).get();
         commonAsset.setApproval(Approval.APPROVE);
