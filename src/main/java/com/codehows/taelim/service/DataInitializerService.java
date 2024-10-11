@@ -134,7 +134,7 @@ public class DataInitializerService {
             amountSetRepository.insertAmountSet(0L, 0L);
 
             // Member 데이터 삽입
-            for (int i = 1; i <= 39; i++) {
+            for (int i = 1; i <= 1000; i++) {
                 Member member = new Member();
                 member.setEmail("user" + i + "@example.com");
                 member.setPassword("password" + i);
@@ -148,7 +148,7 @@ public class DataInitializerService {
             int assetCountPerClassification = 3;  // 각 분류당 15개씩 생
 
             // CommonAsset 첫번째 데이터 삽입
-            for (int i = 1; i <= 39; i++) {
+            for (int i = 1; i <= 1000; i++) {
 
                 Member member = new Member();
                 member.setEmail("user" + i + "@example.com");
