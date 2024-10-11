@@ -6,11 +6,13 @@ import com.sun.jna.Native;
 
 public class EZioLib
 {
+
 	public interface API extends Library
 	{
 		//String path = API.class.getResource("/").getPath().replaceAll("%20", " ").substring(1) + "Ezio64.dll";
 		String path = API.class.getResource("/libezio.so.1.1.0").getPath();
 		API INSTANCE = (API) Native.loadLibrary(path, API.class);
+
 		
 		public int openport(String strPort);
 		public int OpenUSB(String strUsbID);
