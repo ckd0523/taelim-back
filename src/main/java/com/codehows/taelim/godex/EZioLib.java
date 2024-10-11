@@ -12,7 +12,7 @@ public class EZioLib
 
 	static {
 		try {
-			String libraryPath = "/gen/libezio.so.1.1.0";
+			String libraryPath = "/gen/x64/libezio.so.1.1.0";
 			System.out.println("Attempting to load library from: " + libraryPath);
 			System.out.println("Current working directory: " + System.getProperty("user.dir"));
 			System.out.println("LD_LIBRARY_PATH: " + System.getenv("LD_LIBRARY_PATH"));
@@ -45,7 +45,7 @@ public class EZioLib
 	public interface API extends Library
 	{
 		//String path = API.class.getResource("/").getPath().replaceAll("%20", " ").substring(1) + "Ezio64.dll";
-		String path = API.class.getResource("/libezio.so.1.1.0").getPath();
+		String path = API.class.getResource("/x64/libezio.so.1.1.0").getPath();
 		API INSTANCE = (API) Native.loadLibrary(path, API.class);
 
 		
