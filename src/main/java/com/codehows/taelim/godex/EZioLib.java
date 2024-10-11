@@ -9,7 +9,7 @@ public class EZioLib
 	public interface API extends Library
 	{
 		//String path = API.class.getResource("/").getPath().replaceAll("%20", " ").substring(1) + "Ezio64.dll";
-		String path = "/gen/libezio.so.1.1.0";
+		String path = API.class.getResource("/libezio.so.1.1.0").getPath();
 		API INSTANCE = (API) Native.loadLibrary(path, API.class);
 		
 		public int openport(String strPort);
