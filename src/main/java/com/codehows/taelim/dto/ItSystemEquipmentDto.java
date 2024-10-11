@@ -18,7 +18,6 @@ public class ItSystemEquipmentDto {
     private CommonAsset assetNo;
 
     private String equipmentType;
-    private Long rackUnit;
     private String powerSupply;
     private String coolingSystem;
     private String interfacePorts;
@@ -34,7 +33,6 @@ public class ItSystemEquipmentDto {
                 .equipmentNo(this.equipmentNo)
                 .assetNo(this.assetNo)
                 .equipmentType(this.equipmentType)
-                .rackUnit(this.rackUnit)
                 .powerSupply(this.powerSupply)
                 .coolingSystem(this.coolingSystem)
                 .interfacePorts(this.interfacePorts)
@@ -52,7 +50,6 @@ public class ItSystemEquipmentDto {
                 entity.getEquipmentNo(),
                 entity.getAssetNo(),
                 entity.getEquipmentType(),
-                entity.getRackUnit(),
                 entity.getPowerSupply(),
                 entity.getCoolingSystem(),
                 entity.getInterfacePorts(),

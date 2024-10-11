@@ -87,6 +87,19 @@ public class RegisterService {
         commonAsset.setDemandCheck(Boolean.FALSE);
         commonAsset.setCreateDate(LocalDate.now());
 
+        if(commonAsset.getPurchaseCost() >= 1000000 && commonAsset.getPurchaseCost() < 100000000) {
+            commonAsset.setConfidentiality(2);
+            commonAsset.setIntegrity(2);
+            commonAsset.setAvailability(2);
+        }else if(commonAsset.getPurchaseCost() >= 100000000){
+            commonAsset.setConfidentiality(3);
+            commonAsset.setIntegrity(3);
+            commonAsset.setAvailability(3);
+        }else {
+            commonAsset.setConfidentiality(1);
+            commonAsset.setIntegrity(1);
+            commonAsset.setAvailability(1);
+        }
 
         // 자산코드 생성
         String assetCode = generateAssetCode(commonAsset.getAssetClassification());

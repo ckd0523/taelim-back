@@ -92,4 +92,12 @@ public class CommonAsset {
     private String acquisitionRoute;
     private LocalDate maintenancePeriod;
 
+    //제품 시리얼 No. 공통으로
+    private String productSerialNumber;
+
+    //rackUnit
+    private String rackUnit;
+    //rack 위치
+    private String rackLocation;
+
 }
