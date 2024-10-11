@@ -6,6 +6,25 @@ import com.sun.jna.Native;
 
 public class EZioLib
 {
+	private static API INSTANCE = null;
+
+	static {
+		try {
+			String libraryPath = "/gen/libezio.so.1.1.0";  // 컨테이너 내부의 절대 경로
+			System.load(libraryPath);
+			INSTANCE = (API) Native.loadLibrary("ezio", API.class);
+		} catch (UnsatisfiedLinkError e) {
+			System.err.println("Failed to load native library: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	public static API getInstance() {
+		if (INSTANCE == null) {
+			throw new RuntimeException("Failed to initialize EZioLib");
+		}
+		return INSTANCE;
+	}
 
 	public interface API extends Library
 	{

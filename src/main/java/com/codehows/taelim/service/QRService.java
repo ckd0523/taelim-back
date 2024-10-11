@@ -21,8 +21,8 @@ public class QRService {
     @Value("${qr.url}")
     private String QRurl;
 
-    EZioLib.API API = EZioLib.API.INSTANCE;
-
+    //EZioLib.API API = EZioLib.API.INSTANCE;
+    EZioLib.API API = EZioLib.getInstance();
     clsPrinterConfig Config = new clsPrinterConfig();
     clsPrinterCommand Command = new clsPrinterCommand();
 
