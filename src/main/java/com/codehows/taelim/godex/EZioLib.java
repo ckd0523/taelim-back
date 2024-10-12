@@ -15,7 +15,7 @@ public class EZioLib
 			String libraryPath = "/gen/x64/libezio.so";
 			System.out.println("Attempting to load library from: " + libraryPath);
 			System.out.println("Current working directory: " + System.getProperty("user.dir"));
-			System.out.println("LD_LIBRARY_PATH: " + System.getenv("LD_LIBRARY_PATH"));
+			System.out.println("LD_LIBRARY_PATH: " + System.getenv("LD_LIBRARY_PATH1"));
 			System.out.println("java.library.path: " + System.getProperty("java.library.path"));
 
 			File file = new File(libraryPath);
