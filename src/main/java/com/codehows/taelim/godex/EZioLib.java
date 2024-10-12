@@ -24,8 +24,13 @@ public class EZioLib
 
 			System.load(libraryPath);
 			System.out.println("Successfully loaded native library");
-			INSTANCE = (API) Native.loadLibrary(libraryPath, API.class);  // 전체 경로 지정
-			System.out.println("Successfully initialized JNA interface");
+			try {
+				INSTANCE = (API) Native.loadLibrary("ezio", API.class);
+				System.out.println("Successfully initialized JNA interface");
+			} catch (Exception e) {
+				System.err.println("Failed to initialize JNA interface: " + e.getMessage());
+				e.printStackTrace();
+			}
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println("Failed to load native library: " + e.getMessage());
 			e.printStackTrace();
