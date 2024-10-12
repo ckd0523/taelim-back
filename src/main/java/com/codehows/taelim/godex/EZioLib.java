@@ -15,7 +15,7 @@ public class EZioLib
 			String libraryPath = "/gen/x64/libezio.so";
 			System.out.println("Attempting to load library from: " + libraryPath);
 			System.out.println("Current working directory: " + System.getProperty("user.dir"));
-			System.out.println("LD_LIBRARY_PATH: " + System.getenv("LD_LIBRARY_PATH1"));
+			System.out.println("LD_LIBRARY_PATH: " + System.getenv("LD_LIBRARY_PATH"));
 			System.out.println("java.library.path: " + System.getProperty("java.library.path"));
 
 			File file = new File(libraryPath);
@@ -24,7 +24,7 @@ public class EZioLib
 
 			System.load(libraryPath);
 			System.out.println("Successfully loaded native library");
-			INSTANCE = (API) Native.loadLibrary("ezio", API.class);
+			INSTANCE = (API) Native.loadLibrary(libraryPath, API.class);  // 전체 경로 지정
 			System.out.println("Successfully initialized JNA interface");
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println("Failed to load native library: " + e.getMessage());
@@ -45,9 +45,10 @@ public class EZioLib
 	public interface API extends Library
 	{
 		//String path = API.class.getResource("/").getPath().replaceAll("%20", " ").substring(1) + "Ezio64.dll";
-		String path = API.class.getResource("/x64/libezio.so").getPath();
-		API INSTANCE = (API) Native.loadLibrary(path, API.class);
+//		String path = API.class.getResource("/x64/libezio.so").getPath();
+//		API INSTANCE = (API) Native.loadLibrary(path, API.class);
 
+		API INSTANCE = EZioLib.getInstance();
 		
 		public int openport(String strPort);
 		public int OpenUSB(String strUsbID);
