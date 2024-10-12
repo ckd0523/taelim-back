@@ -14,34 +14,21 @@ public class EZioLib
 		try {
 			String libraryPath = "/gen/x64/libezio.so";
 			System.out.println("Attempting to load library from: " + libraryPath);
-			System.out.println("Current working directory: " + System.getProperty("user.dir"));
-			System.out.println("LD_LIBRARY_PATH: " + System.getenv("LD_LIBRARY_PATH"));
-			System.out.println("java.library.path: " + System.getProperty("java.library.path"));
-
-			File file = new File(libraryPath);
-			System.out.println("Library file exists: " + file.exists());
-			System.out.println("Library file can read: " + file.canRead());
-
 			System.load(libraryPath);
-			System.out.println("Successfully loaded native library");
-			System.load(libraryPath);
-			System.out.println("Successfully loaded native library");
 
 			// JNA 디버깅 활성화
 			System.setProperty("jna.debug_load", "true");
 			System.setProperty("jna.debug_load.jna", "true");
 
-			// Native.load를 통해 API 초기화
 			INSTANCE = Native.load("ezio", API.class);
 			System.out.println("Successfully initialized JNA interface");
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println("Failed to load native library: " + e.getMessage());
-			e.printStackTrace();
 		} catch (Exception e) {
 			System.err.println("Unexpected error: " + e.getMessage());
-			e.printStackTrace();
 		}
 	}
+
 
 	public static API getInstance() {
 		if (INSTANCE == null) {
