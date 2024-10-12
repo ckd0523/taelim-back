@@ -25,7 +25,7 @@ public class EZioLib
 			System.load(libraryPath);
 			System.out.println("Successfully loaded native library");
 			try {
-				INSTANCE = (API) Native.load("ezio", API.class);
+				INSTANCE = Native.load("ezio", API.class);
 				System.out.println("Successfully initialized JNA interface");
 			} catch (Exception e) {
 				System.err.println("Failed to initialize JNA interface: " + e.getMessage());
@@ -53,8 +53,8 @@ public class EZioLib
 //		String path = API.class.getResource("/x64/libezio.so").getPath();
 //		API INSTANCE = (API) Native.loadLibrary(path, API.class);
 
-		API INSTANCE = EZioLib.getInstance();
-		
+		//API INSTANCE = EZioLib.getInstance();
+
 		public int openport(String strPort);
 		public int OpenUSB(String strUsbID);
 		public int OpenDriver(String strDriverName);
