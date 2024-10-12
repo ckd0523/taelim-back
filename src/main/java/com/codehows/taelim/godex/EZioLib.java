@@ -14,18 +14,24 @@ public class EZioLib
 		try {
 			String libraryPath = "/gen/x64/libezio.so";
 			System.out.println("Attempting to load library from: " + libraryPath);
-			System.load(libraryPath);
 
 			// JNA 디버깅 활성화
 			System.setProperty("jna.debug_load", "true");
 			System.setProperty("jna.debug_load.jna", "true");
 
+			// 라이브러리 로드
+			System.load(libraryPath);
+			System.out.println("Successfully loaded native library");
+
+			// Native.load를 통해 API 초기화
 			INSTANCE = Native.load("ezio", API.class);
 			System.out.println("Successfully initialized JNA interface");
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println("Failed to load native library: " + e.getMessage());
+			e.printStackTrace();  // 상세 오류 출력
 		} catch (Exception e) {
 			System.err.println("Unexpected error: " + e.getMessage());
+			e.printStackTrace();  // 상세 오류 출력
 		}
 	}
 
