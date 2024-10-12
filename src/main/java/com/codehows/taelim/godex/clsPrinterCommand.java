@@ -255,7 +255,7 @@ public class clsPrinterCommand
 	//---------------------------------------------------------------------------
 	// Print QR Code
 	//---------------------------------------------------------------------------
-	public int PrintQRCode(int PosX, int PosY, String Data)
+	int PrintQRCode(int PosX, int PosY, String Data)
 	{
 	    return API.Bar_QRcode_S(PosX, PosY, Data.length(), Data);
 	}
@@ -263,7 +263,7 @@ public class clsPrinterCommand
 	//---------------------------------------------------------------------------
 	// Print QR Code (More Parameter)
 	//---------------------------------------------------------------------------
-	int PrintQRCode(int PosX, int PosY, int Mode, int Type, String ErrorLavel, int Mask, int Mul, int Rotation, String Data)
+	public int PrintQRCode(int PosX, int PosY, int Mode, int Type, String ErrorLavel, int Mask, int Mul, int Rotation, String Data)
 	{
 	    return API.Bar_QRcode(PosX, PosY, Mode, Type, ErrorLavel, Mask, Mul, Data.length(), Rotation, Data);
 	}

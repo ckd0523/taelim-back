@@ -35,7 +35,7 @@ public class QRService {
     // QR 코드 출력
     public void PrintQRCode(String url, int posX, int posY) {
         printer.Command.Start(); // 시작 명령
-        printer.Command.PrintQRCode(posX, posY, url); // QR 코드 출력
+        printer.Command.PrintQRCode(posX, posY, 2, 7, "L", 0, 1, url.length(), url); // QR 코드 출력
         printer.Command.End(); // 완료 명령
     }
 
