@@ -2,13 +2,17 @@ package com.codehows.taelim.controller;
 
 import com.codehows.taelim.constant.AssetLocation;
 import com.codehows.taelim.dto.*;
+import com.codehows.taelim.security.PasswordHasher;
 import com.codehows.taelim.service.AssetSurveyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -16,10 +20,22 @@ import java.util.List;
 public class AssetSurveyController {
 
     private final AssetSurveyService assetSurveyService;
+    private final PasswordHasher passwordHasher;
 
     //자산 조사 이력 보여주기
     @GetMapping("/assetSurveyHistory")
     public List<AssetSurveyHistoryDto> getAssetSurveyHistory() {
+        try {
+            byte[] ok = passwordHasher.hashPassword("Programming is fun!");
+            System.out.println(Arrays.toString(ok));
+        } catch (NoSuchAlgorithmException e) {
+            System.out.println("ㄴㄴ");
+//            throw new RuntimeException(e);
+        } catch (InvalidKeySpecException e) {
+            System.out.println("ㄴㄴ2");
+            throw new RuntimeException(e);
+        }
+
         return assetSurveyService.getAssetSurveyHistory();
     }
 

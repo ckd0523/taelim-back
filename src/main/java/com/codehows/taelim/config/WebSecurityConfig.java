@@ -1,7 +1,9 @@
 package com.codehows.taelim.config;
 
+import com.codehows.taelim.security.CustomAuthenticationProvider;
 import com.codehows.taelim.security.JwtAuthenticationFilter;
 import com.codehows.taelim.security.JwtUtil;
+import com.codehows.taelim.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,11 +23,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
 
     private final JwtUtil jwtUtil;  // JwtService 의존성 주입
-    private final UserDetailsService userDetailsService;
+    //private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService customUserDetailsService;
     //밑에서 얘를 아무도 안쓰는데 주입해주는 이유는
     //AuthenticationManager는 기본적으로 여러 개의 AuthenticationProvider를 관리하는데
     //여러 개를 차례로 호출하여 인증을 시도 커스텀 provider를 manager에 적용하기 위해 주입
-    //private final CustomAuthenticationProvider customAuthenticationProvider;
+    private final CustomAuthenticationProvider customAuthenticationProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -33,7 +36,7 @@ public class WebSecurityConfig {
                 //.csrf(AbstractHttpConfigurer::disable)  // CSRF 보호 비활성화
                 //.cors(AbstractHttpConfigurer::disable)  // CORS 비활성화
                 .authorizeHttpRequests(requests -> {
-                    requests.requestMatchers("/login").permitAll();  // 로그인 경로는 인증 필요 없음
+                    requests.requestMatchers("/login", "/assetSurveyHistory").permitAll();  // 로그인 경로는 인증 필요 없음
                     requests.requestMatchers(HttpMethod.POST).authenticated();
                     requests.requestMatchers(HttpMethod.GET).authenticated();
                     requests.requestMatchers(HttpMethod.PUT).authenticated();
@@ -67,6 +70,6 @@ public class WebSecurityConfig {
     //생성자에 jwtUtil과 userDetailService는 왜 주는거지
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtUtil, userDetailsService);
+        return new JwtAuthenticationFilter(jwtUtil, customUserDetailsService);
     }
 }

@@ -68,8 +68,8 @@ public class JwtUtil {
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
         //claimsResolver가 뭐지
-        final Claims claims = getAllClaimsFromToken(token);
-        return claimsResolver.apply(claims);
+        final Claims claims = getAllClaimsFromToken(token);  // 토큰에서 모든 클레임을 추출
+        return claimsResolver.apply(claims); // 함수형 인터페이스로 클레임에서 원하는 값 반환
     }
 
     private Claims getAllClaimsFromToken(String token) {

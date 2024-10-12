@@ -1,19 +1,23 @@
 package com.codehows.taelim.security;
 
+import org.springframework.stereotype.Component;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Base64;
 
+@Component
 public class PasswordHasher {
 
     private static final int ITERATION_COUNT = 10000;
     private static final int SALT_SIZE = 128 / 8;
     private static final int HASH_SIZE = 256 / 8;
 
-    public static byte[] hashPassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public byte[] hashPassword(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[SALT_SIZE];
         random.nextBytes(salt);
@@ -29,6 +33,24 @@ public class PasswordHasher {
         System.arraycopy(hash, 0, output, 13 + salt.length, hash.length);
 
         return output;
+    }
+
+    public boolean verifyPassword(String password, String storedHash) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        byte[] storedHashBytes = Base64.getDecoder().decode(storedHash);
+
+        if (storedHashBytes[0] != 0x01) {
+            throw new IllegalArgumentException("Invalid hash version");
+        }
+
+        int iterations = ByteBuffer.wrap(storedHashBytes, 5, 4).getInt();
+        int saltLength = ByteBuffer.wrap(storedHashBytes, 9, 4).getInt();
+
+        byte[] salt = Arrays.copyOfRange(storedHashBytes, 13, 13 + saltLength);
+        byte[] hash = Arrays.copyOfRange(storedHashBytes, 13 + saltLength, storedHashBytes.length);
+
+        byte[] testHash = pbkdf2(password.toCharArray(), salt, iterations, hash.length);
+
+        return Arrays.equals(hash, testHash);
     }
 
     private static byte[] pbkdf2(char[] password, byte[] salt, int iterations, int bytes)
