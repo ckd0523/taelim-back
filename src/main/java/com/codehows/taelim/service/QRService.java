@@ -2,10 +2,7 @@ package com.codehows.taelim.service;
 
 import com.codehows.taelim.entity.CommonAsset;
 
-import com.codehows.taelim.godex.EZioLib;
 import com.codehows.taelim.godex.GodexPrinter;
-import com.codehows.taelim.godex.clsPrinterCommand;
-import com.codehows.taelim.godex.clsPrinterConfig;
 import com.codehows.taelim.repository.CommonAssetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,53 +18,30 @@ public class QRService {
     @Value("${qr.url}")
     private String QRurl;
 
-    //EZioLib.API API = EZioLib.API.INSTANCE;
-    EZioLib.API API = EZioLib.getInstance();
-    clsPrinterConfig Config = new clsPrinterConfig();
-    clsPrinterCommand Command = new clsPrinterCommand();
-
+    private final GodexPrinter printer; // 주입받도록 변경
 
     private final CommonAssetRepository commonAssetRepository;
 
-
-
-    // 프린터 연결 (직렬 포트 또는 드라이버)
-    public void Open(String PortName) {
-        if (PortName.contains("COM")) {
-            API.OpenUSB(PortName);
-        } else {
-            API.OpenDriver(PortName);
-        }
-    }
-
     // 네트워크로 프린터 연결
     public void Open(String strIP, String strPort) {
-        API.OpenNet(strIP, strPort);
+        printer.Open(strIP, strPort);
     }
 
     // 프린터 포트 닫기
     public void Close() {
-        API.closeport();
-    }
-
-    // DLL 버전 정보 가져오기
-    public String GetVersion() {
-        byte[] ByteData = new byte[50];
-        API.GetDllVersion(ByteData);
-        String strData = new String(ByteData).trim();
-        return strData;
+        printer.Close();
     }
 
     // QR 코드 출력
     public void PrintQRCode(String url, int posX, int posY) {
-        API.sendcommand("^L"); // 시작 명령
-        API.sendcommand(String.format("BQR %d,%d,Q,2,7,H,0,M2,S7,\"%s\"", posX, posY, url));
-        API.sendcommand("E"); // 완료 명령
+        printer.Command.Start(); // 시작 명령
+        printer.Command.PrintQRCode(posX, posY, url); // QR 코드 출력
+        printer.Command.End(); // 완료 명령
     }
 
     // 텍스트 출력
     public void PrintText(String text, int posX, int posY, int fontSize) {
-        API.sendcommand(String.format("T %d,%d,%d,0,1,\"%s\"", posX, posY, fontSize, text));
+        printer.Command.PrintText(posX, posY, fontSize, "Arial", text); // 텍스트 출력
     }
 
     // 자산 라벨 출력
