@@ -20,7 +20,7 @@ public class EZioLib
 			System.setProperty("jna.debug_load", "true");
 			System.setProperty("jna.debug_load.jna", "true");
 
-			INSTANCE = Native.load("libezio", API.class);
+			INSTANCE = Native.load("ezio", API.class);
 			System.out.println("Successfully initialized JNA interface");
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println("Failed to load native library: " + e.getMessage());
