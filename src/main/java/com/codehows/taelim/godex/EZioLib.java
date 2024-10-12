@@ -12,7 +12,7 @@ public class EZioLib
 
 	static {
 		try {
-			String libraryPath = "/gen/x64/libezio";
+			String libraryPath = "/gen/x64/";
 			System.out.println("Attempting to load library from: " + libraryPath);
 			System.load(libraryPath);
 
