@@ -175,22 +175,33 @@ public class DataInitializerService {
                 asset.setPurpose("Test Purpose");
                 asset.setQuantity(1L);
                 asset.setDepartment(Department.IT_DEPARTMENT);
-                asset.setAssetLocation(AssetLocation.MAIN_1F);
+                // AssetLocation을 순환하여 설정
+                AssetLocation assetLocation = AssetLocation.values()[i% AssetLocation.values().length];
+                asset.setAssetLocation(assetLocation);
+                // Department을 순환하여 설정
+                Department department = Department.values()[i % Department.values().length];
+                asset.setDepartment(department);
                 asset.setAssetUser(member);
                 asset.setAssetOwner(member);
                 asset.setAssetSecurityManager(member);
-                asset.setOperationStatus(OperationStatus.OPERATING);
+                // OperationStatus을 순환하여 설정
+                OperationStatus operationStatus = OperationStatus.values()[i % OperationStatus.values().length];
+                asset.setOperationStatus(operationStatus);
                 asset.setIntroducedDate(LocalDate.now());
                 asset.setConfidentiality(1);
                 asset.setIntegrity(1);
                 asset.setAvailability(1);
                 asset.setNote("Test Note");
                 asset.setManufacturingCompany("Test Manufacturing Company");
-                asset.setOwnership(Ownership.OWNED);
+                //Owenerhip
+                Ownership ownership = Ownership.values()[i % Ownership.values().length];
+                asset.setOwnership(ownership);
                 asset.setPurchaseCost(5000L);
                 asset.setPurchaseDate(LocalDate.now());
                 asset.setUsefulLife(5L);
-                asset.setDepreciationMethod(DepreciationMethod.FIXED_RATE);
+                // 정액법 정률법
+                DepreciationMethod depreciationMethod = DepreciationMethod.values()[i % DepreciationMethod.values().length];
+                asset.setDepreciationMethod(depreciationMethod);
                 asset.setWarrantyDetails("Test Warranty Details");
                 asset.setAttachment("Test Attachment");
                 asset.setPurchaseSource("Test Purchase Source");

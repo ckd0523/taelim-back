@@ -501,6 +501,63 @@ public class RegisterService {
         // 자산 분류에 따라 관련된 데이터베이스 저장
         saveRelatedEntity(assetDto, latestAsset);
 
+        //파일 복사
+        List<FileDto> files = assetDto.getFiles();
+        for (FileDto fileDto : files) {
+            File file = new File();
+            file.setAssetNo(updateAsset);
+
+            // 기존 파일 이름에서 확장자 추출
+            String originalFileName = fileDto.getOriFileName();
+            String extension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
+
+            // 새로운 UUID로 파일 이름 생성
+            String uuid = UUID.randomUUID().toString();
+            String saveFileName = uuid + extension;
+            String savePath = filePath + saveFileName;
+
+            // 새로운 URL 생성
+            String url = fileUrl + saveFileName; // 저장한 파일의 URL 생성
+            file.setFileURL(url);
+            file.setOriFileName(originalFileName);
+            file.setFileName(saveFileName);
+            file.setFileExt(extension);
+            file.setFileSize(fileDto.getFileSize()); // 기존 파일 크기 사용
+            file.setFileType(fileDto.getFileType()); // 기존 파일 타입 사용
+
+            // 실제 파일 저장 경로 생성
+            try {
+                java.io.File dir = new java.io.File(filePath);  // filePath 에 해당하는 경로를 File 객체로 생성
+                if (!dir.exists()) {
+                    dir.mkdirs(); // 경로가 존재하지 않으면 생성
+                }
+
+                // 기존 URL에서 파일 이름 추출
+                String existingFileName = fileDto.getFileURL().substring(fileDto.getFileURL().lastIndexOf('/') + 1);
+                java.io.File existingFile = new java.io.File(filePath + existingFileName); // 기존 파일 경로
+
+                // 파일 복사
+                try (FileInputStream fis = new FileInputStream(existingFile);
+                     FileOutputStream fos = new FileOutputStream(savePath)) {
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = fis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, length);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace(); // 예외 처리
+                    continue; // 다음 파일로 진행
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace(); // 예외 처리
+                continue; // 다음 파일로 진행
+            }
+
+            // 파일 엔티티 저장
+            fileRepository.save(file);
+        }
+
         // 수정 이력 저장
         Demand demand = new Demand();
         //demand.setDemandBy(); 추후 사람
