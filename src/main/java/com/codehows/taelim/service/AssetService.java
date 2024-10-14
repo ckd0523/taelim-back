@@ -1127,6 +1127,11 @@ public class AssetService {
             assetDto.setPurpose(commonAsset.getPurpose());
             assetDto.setDepartment(commonAsset.getDepartment());
             assetDto.setAssetLocation(commonAsset.getAssetLocation());
+
+//            assetDto.setAssetUser(commonAsset.getAssetUser().getUName());
+//            assetDto.setAssetOwner(commonAsset.getAssetOwner().getUName());
+//            assetDto.setAssetSecurityManager(commonAsset.getAssetSecurityManager().getUName());
+
             assetDto.setUsestate(commonAsset.getUseState());
             assetDto.setOperationStatus(commonAsset.getOperationStatus());
             assetDto.setIntroducedDate(commonAsset.getIntroducedDate());
@@ -1268,7 +1273,7 @@ public class AssetService {
 
             }
 
-            List<File> files = fileRepository.findByAssetCode(commonAsset.getAssetCode());
+            List<File> files = fileRepository.findByAssetNo(commonAsset);
 
             List<FileDto> fileDtos = files.stream()
                     .map(file -> {
