@@ -159,7 +159,7 @@ public class DataInitializerService {
                 CommonAsset asset = new CommonAsset();
 
                 // 자산 분류는 총 13개, 이를 15개씩 순환하며 할당
-                AssetClassification classification = classifications[(i - 1) / 100];
+                AssetClassification classification = classifications[(i - 1) / 3];
                 String assetCode = registerService.generateAssetCode(classification);
                 asset.setAssetCode(assetCode);
 
