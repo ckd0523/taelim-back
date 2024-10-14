@@ -1128,9 +1128,9 @@ public class AssetService {
             assetDto.setDepartment(commonAsset.getDepartment());
             assetDto.setAssetLocation(commonAsset.getAssetLocation());
 
-//            assetDto.setAssetUser(commonAsset.getAssetUser().getUName());
-//            assetDto.setAssetOwner(commonAsset.getAssetOwner().getUName());
-//            assetDto.setAssetSecurityManager(commonAsset.getAssetSecurityManager().getUName());
+            assetDto.setAssetUser(commonAsset.getAssetUser().getUName());
+            assetDto.setAssetOwner(commonAsset.getAssetOwner().getUName());
+            assetDto.setAssetSecurityManager(commonAsset.getAssetSecurityManager().getUName());
 
             assetDto.setUsestate(commonAsset.getUseState());
             assetDto.setOperationStatus(commonAsset.getOperationStatus());

@@ -297,9 +297,9 @@ public class RegisterService {
         updateAsset.setAssetBasis(existAsset.getAssetBasis());
         updateAsset.setManufacturingCompany(existAsset.getManufacturingCompany());
         updateAsset.setPurpose(existAsset.getPurpose());
-//        updateAsset.setAssetUser(existAsset.getAssetUser());    // 사용자들은 나중에 바꿔야함
-//        updateAsset.setAssetOwner(existAsset.getAssetOwner());
-//        updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
+        updateAsset.setAssetUser(existAsset.getAssetUser());    // 사용자들은 나중에 바꿔야함
+        updateAsset.setAssetOwner(existAsset.getAssetOwner());
+        updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
 
         // AssetDto에서 업데이트할 필드 설정 (null 체크 후 기존 값 유지)
         updateAsset.setDepartment(assetDto.getDepartment() != null ? assetDto.getDepartment() : existAsset.getDepartment());
