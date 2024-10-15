@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface DemandDtlRepository extends JpaRepository<DemandDtl, Long> , DemandDtlRepositoryCustom {
     List<DemandDtl> findByDemandNo_DemandNo(Long demandNo);
+
+    public List<DemandDtl> findAllByOrderByDemandDtlNoDesc();
 }
