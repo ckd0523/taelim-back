@@ -39,7 +39,7 @@ public class DemandService {
 
     public List<DemandHistoryDto> getAllDemandHistory() {
 
-        List<DemandDtl> demandDtls = demandDtlRepository.findAll();
+        List<DemandDtl> demandDtls = demandDtlRepository.findAllByOrderByDemandDtlNoDesc();
         List<DemandHistoryDto> demandHistoryDtos = new ArrayList<>();
         for(DemandDtl demandDtl : demandDtls){
             Optional<CommonAsset> commonAsset = commonAssetRepository.findById(demandDtl.getAssetNo().getAssetNo());
