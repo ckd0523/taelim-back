@@ -2,6 +2,8 @@ package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
+import com.codehows.taelim.constant.AssetLocation;
+import com.codehows.taelim.constant.Department;
 import com.codehows.taelim.dto.AssetDto;
 import com.codehows.taelim.dto.FileDto;
 import com.codehows.taelim.dto.*;
@@ -1128,9 +1130,9 @@ public class AssetService {
             assetDto.setDepartment(commonAsset.getDepartment());
             assetDto.setAssetLocation(commonAsset.getAssetLocation());
 
-            assetDto.setAssetUser(commonAsset.getAssetUser().getUName());
-            assetDto.setAssetOwner(commonAsset.getAssetOwner().getUName());
-            assetDto.setAssetSecurityManager(commonAsset.getAssetSecurityManager().getUName());
+//            assetDto.setAssetUser(commonAsset.getAssetUser().getUName());
+//            assetDto.setAssetOwner(commonAsset.getAssetOwner().getUName());
+//            assetDto.setAssetSecurityManager(commonAsset.getAssetSecurityManager().getUName());
 
             assetDto.setUsestate(commonAsset.getUseState());
             assetDto.setOperationStatus(commonAsset.getOperationStatus());
@@ -1372,5 +1374,10 @@ public class AssetService {
 //    // 특정 분류에 맞는 자산 상세 정보 리스트를 가져오는 새로운 메소드
 //    public List<CommonAsset> getAssetDetailByClassification(AssetClassification assetClassification) {
 //        return commonAssetRepository.findByClassification(assetClassification);
+//    }
+
+    // 검색 쿼리 만들어보기
+//    public List<CommonAsset> searchAssets(String assetName, AssetLocation assetLocation, String assetUser, Department department, LocalDate introducedData) {
+//        return commonAssetRepository.searchAssets(assetName, assetLocation, assetUser, department, introducedData);
 //    }
 }
