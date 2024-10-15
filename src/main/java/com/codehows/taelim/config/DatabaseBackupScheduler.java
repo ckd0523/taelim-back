@@ -46,7 +46,7 @@ public class DatabaseBackupScheduler { //백업 스크립트를 실행할 스케
 
         } catch (Exception e) {
             System.out.println("백업 실패");
-            //e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
