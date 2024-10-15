@@ -13,6 +13,6 @@ public class DataInitializerRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        dataInitializerService.insertDummyData();
+//        dataInitializerService.insertDummyData();
     }
 }
