@@ -9,13 +9,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -33,7 +34,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                //.csrf(AbstractHttpConfigurer::disable)  // CSRF 보호 비활성화
+                .csrf(AbstractHttpConfigurer::disable)  // CSRF 보호 비활성화
                 //.cors(AbstractHttpConfigurer::disable)  // CORS 비활성화
                 .authorizeHttpRequests(requests -> {
                     requests.requestMatchers("/login", "/assetSurveyHistory").permitAll();  // 로그인 경로는 인증 필요 없음
@@ -63,7 +64,8 @@ public class WebSecurityConfig {
     //인증에 성공하면 Authentication 객체를 반환하고 실패하면 AuthenticationException Throw
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+        // CustomAuthenticationProvider를 사용하는 AuthenticationManager 등록
+        return new ProviderManager(customAuthenticationProvider);
     }
 
     //얘는 왜 빈 주입을 하지? 필터를 사용하려고 하는건 뭔가 알겠는데

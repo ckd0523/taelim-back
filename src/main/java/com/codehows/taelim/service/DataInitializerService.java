@@ -8,6 +8,7 @@ import com.codehows.taelim.entity.Software;
 import com.codehows.taelim.loginEntity.TestMember;
 import com.codehows.taelim.loginRepository.TestMemberRepository;
 import com.codehows.taelim.repository.*;
+import com.codehows.taelim.security.PasswordHasher2;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class DataInitializerService {
     private final FurnitureRepository furnitureRepository;
     private final AmountSetRepository amountSetRepository;
     private final TestMemberRepository testMemberRepository;
+    private final PasswordHasher2 passwordHasher2;
 
     @Transactional
     public void insertDummyData() {
@@ -36,6 +38,17 @@ public class DataInitializerService {
         testMember.toEntity("user1@example.com", "1234" ,
                 "testUser1", Department.IT_DEPARTMENT, Role.ADMIN);
         testMemberRepository.save(testMember);
+
+        //두 번째 DB 로그인을 위한 유저 등록 테스트
+        TestMember testMember2 = new TestMember();
+        String hashedPassword = null;
+        try {
+            hashedPassword = passwordHasher2.hashPasswordV3("taelim");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        testMember2.toEntity("taelim@taelim.com", hashedPassword, "전찬용", Department.IT_DEPARTMENT, Role.ADMIN);
+        testMemberRepository.save(testMember2);
 
 
         // Member 데이터 삽입

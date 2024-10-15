@@ -2,6 +2,7 @@ package com.codehows.taelim.controller;
 
 import com.codehows.taelim.dto.LoginRequest;
 import com.codehows.taelim.dto.LoginResponse;
+import com.codehows.taelim.security.CustomAuthenticationProvider;
 import com.codehows.taelim.security.JwtUtil;
 import com.codehows.taelim.service.LoginTestService;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,12 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        System.out.println("로그인 컨트롤러 1");
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
         );
 
+        System.out.println("로그인 컨트롤러 2");
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String accessToken = jwtUtil.generateAccessToken(userDetails);
         String refreshToken = jwtUtil.generateRefreshToken(userDetails);

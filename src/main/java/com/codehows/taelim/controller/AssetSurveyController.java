@@ -3,6 +3,7 @@ package com.codehows.taelim.controller;
 import com.codehows.taelim.constant.AssetLocation;
 import com.codehows.taelim.dto.*;
 import com.codehows.taelim.security.PasswordHasher;
+import com.codehows.taelim.security.PasswordHasher2;
 import com.codehows.taelim.service.AssetSurveyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -10,9 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -21,20 +24,32 @@ public class AssetSurveyController {
 
     private final AssetSurveyService assetSurveyService;
     private final PasswordHasher passwordHasher;
+    private final PasswordHasher2 passwordHasher2;
 
     //자산 조사 이력 보여주기
     @GetMapping("/assetSurveyHistory")
     public List<AssetSurveyHistoryDto> getAssetSurveyHistory() {
-        try {
-            byte[] ok = passwordHasher.hashPassword("Programming is fun!");
-            System.out.println(Arrays.toString(ok));
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println("ㄴㄴ");
+//        SecureRandom rng = new SecureRandom();
+//        byte[] hash = null;
+//        try {
+//            hash = passwordHasher2.hashPasswordV3("Programming is fun!", rng, "PBKDF2WithHmacSHA256", 10000, 16, 32);
+//
+//            // 예시 해시된 비밀번호
+//            byte[] hashedPassword = hash;
+//            // 출력 테스트
+//            System.out.println(Base64.getEncoder().encodeToString(hash));
+//
+//            // 입력된 패스워드
+//            String password = "Programming is fun!";
+//            int[] iterCount = new int[1];  // 반복 횟수를 저장할 배열
+//            String prf = "PBKDF2WithHmacSHA256"; // 사용된 PRF
+//
+//            boolean isValid = passwordHasher2.verifyHashedPasswordV3(hashedPassword, password, iterCount, prf);
+//            System.out.println("패스워드 유효성 검사: " + isValid);
+//
+//        } catch (Exception e) {
 //            throw new RuntimeException(e);
-        } catch (InvalidKeySpecException e) {
-            System.out.println("ㄴㄴ2");
-            throw new RuntimeException(e);
-        }
+//        }
 
         return assetSurveyService.getAssetSurveyHistory();
     }

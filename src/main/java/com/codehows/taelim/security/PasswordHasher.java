@@ -35,6 +35,17 @@ public class PasswordHasher {
         return output;
     }
 
+    public String hashPassword2(String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[SALT_SIZE];
+        random.nextBytes(salt);
+
+        byte[] hash = pbkdf2(password.toCharArray(), salt, ITERATION_COUNT, HASH_SIZE);
+
+        // 단순화된 반환
+        return Base64.getEncoder().encodeToString(hash);
+    }
+
     public boolean verifyPassword(String password, String storedHash) throws NoSuchAlgorithmException, InvalidKeySpecException {
         byte[] storedHashBytes = Base64.getDecoder().decode(storedHash);
 
