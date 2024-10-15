@@ -13,9 +13,9 @@ import java.io.InputStreamReader;
 public class DatabaseBackupScheduler { //백업 스크립트를 실행할 스케줄러 메서드 정의
     private final BackupService backupService;
 
-    //@Scheduled(cron = "0 0 2 * * ?") // 매일 새벽 2시에 실행
+    @Scheduled(cron = "0 0 2 * * ?") // 매일 새벽 2시에 실행
     //@Scheduled(cron = "0 * * * * ?") // 1분 마다 작업 실행
-    @Scheduled(cron = "0 */5 * * * ?") // 5분마다 작업 실행
+    //@Scheduled(cron = "0 */5 * * * ?") // 5분마다 작업 실행
     public void backupDatabase() {
         try {
             // 백업 스크립트 경로를 지정
@@ -39,7 +39,7 @@ public class DatabaseBackupScheduler { //백업 스크립트를 실행할 스케
             if (exitCode == 0) {
                 backupService.backup();
 
-                System.out.println("Database backup completed successfully.");
+                //System.out.println("Database backup completed successfully.");
             } else {
                 System.err.println("Database backup failed with exit code " + exitCode);
             }
@@ -52,9 +52,9 @@ public class DatabaseBackupScheduler { //백업 스크립트를 실행할 스케
 
     //DB에 레코드 추가하는 작업
     //@Scheduled(cron = "0 * * * * ?") // 1분 마다 작업 실행
-    @Scheduled(cron = "0 */5 * * * ?") // 5분마다 작업 실행
-    public void backupDatabaseTest() {
-        backupService.backup();
-    }
+//    @Scheduled(cron = "0 */5 * * * ?") // 5분마다 작업 실행
+//    public void backupDatabaseTest() {
+//        backupService.backup();
+//    }
 
 }
