@@ -257,14 +257,12 @@ public class DemandService {
                         dto.setApplicationNo(patentsAndTrademarks.getApplicationNo());
                         dto.setInventor(patentsAndTrademarks.getInventor());
                         dto.setAssignee(patentsAndTrademarks.getAssignee());
-                        dto.setRelatedDocuments(patentsAndTrademarks.getRelatedDocuments());
                     }
                 }
                 case ITSYSTEM_EQUIPMENT -> {
                     ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(asset);
                     if (itSystemEquipment != null) {
                         dto.setEquipmentType(itSystemEquipment.getEquipmentType());
-                        dto.setRackUnit(itSystemEquipment.getRackUnit());
                         dto.setPowerSupply(itSystemEquipment.getPowerSupply());
                         dto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
                         dto.setInterfacePorts(itSystemEquipment.getInterfacePorts());
@@ -290,7 +288,6 @@ public class DemandService {
                     Terminal terminal = terminalRepository.findByAssetNo(asset);
                     if (terminal != null) {
                         dto.setIp(terminal.getIp());
-                        dto.setProductSerialNumber(terminal.getProductSerialNumber());
                         dto.setOs(terminal.getOs());
                         dto.setSecurityControl(terminal.getSecurityControl());
                         dto.setKaitsKeeper(terminal.getKaitsKeeper());

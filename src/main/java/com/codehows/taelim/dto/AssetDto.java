@@ -84,7 +84,6 @@ public class AssetDto {
     private String applicationNo;
     private String inventor;
     private String assignee;
-    private String relatedDocuments;
 
     private String equipmentType;
     private Long rackUnit;
@@ -130,9 +129,11 @@ public class AssetDto {
     private String usageFrequency;
 
     //파일
-    private FileType image;
-    private FileType warrantyDocument;
-    private FileType userDocument;
+//    private FileType image;
+//    private FileType warrantyDocument;
+//    private FileType userDocument;
+//    private FileType relatedDocuments;
+
 
     public CommonAsset toEntity() {
 
@@ -229,7 +230,6 @@ public class AssetDto {
                 .applicationNo(applicationNo)
                 .inventor(inventor)
                 .assignee(assignee)
-                .relatedDocuments(relatedDocuments)
                 .build();
     }
 
@@ -237,7 +237,6 @@ public class AssetDto {
     public ItSystemEquipment toItSystemEquipment(){
         return ItSystemEquipment.builder()
                 .equipmentType(equipmentType)
-                .rackUnit(rackUnit)
                 .powerSupply(powerSupply)
                 .coolingSystem(coolingSystem)
                 .interfacePorts(interfacePorts)
@@ -265,7 +264,6 @@ public class AssetDto {
     public Terminal toTerminal() {
         return Terminal.builder()
                 .ip(ip)
-                .productSerialNumber(productSerialNumber)
                 .os(os)
                 .securityControl(securityControl)
                 .kaitsKeeper(kaitsKeeper)

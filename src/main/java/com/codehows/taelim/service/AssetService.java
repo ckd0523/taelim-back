@@ -196,7 +196,6 @@ public class AssetService {
             case TERMINAL -> {
                 Terminal terminal = terminalRepository.findByAssetNo(commonAsset);
                 assetDto.setIp(terminal.getIp());
-                assetDto.setProductSerialNumber(terminal.getProductSerialNumber());
                 assetDto.setOs(terminal.getOs());
                 assetDto.setSecurityControl(terminal.getSecurityControl());
                 assetDto.setKaitsKeeper(terminal.getKaitsKeeper());
@@ -218,7 +217,6 @@ public class AssetService {
             case ITSYSTEM_EQUIPMENT -> {
                 ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(commonAsset);
                 assetDto.setEquipmentType(itSystemEquipment.getEquipmentType());
-                assetDto.setRackUnit(itSystemEquipment.getRackUnit());
                 assetDto.setPowerSupply(itSystemEquipment.getPowerSupply());
                 assetDto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
                 assetDto.setInterfacePorts(itSystemEquipment.getInterfacePorts());
@@ -264,7 +262,7 @@ public class AssetService {
                 assetDto.setApplicationNo(patentsAndTrademarks.getApplicationNo());
                 assetDto.setInventor(patentsAndTrademarks.getInventor());
                 assetDto.setAssignee(patentsAndTrademarks.getAssignee());
-                assetDto.setRelatedDocuments(patentsAndTrademarks.getRelatedDocuments());
+
             }
             case INFORMATION_PROTECTION_SYSTEM -> {
                 InformationProtectionSystem informationProtectionSystem = informationProtectionSystemRepository.findByAssetNo(commonAsset);
@@ -416,7 +414,6 @@ public class AssetService {
                 Terminal terminal = terminalRepository.findByAssetNo(commonAsset);
                 TerminalDto terminalDto = new TerminalDto();
                 terminalDto.setIp(terminal.getIp());
-                terminalDto.setProductSerialNumber(terminal.getProductSerialNumber());
                 terminalDto.setOs(terminal.getOs());
                 terminalDto.setSecurityControl(terminal.getSecurityControl());
                 terminalDto.setKaitsKeeper(terminal.getKaitsKeeper());
@@ -444,7 +441,6 @@ public class AssetService {
                 ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(commonAsset);
                 ItSystemEquipmentDto itSystemEquipmentDto = new ItSystemEquipmentDto();
                 itSystemEquipmentDto.setEquipmentType(itSystemEquipment.getEquipmentType());
-                itSystemEquipmentDto.setRackUnit(itSystemEquipment.getRackUnit());
                 itSystemEquipmentDto.setPowerSupply(itSystemEquipment.getPowerSupply());
                 itSystemEquipmentDto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
                 itSystemEquipmentDto.setInterfacePorts(itSystemEquipment.getInterfacePorts());
@@ -498,7 +494,6 @@ public class AssetService {
                 patentsAndTrademarksDto.setApplicationNo(patentsAndTrademarks.getApplicationNo());
                 patentsAndTrademarksDto.setInventor(patentsAndTrademarks.getInventor());
                 patentsAndTrademarksDto.setAssignee(patentsAndTrademarks.getAssignee());
-                patentsAndTrademarksDto.setRelatedDocuments(patentsAndTrademarks.getRelatedDocuments());
                 result.put("patentsAndTrademarks", patentsAndTrademarksDto);
             }
             case INFORMATION_PROTECTION_SYSTEM -> {
@@ -846,14 +841,12 @@ public class AssetService {
                         dto.setApplicationNo(patentsAndTrademarks.getApplicationNo());
                         dto.setInventor(patentsAndTrademarks.getInventor());
                         dto.setAssignee(patentsAndTrademarks.getAssignee());
-                        dto.setRelatedDocuments(patentsAndTrademarks.getRelatedDocuments());
                     }
                 }
                 case ITSYSTEM_EQUIPMENT -> {
                     ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(asset);
                     if (itSystemEquipment != null) {
                         dto.setEquipmentType(itSystemEquipment.getEquipmentType());
-                        dto.setRackUnit(itSystemEquipment.getRackUnit());
                         dto.setPowerSupply(itSystemEquipment.getPowerSupply());
                         dto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
                         dto.setInterfacePorts(itSystemEquipment.getInterfacePorts());
@@ -879,7 +872,6 @@ public class AssetService {
                     Terminal terminal = terminalRepository.findByAssetNo(asset);
                     if (terminal != null) {
                         dto.setIp(terminal.getIp());
-                        dto.setProductSerialNumber(terminal.getProductSerialNumber());
                         dto.setOs(terminal.getOs());
                         dto.setSecurityControl(terminal.getSecurityControl());
                         dto.setKaitsKeeper(terminal.getKaitsKeeper());
@@ -1028,14 +1020,12 @@ public class AssetService {
                         dto.setApplicationNo(patentsAndTrademarks.getApplicationNo());
                         dto.setInventor(patentsAndTrademarks.getInventor());
                         dto.setAssignee(patentsAndTrademarks.getAssignee());
-                        dto.setRelatedDocuments(patentsAndTrademarks.getRelatedDocuments());
                     }
                 }
                 case ITSYSTEM_EQUIPMENT -> {
                     ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(asset);
                     if (itSystemEquipment != null) {
                         dto.setEquipmentType(itSystemEquipment.getEquipmentType());
-                        dto.setRackUnit(itSystemEquipment.getRackUnit());
                         dto.setPowerSupply(itSystemEquipment.getPowerSupply());
                         dto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
                         dto.setInterfacePorts(itSystemEquipment.getInterfacePorts());
@@ -1061,7 +1051,6 @@ public class AssetService {
                     Terminal terminal = terminalRepository.findByAssetNo(asset);
                     if (terminal != null) {
                         dto.setIp(terminal.getIp());
-                        dto.setProductSerialNumber(terminal.getProductSerialNumber());
                         dto.setOs(terminal.getOs());
                         dto.setSecurityControl(terminal.getSecurityControl());
                         dto.setKaitsKeeper(terminal.getKaitsKeeper());
@@ -1196,7 +1185,6 @@ public class AssetService {
                 case TERMINAL -> {
                     Terminal terminal = terminalRepository.findByAssetNo(commonAsset);
                     assetDto.setIp(terminal.getIp());
-                    assetDto.setProductSerialNumber(terminal.getProductSerialNumber());
                     assetDto.setOs(terminal.getOs());
                     assetDto.setSecurityControl(terminal.getSecurityControl());
                     assetDto.setKaitsKeeper(terminal.getKaitsKeeper());
@@ -1218,7 +1206,6 @@ public class AssetService {
                 case ITSYSTEM_EQUIPMENT -> {
                     ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(commonAsset);
                     assetDto.setEquipmentType(itSystemEquipment.getEquipmentType());
-                    assetDto.setRackUnit(itSystemEquipment.getRackUnit());
                     assetDto.setPowerSupply(itSystemEquipment.getPowerSupply());
                     assetDto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
                     assetDto.setInterfacePorts(itSystemEquipment.getInterfacePorts());
@@ -1264,7 +1251,6 @@ public class AssetService {
                     assetDto.setApplicationNo(patentsAndTrademarks.getApplicationNo());
                     assetDto.setInventor(patentsAndTrademarks.getInventor());
                     assetDto.setAssignee(patentsAndTrademarks.getAssignee());
-                    assetDto.setRelatedDocuments(patentsAndTrademarks.getRelatedDocuments());
                 }
                 case INFORMATION_PROTECTION_SYSTEM -> {
                     InformationProtectionSystem informationProtectionSystem = informationProtectionSystemRepository.findByAssetNo(commonAsset);

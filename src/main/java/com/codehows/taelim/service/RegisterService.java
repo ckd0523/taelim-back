@@ -87,6 +87,19 @@ public class RegisterService {
         commonAsset.setDemandCheck(Boolean.FALSE);
         commonAsset.setCreateDate(LocalDate.now());
 
+        if(commonAsset.getPurchaseCost() >= 1000000 && commonAsset.getPurchaseCost() < 100000000) {
+            commonAsset.setConfidentiality(2);
+            commonAsset.setIntegrity(2);
+            commonAsset.setAvailability(2);
+        }else if(commonAsset.getPurchaseCost() >= 100000000){
+            commonAsset.setConfidentiality(3);
+            commonAsset.setIntegrity(3);
+            commonAsset.setAvailability(3);
+        }else {
+            commonAsset.setConfidentiality(1);
+            commonAsset.setIntegrity(1);
+            commonAsset.setAvailability(1);
+        }
 
         // 자산코드 생성
         String assetCode = generateAssetCode(commonAsset.getAssetClassification());
@@ -168,9 +181,9 @@ public class RegisterService {
 
     }
 
-    @Transactional
+
     //엑셀로 등록
-    public void excelRegister (ExcelDto excelDto) {
+    public void excelRegister (AssetDto assetDto) {
 
 //        Member assetOwner = memberRepository.findByUName(excelDto.getAssetOwner())
 //                .orElse(new Member(excelDto.getAssetOwner()));
@@ -178,7 +191,7 @@ public class RegisterService {
 //                .orElse(new Member(excelDto.getAssetUser()));
 //        Member assetSecurityManager = memberRepository.findByUName(excelDto.getAssetSecurityManager())
 //                .orElse(new Member(excelDto.getAssetSecurityManager()));
-        CommonAsset commonAsset = excelDto.toExcel();
+        CommonAsset commonAsset = assetDto.toEntity();
 //        commonAsset.setAssetOwner(assetOwner);
 //        commonAsset.setAssetUser(assetUser);
 
@@ -188,21 +201,84 @@ public class RegisterService {
         commonAsset.setDemandCheck(Boolean.FALSE);
         commonAsset.setCreateDate(LocalDate.now());
 //        commonAsset.setAssetSecurityManager(assetSecurityManager);
-        commonAssetRepository.save(commonAsset);
         System.out.println("excel commonAsset : " + commonAsset);
-        CommonAsset commonAsset1 = commonAssetRepository.findTopByOrderByAssetNoDesc();
+        String assetCode = generateAssetCode(commonAsset.getAssetClassification());
+        commonAsset.setAssetCode(assetCode);
 
-        InformationProtectionSystem informationProtectionSystem = excelDto.toExcelInfo();
-        informationProtectionSystem.setAssetNo(commonAsset1);
+        CommonAsset commonAsset1 = commonAssetRepository.save(commonAsset);
 
-        informationProtectionSystemRepository.save(informationProtectionSystem);
-        System.out.println("excel information : " + informationProtectionSystem);
+        switch (commonAsset.getAssetClassification()){
+            case INFORMATION_PROTECTION_SYSTEM -> {
+                InformationProtectionSystem informationProtectionSystem = assetDto.toInformationProtectionSystem();
+                informationProtectionSystem.setAssetNo(commonAsset1);
+                informationProtectionSystemRepository.save(informationProtectionSystem);
+            }
+            case APPLICATION_PROGRAM -> {
+                ApplicationProgram applicationProgram = assetDto.toApplication();
+                applicationProgram.setAssetNo(commonAsset1);
+                applicationProgramRepository.save(applicationProgram);
+            }
+            case SOFTWARE -> {
+                Software software = assetDto.toSoftware();
+                software.setAssetNo(commonAsset1);
+                softwareRepository.save(software);
+            }
+            case ELECTRONIC_INFORMATION -> {
+                ElectronicInformation electronicInformation = assetDto.toElectronicInformation();
+                electronicInformation.setAssetNo(commonAsset1);
+                electronicInformationRepository.save(electronicInformation);
+            }
+            case DOCUMENT -> {
+                Document document = assetDto.toDocumnet();
+                document.setAssetNo(commonAsset1);
+                documentRepository.save(document);
+            }
+            case PATENTS_AND_TRADEMARKS -> {
+                PatentsAndTrademarks patentsAndTrademarks = assetDto.toPatentsAndTrademarks();
+                patentsAndTrademarks.setAssetNo(commonAsset1);
+                patentsAndTrademarksRepository.save(patentsAndTrademarks);
+            }
+            case ITSYSTEM_EQUIPMENT -> {
+                ItSystemEquipment itSystemEquipment = assetDto.toItSystemEquipment();
+                itSystemEquipment.setAssetNo(commonAsset1);
+                itSystemEquipmentRepository.save(itSystemEquipment);
+            }
+            case ITNETWORK_EQUIPMENT -> {
+                ItNetworkEquipment itNetworkEquipment = assetDto.toItNetworkEquipment();
+                itNetworkEquipment.setAssetNo(commonAsset1);
+                itNetworkEquipmentRepository.save(itNetworkEquipment);
+            }
+            case TERMINAL -> {
+                Terminal terminal = assetDto.toTerminal();
+                terminal.setAssetNo(commonAsset1);
+                terminalRepository.save(terminal);
+            }
+            case FURNITURE -> {
+                Furniture furniture = assetDto.toFurniture();
+                furniture.setAssetNo(commonAsset1);
+                furnitureRepository.save(furniture);
+            }
+            case DEVICES -> {
+                Devices devices = assetDto.toDevices();
+                devices.setAssetNo(commonAsset1);
+                devicesRepository.save(devices);
+            }
+            case CAR -> {
+                Car car = assetDto.toCar();
+                car.setAssetNo(commonAsset1);
+                carRepository.save(car);
+            }
+            case OTHERASSETS -> {
+                OtherAssets otherAssets = assetDto.toOtherAssets();
+                otherAssets.setAssetNo(commonAsset1);
+                otherAssetsRepository.save(otherAssets);
+            }
+        }
 
     }
-    @Transactional
-    public void excelRegisterAll(List<ExcelDto> excelDtos) {
+    public void excelRegisterAll(List<AssetDto> excelDtos) {
 
-        for (ExcelDto excelDto : excelDtos) {
+        for (AssetDto excelDto : excelDtos) {
             excelRegister(excelDto);
             System.out.println(excelDto);
         }
