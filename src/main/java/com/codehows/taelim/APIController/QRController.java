@@ -8,6 +8,7 @@ import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Demand;
 import com.codehows.taelim.repository.CommonAssetRepository;
+import com.codehows.taelim.service.AssetFinalService;
 import com.codehows.taelim.service.AssetService;
 //import com.codehows.taelim.service.QRService;
 import com.codehows.taelim.service.RegisterService;

@@ -158,7 +158,7 @@ public class AssetFinalService {
                 case TERMINAL -> {
                     Terminal terminal = terminalRepository.findByAssetNo(commonAsset);
                     assetDto.setIp(terminal.getIp());
-                    assetDto.setProductSerialNumber(terminal.getProductSerialNumber());
+                    //assetDto.setProductSerialNumber(terminal.getProductSerialNumber());
                     assetDto.setOs(terminal.getOs());
                     assetDto.setSecurityControl(terminal.getSecurityControl());
                     assetDto.setKaitsKeeper(terminal.getKaitsKeeper());
@@ -180,7 +180,7 @@ public class AssetFinalService {
                 case ITSYSTEM_EQUIPMENT -> {
                     ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(commonAsset);
                     assetDto.setEquipmentType(itSystemEquipment.getEquipmentType());
-                    assetDto.setRackUnit(itSystemEquipment.getRackUnit());
+                    //assetDto.setRackUnit(itSystemEquipment.getRackUnit());
                     assetDto.setPowerSupply(itSystemEquipment.getPowerSupply());
                     assetDto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
                     assetDto.setInterfacePorts(itSystemEquipment.getInterfacePorts());
@@ -226,7 +226,7 @@ public class AssetFinalService {
                     assetDto.setApplicationNo(patentsAndTrademarks.getApplicationNo());
                     assetDto.setInventor(patentsAndTrademarks.getInventor());
                     assetDto.setAssignee(patentsAndTrademarks.getAssignee());
-                    assetDto.setRelatedDocuments(patentsAndTrademarks.getRelatedDocuments());
+                    //assetDto.setRelatedDocuments(patentsAndTrademarks.getRelatedDocuments());
                 }
                 case INFORMATION_PROTECTION_SYSTEM -> {
                     InformationProtectionSystem informationProtectionSystem = informationProtectionSystemRepository.findByAssetNo(commonAsset);
