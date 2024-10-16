@@ -235,6 +235,8 @@ public class DataInitializerService {
                 asset.setUseState(UseState.IN_USE);
                 asset.setAcquisitionRoute("Test Acquisition Route");
                 asset.setMaintenancePeriod(LocalDate.now());
+                asset.setProductSerialNumber("Serial" + i);  // 더미 데이터 반영
+
                 // 기타 필드 설정
                 commonAssetRepository.save(asset);
 
@@ -309,15 +311,14 @@ public class DataInitializerService {
                         patentsAndTrademarks.setApplicationNo("AppNo_" + i);  // 더미 데이터 반영
                         patentsAndTrademarks.setInventor("Inventor " + i);  // 더미 데이터 반영
                         patentsAndTrademarks.setAssignee("Assignee " + i);  // 더미 데이터 반영
-                        patentsAndTrademarks.setRelatedDocuments("Related Docs " + i);  // 더미 데이터 반영
+
                         patentsAndTrademarksRepository.save(patentsAndTrademarks);
                     }
                     case ITSYSTEM_EQUIPMENT -> {
                         ItSystemEquipment itSystemEquipment = new ItSystemEquipment();
                         itSystemEquipment.setAssetNo(commonAsset1);  // 자산 번호 설정
                         itSystemEquipment.setEquipmentType("Type " + i);  // 더미 데이터 반영
-                        // int를 Long으로 변환하여 설정
-                        itSystemEquipment.setRackUnit(Long.valueOf(i));  // Long 타입으로 설정
+
                         itSystemEquipment.setPowerSupply("Power Supply " + i);  // 더미 데이터 반영
                         itSystemEquipment.setCoolingSystem("Cooling System " + i);  // 더미 데이터 반영
                         itSystemEquipment.setInterfacePorts("Port " + i);  // 더미 데이터 반영
@@ -332,6 +333,7 @@ public class DataInitializerService {
                         ItNetworkEquipment itNetworkEquipment = new ItNetworkEquipment();
                         itNetworkEquipment.setAssetNo(commonAsset1);  // 자산 번호 설정
                         itNetworkEquipment.setEquipmentType("Network Equipment Type " + i);  // 더미 데이터 반영
+                        itNetworkEquipment.setRackUnit("Test Rack Unit");
                         itNetworkEquipment.setNumberOfPorts(Long.valueOf(i));  // 더미 데이터 반영
                         itNetworkEquipment.setSupportedProtocols("Protocol " + i);  // 더미 데이터 반영
                         itNetworkEquipment.setFirmwareVersion("v1." + i);  // 더미 데이터 반영
@@ -343,7 +345,6 @@ public class DataInitializerService {
                         Terminal terminal = new Terminal();
                         terminal.setAssetNo(commonAsset1);
                         terminal.setIp("192.168.1." + i);  // 더미 데이터 반영
-                        terminal.setProductSerialNumber("Serial" + i);  // 더미 데이터 반영
                         terminal.setOs("Terminal OS " + i);  // 더미 데이터 반영
                         SecurityControl securityControl = SecurityControl.values()[i % SecurityControl.values().length ];
                         terminal.setSecurityControl(securityControl);
