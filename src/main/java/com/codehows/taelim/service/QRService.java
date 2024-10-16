@@ -1,22 +1,35 @@
-package com.codehows.taelim.service;
-
-import com.codehows.taelim.entity.CommonAsset;
-
-import com.codehows.taelim.godex.EZioLib;
-import com.codehows.taelim.godex.GodexPrinter;
-import com.codehows.taelim.godex.clsPrinterCommand;
-import com.codehows.taelim.godex.clsPrinterConfig;
-import com.codehows.taelim.repository.CommonAssetRepository;
-import org.springframework.stereotype.Service;
-
-import lombok.RequiredArgsConstructor;
-
-
-@RequiredArgsConstructor
-@Service
-public class QRService {
-
-////    EZioLib.API API = EZioLib.API.INSTANCE;
+//package com.codehows.taelim.service;
+//
+//import com.codehows.taelim.entity.CommonAsset;
+//
+//import com.codehows.taelim.godex.EZioLib;
+//import com.codehows.taelim.godex.GodexPrinter;
+//import com.codehows.taelim.godex.clsPrinterCommand;
+//import com.codehows.taelim.godex.clsPrinterConfig;
+//import com.codehows.taelim.repository.CommonAssetRepository;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.stereotype.Service;
+//
+//import lombok.RequiredArgsConstructor;
+//
+//
+//@RequiredArgsConstructor
+//@Service
+//public class QRService {
+//
+//    @Value("${qr.url}")
+//    private String QRurl;
+//
+//    //EZioLib.API API = EZioLib.API.INSTANCE;
+//    private final EZioLib.API API;
+//    @Autowired
+//    public QRService(CommonAssetRepository commonAssetRepository) {
+//        this.commonAssetRepository = commonAssetRepository;
+//        this.API = EZioLib.API.INSTANCE;
+//        // ... (나머지 초기화 코드)
+//    }
+//
 ////    clsPrinterConfig Config = new clsPrinterConfig();
 ////    clsPrinterCommand Command = new clsPrinterCommand();
 //
@@ -67,7 +80,7 @@ public class QRService {
 //    // 자산 라벨 출력
 //    public void PrintAssetLabel(Long assetNo) {
 //        CommonAsset commonAsset = commonAssetRepository.findById(assetNo).orElseThrow();
-//        String url = "http://localhost:5173/asset1/" + commonAsset.getAssetCode();
+//        String url = QRurl + commonAsset.getAssetCode();
 //        //String url = "http://125.6.38.5:5173/jsx/" + commonAsset.getAssetCode();
 //        // 프린터 열기
 //        Open("","");
@@ -91,8 +104,8 @@ public class QRService {
 //        PrintText("이 자산은 태림산업(주)의 소중한 자산입니다", 50, 250, 20);
 //
 //        // 프린터 닫기
-////        Close();
+//        Close();
 //
 //    }
-
-}
+//
+//}

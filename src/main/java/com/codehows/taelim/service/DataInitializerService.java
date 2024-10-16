@@ -2,6 +2,12 @@ package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.*;
 import com.codehows.taelim.entity.*;
+import com.codehows.taelim.entity.CommonAsset;
+import com.codehows.taelim.entity.Furniture;
+import com.codehows.taelim.entity.Member;
+import com.codehows.taelim.entity.Software;
+import com.codehows.taelim.loginEntity.TestMember;
+import com.codehows.taelim.loginRepository.TestMemberRepository;
 import com.codehows.taelim.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,88 +36,103 @@ public class DataInitializerService {
     private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
     private final InformationProtectionSystemRepository informationProtectionSystemRepository;
     private final RegisterService registerService;
-//    @Transactional
-//    public void insertDummyData() {
-//        // Member 데이터 삽입
-//        for (int i = 1; i <= 40; i++) {
-//            Member member = new Member();
-//            member.setEmail("user" + i + "@example.com");
-//            member.setPassword("password" + i);
-//            member.setUName("User Name " + i);
-//            member.setRole(i % 10 == 0 ? Role.ADMIN : (i % 2 == 0 ? Role.ASSET_MANAGER : Role.USER));
-//            memberRepository.save(member);
-//        }
-//
-//        // CommonAsset 첫번째 데이터 삽입
-//        for (int i = 1; i <= 40; i++) {
-//
-//            Member member = new Member();
-//            member.setEmail("user" + i + "@example.com");
-//            member.setPassword("password" + i);
-//            member.setUName("User Name " + i);
-//            member.setRole(Role.USER);
-//
-//            CommonAsset asset = new CommonAsset();
-//            if (i <= 5) {
-//                asset.setAssetClassification(AssetClassification.SOFTWARE);
-//            }else {
-//                asset.setAssetClassification(AssetClassification.FURNITURE);
-//            }
-//            asset.setAssetBasis(AssetBasis.COMMON);
-//            asset.setAssetCode(String.format("ASSET%03d", i));
-//            asset.setAssetName("Asset " + i);
-//            asset.setPurpose("Test Purpose");
-//            asset.setQuantity(1L);
-//            asset.setDepartment(Department.IT_DEPARTMENT);
-//            asset.setAssetLocation(AssetLocation.MAIN_1F);
-//            asset.setAssetUser(member);
-//            asset.setAssetOwner(member);
-//            asset.setAssetSecurityManager(member);
-//            asset.setOperationStatus(OperationStatus.OPERATING);
-//            asset.setIntroducedDate(LocalDate.now());
-//            asset.setConfidentiality(1);
-//            asset.setIntegrity(1);
-//            asset.setAvailability(1);
-//            asset.setNote("Test Note");
-//            asset.setManufacturingCompany("Test Manufacturing Company");
-//            asset.setOwnership(Ownership.OWNED);
-//            asset.setPurchaseCost(5000L);
-//            asset.setPurchaseDate(LocalDate.now());
-//            asset.setUsefulLife(5L);
-//            asset.setDepreciationMethod(DepreciationMethod.FIXED_RATE);
-//            asset.setWarrantyDetails("Test Warranty Details");
-//            asset.setAttachment("Test Attachment");
-//            asset.setPurchaseSource("Test Purchase Source");
-//            asset.setContactInformation("010-0000-0000");
-//            asset.setDisposalStatus(Boolean.FALSE);
-//            asset.setDemandStatus(Boolean.FALSE);
-//            asset.setApproval(Approval.APPROVE);
-//            asset.setDemandCheck(Boolean.FALSE);
-//            asset.setCreateDate(LocalDate.now());
-//            asset.setUseState(UseState.IN_USE);
-//            asset.setAcquisitionRoute("Test Acquisition Route");
-//            asset.setMaintenancePeriod(LocalDate.now());
-//            // 기타 필드 설정
-//            commonAssetRepository.save(asset);
-//            if(i<=5) {
-//                Software software = new Software();
-//                software.setAssetNo(asset);
-//                software.setIp("192.168.1." + i);
-//                software.setServerId("server" + String.format("%02d", i));
-//                software.setServerPassword("pass" + i);
-//                software.setCompanyManager("Manager " + i);
-//                software.setOs("Windows Server 2022");
-//                softwareRepository.save(software);
-//            } else {
-//                Furniture furniture = new Furniture();
-//                furniture.setAssetNo(asset);
-//                furniture.setFurnitureSize("500");
-//                furnitureRepository.save(furniture);
-//            }
-//        }
+    private final AmountSetRepository amountSetRepository;
+    private final TestMemberRepository testMemberRepository;
+
+    // @Transactional
+    // public void insertDummyData() {
+        
+
+    //     //두 번째 DB 테스트
+    //     TestMember testMember = new TestMember();
+    //     testMember.toEntity("user1@example.com", "1234" ,
+    //             "testUser1", Department.IT_DEPARTMENT, Role.ADMIN);
+    //     testMemberRepository.save(testMember);
+
+
+    //     // Member 데이터 삽입
+    //     for (int i = 1; i <= 40; i++) {
+    //         Member member = new Member();
+    //         member.setEmail("user" + i + "@example.com");
+    //         member.setPassword("password" + i);
+    //         member.setUName("User Name " + i);
+    //         member.setRole(i % 10 == 0 ? Role.ADMIN : (i % 2 == 0 ? Role.ASSET_MANAGER : Role.USER));
+    //         memberRepository.save(member);
+    //     }
+
+    //     // CommonAsset 첫번째 데이터 삽입
+    //     for (int i = 1; i <= 40; i++) {
+
+    //         Member member = new Member();
+    //         member.setEmail("user" + i + "@example.com");
+    //         member.setPassword("password" + i);
+    //         member.setUName("User Name " + i);
+    //         member.setRole(Role.USER);
+
+    //         CommonAsset asset = new CommonAsset();
+    //         if (i <= 5) {
+    //             asset.setAssetClassification(AssetClassification.SOFTWARE);
+    //         }else {
+    //             asset.setAssetClassification(AssetClassification.FURNITURE);
+    //         }
+    //         asset.setAssetBasis(AssetBasis.COMMON);
+    //         asset.setAssetCode(String.format("ASSET%03d", i));
+    //         asset.setAssetName("Asset " + i);
+    //         asset.setPurpose("Test Purpose");
+    //         asset.setQuantity(1L);
+    //         asset.setDepartment(Department.IT_DEPARTMENT);
+    //         asset.setAssetLocation(AssetLocation.MAIN_1F);
+    //         asset.setAssetUser(member);
+    //         asset.setAssetOwner(member);
+    //         asset.setAssetSecurityManager(member);
+    //         asset.setOperationStatus(OperationStatus.OPERATING);
+    //         asset.setIntroducedDate(LocalDate.now());
+    //         asset.setConfidentiality(1);
+    //         asset.setIntegrity(1);
+    //         asset.setAvailability(1);
+    //         asset.setNote("Test Note");
+    //         asset.setManufacturingCompany("Test Manufacturing Company");
+    //         asset.setOwnership(Ownership.OWNED);
+    //         asset.setPurchaseCost(5000L);
+    //         asset.setPurchaseDate(LocalDate.now());
+    //         asset.setUsefulLife(5L);
+    //         asset.setDepreciationMethod(DepreciationMethod.FIXED_RATE);
+    //         asset.setWarrantyDetails("Test Warranty Details");
+    //         asset.setAttachment("Test Attachment");
+    //         asset.setPurchaseSource("Test Purchase Source");
+    //         asset.setContactInformation("010-0000-0000");
+    //         asset.setDisposalStatus(Boolean.FALSE);
+    //         asset.setDemandStatus(Boolean.FALSE);
+    //         asset.setApproval(Approval.APPROVE);
+    //         asset.setDemandCheck(Boolean.FALSE);
+    //         asset.setCreateDate(LocalDate.now());
+    //         asset.setUseState(UseState.IN_USE);
+    //         asset.setAcquisitionRoute("Test Acquisition Route");
+    //         asset.setMaintenancePeriod(LocalDate.now());
+    //         // 기타 필드 설정
+    //         commonAssetRepository.save(asset);
+    //         if(i<=5) {
+    //             Software software = new Software();
+    //             software.setAssetNo(asset);
+    //             software.setIp("192.168.1." + i);
+    //             software.setServerId("server" + String.format("%02d", i));
+    //             software.setServerPassword("pass" + i);
+    //             software.setCompanyManager("Manager " + i);
+    //             software.setOs("Windows Server 2022");
+    //             softwareRepository.save(software);
+    //         } else {
+    //             Furniture furniture = new Furniture();
+    //             furniture.setAssetNo(asset);
+    //             furniture.setFurnitureSize("500");
+    //             furnitureRepository.save(furniture);
+    //         }
+    //     }
 
         @Transactional
         public void insertDummyData() {
+            //자산 기준 금액 설정 초기값 설정
+            amountSetRepository.insertAmountSet(0L, 0L);
+
             // Member 데이터 삽입
             for (int i = 1; i <= 195; i++) {
                 Member member = new Member();
@@ -214,6 +235,8 @@ public class DataInitializerService {
                 asset.setUseState(UseState.IN_USE);
                 asset.setAcquisitionRoute("Test Acquisition Route");
                 asset.setMaintenancePeriod(LocalDate.now());
+                asset.setProductSerialNumber("Serial" + i);  // 더미 데이터 반영
+
                 // 기타 필드 설정
                 commonAssetRepository.save(asset);
 
@@ -288,15 +311,14 @@ public class DataInitializerService {
                         patentsAndTrademarks.setApplicationNo("AppNo_" + i);  // 더미 데이터 반영
                         patentsAndTrademarks.setInventor("Inventor " + i);  // 더미 데이터 반영
                         patentsAndTrademarks.setAssignee("Assignee " + i);  // 더미 데이터 반영
-                        patentsAndTrademarks.setRelatedDocuments("Related Docs " + i);  // 더미 데이터 반영
+
                         patentsAndTrademarksRepository.save(patentsAndTrademarks);
                     }
                     case ITSYSTEM_EQUIPMENT -> {
                         ItSystemEquipment itSystemEquipment = new ItSystemEquipment();
                         itSystemEquipment.setAssetNo(commonAsset1);  // 자산 번호 설정
                         itSystemEquipment.setEquipmentType("Type " + i);  // 더미 데이터 반영
-                        // int를 Long으로 변환하여 설정
-                        itSystemEquipment.setRackUnit(Long.valueOf(i));  // Long 타입으로 설정
+
                         itSystemEquipment.setPowerSupply("Power Supply " + i);  // 더미 데이터 반영
                         itSystemEquipment.setCoolingSystem("Cooling System " + i);  // 더미 데이터 반영
                         itSystemEquipment.setInterfacePorts("Port " + i);  // 더미 데이터 반영
@@ -311,6 +333,7 @@ public class DataInitializerService {
                         ItNetworkEquipment itNetworkEquipment = new ItNetworkEquipment();
                         itNetworkEquipment.setAssetNo(commonAsset1);  // 자산 번호 설정
                         itNetworkEquipment.setEquipmentType("Network Equipment Type " + i);  // 더미 데이터 반영
+                        itNetworkEquipment.setRackUnit("Test Rack Unit");
                         itNetworkEquipment.setNumberOfPorts(Long.valueOf(i));  // 더미 데이터 반영
                         itNetworkEquipment.setSupportedProtocols("Protocol " + i);  // 더미 데이터 반영
                         itNetworkEquipment.setFirmwareVersion("v1." + i);  // 더미 데이터 반영
@@ -322,7 +345,6 @@ public class DataInitializerService {
                         Terminal terminal = new Terminal();
                         terminal.setAssetNo(commonAsset1);
                         terminal.setIp("192.168.1." + i);  // 더미 데이터 반영
-                        terminal.setProductSerialNumber("Serial" + i);  // 더미 데이터 반영
                         terminal.setOs("Terminal OS " + i);  // 더미 데이터 반영
                         SecurityControl securityControl = SecurityControl.values()[i % SecurityControl.values().length ];
                         terminal.setSecurityControl(securityControl);
@@ -376,150 +398,5 @@ public class DataInitializerService {
                     classificationIndex++;
                 }
             }
-
-        //수정
-//        for (int i = 1; i <= 10; i++) {
-//            if(i%3==0) {
-//                Member member = new Member();
-//                member.setEmail("user" + i + "@example.com");
-//                member.setPassword("password" + i);
-//                member.setUName("User Name " + i);
-//                member.setRole(Role.USER);
-//
-//                CommonAsset asset = new CommonAsset();
-//                asset.setAssetClassification(AssetClassification.FURNITURE);
-//                asset.setAssetBasis(AssetBasis.COMMON);
-//                asset.setAssetCode(String.format("ASSET%03d", i));
-//                asset.setAssetName("Asset " + i);
-//                asset.setPurpose("Test Purpose");
-//                asset.setQuantity(1L);
-//                asset.setDepartment(Department.IT_DEPARTMENT);
-//                asset.setAssetLocation(AssetLocation.MAIN_1F);
-//                asset.setAssetUser(member);
-//                asset.setAssetOwner(member);
-//                asset.setAssetSecurityManager(member);
-//                asset.setOperationStatus(OperationStatus.OPERATING);
-//                asset.setIntroducedDate(LocalDate.now());
-//                asset.setConfidentiality(1);
-//                asset.setIntegrity(1);
-//                asset.setAvailability(1);
-//                asset.setNote("Test Note");
-//                asset.setManufacturingCompany("Test Manufacturing Company");
-//                asset.setOwnership(Ownership.OWNED);
-//                asset.setPurchaseCost(5000L);
-//                asset.setPurchaseDate(LocalDate.now());
-//                asset.setUsefulLife(5L);
-//                asset.setDepreciationMethod(DepreciationMethod.FIXED_RATE);
-//                asset.setWarrantyDetails("Test Warranty Details");
-//                asset.setAttachment("Test Attachment");
-//                asset.setPurchaseSource("Test Purchase Source");
-//                asset.setContactInformation("010-0000-0000");
-//                asset.setDisposalStatus(Boolean.FALSE);
-//
-//                asset.setDemandStatus(Boolean.TRUE);
-//                if (i < 5) {
-//                    asset.setApproval(Approval.APPROVE);
-//                } else {
-//                    asset.setApproval(Approval.REFUSAL);
-//                }
-//
-//                asset.setDemandCheck(Boolean.TRUE);
-//                asset.setCreateDate(LocalDate.now());
-//                asset.setUseState(UseState.IN_USE);
-//                asset.setAcquisitionRoute("Test Acquisition Route");
-//                asset.setMaintenancePeriod(LocalDate.now());
-//                // 기타 필드 설정
-//                commonAssetRepository.save(asset);
-//                if(i<=5) {
-//                    Software software = new Software();
-//                        software.setAssetNo(asset);
-//                        software.setIp("192.168.1." + i);
-//                        software.setServerId("server" + String.format("%02d", i));
-//                        software.setServerPassword("pass" + i);
-//                        software.setCompanyManager("Manager " + i);
-//                        software.setOs("Windows Server 2022");
-//                        softwareRepository.save(software);
-//                    } else {
-//                    Furniture furniture = new Furniture();
-//                        furniture.setAssetNo(asset);
-//                        furniture.setFurnitureSize("500");
-//                        furnitureRepository.save(furniture);
-//                }
-//            }
-//        }
-
-        //폐기
-//        for (int i = 1; i <= 10; i++) {
-//            if(i%5==0) {
-//                Member member = new Member();
-//                member.setEmail("user" + i + "@example.com");
-//                member.setPassword("password" + i);
-//                member.setUName("User Name " + i);
-//                member.setRole(Role.USER);
-//
-//                CommonAsset asset = new CommonAsset();
-//                asset.setAssetClassification(AssetClassification.FURNITURE);
-//                asset.setAssetBasis(AssetBasis.COMMON);
-//                asset.setAssetCode(String.format("ASSET%03d", i));
-//                asset.setAssetName("Asset " + i);
-//                asset.setPurpose("Test Purpose");
-//                asset.setQuantity(1L);
-//                asset.setDepartment(Department.IT_DEPARTMENT);
-//                asset.setAssetLocation(AssetLocation.MAIN_1F);
-//                asset.setAssetUser(member);
-//                asset.setAssetOwner(member);
-//                asset.setAssetSecurityManager(member);
-//                asset.setOperationStatus(OperationStatus.OPERATING);
-//                asset.setIntroducedDate(LocalDate.now());
-//                asset.setConfidentiality(1);
-//                asset.setIntegrity(1);
-//                asset.setAvailability(1);
-//                asset.setNote("Test Note");
-//                asset.setManufacturingCompany("Test Manufacturing Company");
-//                asset.setOwnership(Ownership.OWNED);
-//                asset.setPurchaseCost(5000L);
-//                asset.setPurchaseDate(LocalDate.now());
-//                asset.setUsefulLife(5L);
-//                asset.setDepreciationMethod(DepreciationMethod.FIXED_RATE);
-//                asset.setWarrantyDetails("Test Warranty Details");
-//                asset.setAttachment("Test Attachment");
-//                asset.setPurchaseSource("Test Purchase Source");
-//                asset.setContactInformation("010-0000-0000");
-//                asset.setQRInformation("Test QR Information");
-//                asset.setDisposalStatus(Boolean.TRUE);
-//                asset.setRequestStatus(Boolean.TRUE);
-//                if (i < 8) {
-//                    asset.setApproval(Approval.APPROVE);
-//                    asset.setUseState(UseState.RETIRED_DISCARDED);
-//                } else {
-//                    asset.setApproval(Approval.REFUSAL);
-//                    asset.setUseState(UseState.IN_USE);
-//                }
-//                asset.setDemandCheck(Boolean.TRUE);
-//                asset.setCreateDate(LocalDate.now());
-//                asset.setAcquisitionRoute("Test Acquisition Route");
-//                asset.setMaintenancePeriod(LocalDate.now());
-//                // 기타 필드 설정
-//                commonAssetRepository.save(asset);
-//            }
-//        }
-
     }
 }
-
-
-
-//if(i<=50) {
-//Software software = new Software();
-//                software.setAssetNo(asset);
-//                software.setIP("192.168.1." + i);
-//                software.setServerId("server" + String.format("%02d", i));
-//        software.setServerPassword("pass" + i);
-//                software.setCompanyManager("Manager " + i);
-//                software.setOS("Windows Server 2022");
-//                softwareRepository.save(software);
-//            } else {
-//Furniture furniture = new Furniture();
-//                furniture.setAssetNo(asset);
-//                furniture.setFurnitureSize("500");
-//            }

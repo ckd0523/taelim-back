@@ -8,7 +8,10 @@ import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Demand;
 import com.codehows.taelim.repository.CommonAssetRepository;
-import com.codehows.taelim.service.*;
+import com.codehows.taelim.service.AssetService;
+//import com.codehows.taelim.service.QRService;
+import com.codehows.taelim.service.RegisterService;
+import com.codehows.taelim.service.UpdateService;
 import com.google.zxing.WriterException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +39,7 @@ import java.util.zip.ZipOutputStream;
 @RestController
 public class QRController {
 
-    private final QRService qrCodeService;
+//    private final QRService qrCodeService;
     private final UpdateService updateService;
     private final RegisterService registerService;
     private final AssetFinalService assetFinalService;
@@ -290,35 +293,23 @@ public class QRController {
     }
 
 
-    // 자산 조회 - 상세정보 화면 까지 다 가져오는 테스트
-    @GetMapping("/assets/test")
-    public List<AssetDto> test() {
-        return assetService.getAssetDetail3();
-    }
-//    @GetMapping("/details")
-//    public ResponseEntity<PaginatedResponse<AssetDto>> getAssetDetails(
-//           @RequestParam(defaultValue = "0") int page,
-//           @RequestParam(defaultValue = "10") int size) {
-//
-//    PaginatedResponse<AssetDto> response = assetService.getAssetDetail3(page, size);
-//    return ResponseEntity.ok(response);
-//    }
+        // 자산 조회 - 상세정보 화면 까지 다 가져오는 테스트
+        @GetMapping("/assets/test")
+        public List<AssetDto> test() {
+            return assetService.getAssetDetail3();
+        }
+
 
     // 파일 업데이트 API
     @PostMapping("/{assetCode}/files")
     public ResponseEntity<String> updateAssetFiles(
             @PathVariable String assetCode,
             @RequestParam("files") List<MultipartFile> newFiles,
-            @RequestParam("fileType") List<FileType> fileTypes) {
-
-        // 파일 수와 fileType 수가 일치하는지 확인
-        if (newFiles.size() != fileTypes.size()) {
-            return ResponseEntity.badRequest().body("파일 수와 파일 타입 수가 일치해야 합니다.");
-        }
+            @RequestParam("fileType") FileType fileType) {
 
         try {
             // 파일 업데이트 서비스 호출
-            registerService.updateAssetFiles(assetCode, newFiles, fileTypes);
+            registerService.updateAssetFiles(assetCode, newFiles, fileType);
             return ResponseEntity.ok("파일이 성공적으로 업데이트되었습니다.");
         } catch (Exception e) {
             // 오류 발생 시

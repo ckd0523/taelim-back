@@ -30,5 +30,4 @@ public class File {
     @Enumerated(EnumType.STRING)
     private FileType fileType;
 
-    // 기존의 생성자 및 메서드들...
 }

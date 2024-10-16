@@ -19,7 +19,6 @@ public class TerminalDto {
     private CommonAsset assetNo;
 
     private String ip;
-    private String productSerialNumber;
     private String os;
 
     private SecurityControl securityControl;
@@ -35,7 +34,6 @@ public class TerminalDto {
                 .terminalNo(this.terminalNo)
                 .assetNo(this.assetNo)
                 .ip(this.ip)
-                .productSerialNumber(this.productSerialNumber)
                 .os(this.os)
                 .securityControl(this.securityControl)
                 .kaitsKeeper(this.kaitsKeeper)
@@ -51,7 +49,6 @@ public class TerminalDto {
                 entity.getTerminalNo(),
                 entity.getAssetNo(),
                 entity.getIp(),
-                entity.getProductSerialNumber(),
                 entity.getOs(),
                 entity.getSecurityControl(),
                 entity.getKaitsKeeper(),

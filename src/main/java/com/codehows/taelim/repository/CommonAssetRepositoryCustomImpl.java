@@ -11,9 +11,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Comparator;
@@ -87,48 +84,6 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .where(ca.assetNo.in(subQuery)) // 서브 쿼리에서 선택된 최신 assetNo
                 .fetch();
     }
-
-//    public Page<CommonAsset> findApprovedAndNotDisposedAssets(Pageable pageable) {
-//        QCommonAsset ca = QCommonAsset.commonAsset;
-//
-//        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
-//        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
-//        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
-//
-//        excludedAssetCodes.select(subCa.assetCode)
-//                .from(subCa)
-//                .where(
-//                        subCa.approval.eq(Approval.APPROVE)
-//                                .and(subCa.disposalStatus.isTrue())
-//                )
-//                .groupBy(subCa.assetCode);
-//
-//        // 2. 최신 assetNo를 선택하는 서브 쿼리
-//        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
-//        subQuery.select(ca.assetNo.max())
-//                .from(ca)
-//                .where(
-//                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
-//                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
-//                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
-//                )
-//                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
-//
-//        // 3. 최종 쿼리: 최신 assetNo에 해당하는 자산 조회
-//        JPAQuery<CommonAsset> query = new JPAQuery<>(entityManager);
-//        List<CommonAsset> results = query.select(ca)
-//                .from(ca)
-//                .where(ca.assetNo.in(subQuery)) // 서브 쿼리에서 선택된 최신 assetNo
-//                .offset(pageable.getOffset())  // 페이징 offset
-//                .limit(pageable.getPageSize()) // 페이징 limit
-//                .fetch();
-//
-//        // 페이징 정보를 포함한 Page 객체 반환
-//        long total = query.fetchCount();  // 전체 데이터 수 계산
-//
-//        return new PageImpl<>(results, pageable, total);
-//    }
-
 
     //위치에 따른 자산 목록
     @Override

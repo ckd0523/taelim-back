@@ -1,9 +1,6 @@
 package com.codehows.taelim.dto;
 
-import com.codehows.taelim.constant.AssetBasis;
-import com.codehows.taelim.constant.AssetLocation;
-import com.codehows.taelim.constant.Department;
-import com.codehows.taelim.constant.OperationStatus;
+import com.codehows.taelim.constant.*;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.InformationProtectionSystem;
 import lombok.*;
@@ -22,6 +19,7 @@ public class ExcelDto {
     private Long assetNo;
 
     private AssetBasis assetBasis;
+    private AssetClassification assetClassification;
     private String assetCode;
     private String assetName;
     private String purpose;
@@ -39,9 +37,12 @@ public class ExcelDto {
     private String note;
     private String serviceScope;
 
+    private LocalDate createDate;
+
     public CommonAsset toExcel() {
         return CommonAsset.builder()
                 .assetNo(assetNo)
+                .assetClassification(assetClassification)
                 .assetCode(assetCode)
                 .assetName(assetName)
                 .assetBasis(assetBasis)
@@ -58,7 +59,7 @@ public class ExcelDto {
                 .integrity(integrity)
                 .availability(availability)
                 .note(note)
-
+                .createDate(createDate)
                 .build();
     }
 
@@ -68,21 +69,5 @@ public class ExcelDto {
                 .build();
     }
 
-    public ExcelDto stream() {
-        return ExcelDto.builder()
-                .assetNo(assetNo)
-                .assetCode(assetCode)
-                .assetName(assetName)
-//                .assetUser(assetUser)
-//                .assetOwner(assetOwner)
-//                .assetSecurityManager(assetSecurityManager)
-                .purpose(purpose)
-                .quantity(quantity)
-                .introducedDate(introducedDate)
-                .confidentiality(confidentiality)
-                .integrity(integrity)
-                .availability(availability)
-                .note(note)
-                .build();
-    }
+
 }

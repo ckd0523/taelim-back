@@ -73,6 +73,21 @@ public class RepairFileService {
         return repairFileRepository.save(toRepairFile);
     }
 
+    public void delete(RepairFile file) {
+        try{
+            File deleteFile = new File(filePath + file.getFileName());
+            if(deleteFile.exists()) {
+                deleteFile.delete();
+            }
+            repairFileRepository.delete(file);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public RepairFile findByRepairNoAndType(RepairHistory repairHistory, RepairType type) {
+        return repairFileRepository.findByRepairNoAndRepairType(repairHistory, type);
+    }
+
 
     public Resource getImage(String fileName) {
         Resource resource = null;

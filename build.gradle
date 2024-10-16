@@ -78,3 +78,6 @@ tasks.withType(Test) {
     enabled = false
 }
 
+//bootRun {
+//    jvmArgs = ["-Djava.library.path=$buildDir/classes/java/main"]
+//}
