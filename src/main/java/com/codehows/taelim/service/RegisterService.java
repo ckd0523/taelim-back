@@ -388,9 +388,25 @@ public class RegisterService {
         // AssetDto에서 업데이트할 필드 설정 (null 체크 후 기존 값 유지)
         updateAsset.setDepartment(assetDto.getDepartment() != null ? assetDto.getDepartment() : existAsset.getDepartment());
         updateAsset.setAssetLocation(assetDto.getAssetLocation() != null ? assetDto.getAssetLocation() : existAsset.getAssetLocation());
-        //updateAsset.setAssetUser(assetDto.getAssetUser() != null ? assetDto.getAssetUser() : existAsset.getAssetUser());
-        //updateAsset.setAssetOwner(assetDto.getAssetOwner() != null ? assetDto.getAssetOwner() : existAsset.getAssetOwner());
-        //updateAsset.setAssetSecurityManager(assetDto.getAssetSecurityManager() != null ? assetDto.getAssetSecurityManager() : existAsset.getAssetSecurityManager());
+
+            // 이메일을 통해 Member 객체 가져오기
+            if (assetDto.getAssetUser() != null && assetDto.getAssetUser().getEmail() != null) {
+                updateAsset.setAssetUser(getMemberByEmail(assetDto.getAssetUser().getEmail()));
+            } else {
+                updateAsset.setAssetUser(existAsset.getAssetUser());
+            }
+
+            if (assetDto.getAssetOwner() != null && assetDto.getAssetOwner().getEmail() != null) {
+                updateAsset.setAssetOwner(getMemberByEmail(assetDto.getAssetOwner().getEmail()));
+            } else {
+                updateAsset.setAssetOwner(existAsset.getAssetOwner());
+            }
+
+            if (assetDto.getAssetSecurityManager() != null && assetDto.getAssetSecurityManager().getEmail() != null) {
+                updateAsset.setAssetSecurityManager(getMemberByEmail(assetDto.getAssetSecurityManager().getEmail()));
+            } else {
+                updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
+            }
         updateAsset.setUseState(assetDto.getUseState() != null ? assetDto.getUseState() : existAsset.getUseState());
         updateAsset.setOperationStatus(assetDto.getOperationStatus() != null ? assetDto.getOperationStatus() : existAsset.getOperationStatus());
         updateAsset.setIntroducedDate(assetDto.getIntroducedDate() != null ? assetDto.getIntroducedDate() : existAsset.getIntroducedDate());
@@ -478,16 +494,30 @@ public class RegisterService {
         updateAsset.setAssetBasis(existAsset.getAssetBasis());
         updateAsset.setManufacturingCompany(existAsset.getManufacturingCompany());
         updateAsset.setPurpose(existAsset.getPurpose());
-//        updateAsset.setAssetUser(existAsset.getAssetUser());    // 사용자들은 나중에 바꿔야함
-//        updateAsset.setAssetOwner(existAsset.getAssetOwner());
-//        updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
+
+            // 이메일을 통해 Member 객체 가져오기
+            if (assetDto.getAssetUser() != null && assetDto.getAssetUser().getEmail() != null) {
+                updateAsset.setAssetUser(getMemberByEmail(assetDto.getAssetUser().getEmail()));
+            } else {
+                updateAsset.setAssetUser(existAsset.getAssetUser());
+            }
+
+            if (assetDto.getAssetOwner() != null && assetDto.getAssetOwner().getEmail() != null) {
+                updateAsset.setAssetOwner(getMemberByEmail(assetDto.getAssetOwner().getEmail()));
+            } else {
+                updateAsset.setAssetOwner(existAsset.getAssetOwner());
+            }
+
+            if (assetDto.getAssetSecurityManager() != null && assetDto.getAssetSecurityManager().getEmail() != null) {
+                updateAsset.setAssetSecurityManager(getMemberByEmail(assetDto.getAssetSecurityManager().getEmail()));
+            } else {
+                updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
+            }
 
         // AssetDto에서 업데이트할 필드 설정 (null 체크 후 기존 값 유지)
         updateAsset.setDepartment(assetDto.getDepartment() != null ? assetDto.getDepartment() : existAsset.getDepartment());
         updateAsset.setAssetLocation(assetDto.getAssetLocation() != null ? assetDto.getAssetLocation() : existAsset.getAssetLocation());
-        //updateAsset.setAssetUser(assetDto.getAssetUser() != null ? assetDto.getAssetUser() : existAsset.getAssetUser());
-        //updateAsset.setAssetOwner(assetDto.getAssetOwner() != null ? assetDto.getAssetOwner() : existAsset.getAssetOwner());
-        //updateAsset.setAssetSecurityManager(assetDto.getAssetSecurityManager() != null ? assetDto.getAssetSecurityManager() : existAsset.getAssetSecurityManager());
+
         updateAsset.setUseState(assetDto.getUseState() != null ? assetDto.getUseState() : existAsset.getUseState());
         updateAsset.setOperationStatus(assetDto.getOperationStatus() != null ? assetDto.getOperationStatus() : existAsset.getOperationStatus());
         updateAsset.setIntroducedDate(assetDto.getIntroducedDate() != null ? assetDto.getIntroducedDate() : existAsset.getIntroducedDate());
@@ -1366,6 +1396,11 @@ public class RegisterService {
             return filename.substring(filename.lastIndexOf('.'));
         }
         return "";
+    }
+
+    private Member getMemberByEmail(String email) {
+        return memberRepository.findById(email)
+                .orElseThrow(() -> new RuntimeException("해당 이메일에 대한 멤버를 찾을 수 없습니다: " + email));
     }
 }
 

@@ -330,6 +330,7 @@ public class QRController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
+
         // 검색 결과를 가져옵니다.
         PaginatedResponse<AssetDto> response = assetFinalService.getAssetSearch(
                 assetName, assetLocationString, assetLocationEnum,
