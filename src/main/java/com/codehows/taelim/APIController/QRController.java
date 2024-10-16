@@ -42,7 +42,7 @@ import java.util.zip.ZipOutputStream;
 @RestController
 public class QRController {
 
-//    private final QRService qrCodeService;
+    private final QRService qrCodeService;
     private final UpdateService updateService;
     private final RegisterService registerService;
     private final AssetFinalService assetFinalService;
