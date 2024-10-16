@@ -4,6 +4,7 @@ import com.codehows.taelim.security.CustomAuthenticationProvider;
 import com.codehows.taelim.security.JwtAuthenticationFilter;
 import com.codehows.taelim.security.JwtUtil;
 import com.codehows.taelim.service.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +38,7 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)  // CSRF 보호 비활성화
                 //.cors(AbstractHttpConfigurer::disable)  // CORS 비활성화
                 .authorizeHttpRequests(requests -> {
-                    requests.requestMatchers("/login", "/assetSurveyHistory").permitAll();  // 로그인 경로는 인증 필요 없음
+                    requests.requestMatchers("/login", "/refresh").permitAll();  // 로그인 경로는 인증 필요 없음
                     requests.requestMatchers(HttpMethod.POST).authenticated();
                     requests.requestMatchers(HttpMethod.GET).authenticated();
                     requests.requestMatchers(HttpMethod.PUT).authenticated();
@@ -50,7 +51,16 @@ public class WebSecurityConfig {
                 //이름만 본다면 유저 이름과 패스워드를 인증하는데 컨트롤러에서 하면 안되나?
                 //일단 월요일에 저거 지워보자
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-        ;
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write("Access token is invalid");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.getWriter().write("Access token is invalid");
+                        })
+                );
 
         return httpSecurity.build();
     }

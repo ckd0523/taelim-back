@@ -1,6 +1,7 @@
 package com.codehows.taelim.security;
 
 import com.codehows.taelim.service.CustomUserDetailsService;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -41,17 +42,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 헤더가 존재하고, "Bearer "로 시작하는 경우
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
+
+            if(jwtUtil.isTokenExpired(jwt)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access token is invalid");
+            }
+
             try {
                 // JWT에서 사용자 이름을 추출
                 email = jwtUtil.getUsernameFromToken(jwt);
-            } catch (JwtException e) {
                 // 사용자 이름을 못 찾았을 때 처리
+            } catch (ExpiredJwtException e) {
+                //액세스 토큰이 만료된 경우
+                logger.error("JWT token has expired", e);
+                SecurityContextHolder.clearContext();
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access token is invalid");
+            } catch (JwtException e) {
+                //다른 이유로 예외 발생
                 logger.error("JWT token is invalid", e);
+                SecurityContextHolder.clearContext();
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access token is invalid");
             }
         }
         System.out.println("커스텀 필터2");
         // 사용자가 인증되지 않은 경우 (SecurityContext에 인증 정보가 없는 경우)
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            System.out.println("커스텀 필터 이메일 : " + email);
 
             //username에 해당하는 사용자 정보를 로드. 보통 데이터베이스에서 사용자의 정보 및 권한을 가져오는 역할을 합니다.
             UserDetails user = customUserDetailsService.loadUserByUsername(email);
@@ -69,6 +84,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // SecurityContext에 인증 정보 설정
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            } else {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access token is invalid");
             }
         }
         System.out.println("커스텀 필터4");
