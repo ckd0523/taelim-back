@@ -232,7 +232,6 @@ public class AssetUpdateDto {
                 .applicationNo(applicationNo)
                 .inventor(inventor)
                 .assignee(assignee)
-                .relatedDocuments(relatedDocuments)
                 .build();
     }
 
@@ -240,7 +239,6 @@ public class AssetUpdateDto {
     public ItSystemEquipment toItSystemEquipment(){
         return ItSystemEquipment.builder()
                 .equipmentType(equipmentType)
-                .rackUnit(rackUnit)
                 .powerSupply(powerSupply)
                 .coolingSystem(coolingSystem)
                 .interfacePorts(interfacePorts)
@@ -268,7 +266,6 @@ public class AssetUpdateDto {
     public Terminal toTerminal() {
         return Terminal.builder()
                 .ip(ip)
-                .productSerialNumber(productSerialNumber)
                 .os(os)
                 .securityControl(securityControl)
                 .kaitsKeeper(kaitsKeeper)

@@ -196,22 +196,33 @@ public class DataInitializerService {
                 asset.setPurpose("Test Purpose");
                 asset.setQuantity(1L);
                 asset.setDepartment(Department.IT_DEPARTMENT);
-                asset.setAssetLocation(AssetLocation.MAIN_1F);
+                // AssetLocation을 순환하여 설정
+                AssetLocation assetLocation = AssetLocation.values()[i% AssetLocation.values().length];
+                asset.setAssetLocation(assetLocation);
+                // Department을 순환하여 설정
+                Department department = Department.values()[i % Department.values().length];
+                asset.setDepartment(department);
                 asset.setAssetUser(member);
                 asset.setAssetOwner(member);
                 asset.setAssetSecurityManager(member);
-                asset.setOperationStatus(OperationStatus.OPERATING);
+                // OperationStatus을 순환하여 설정
+                OperationStatus operationStatus = OperationStatus.values()[i % OperationStatus.values().length];
+                asset.setOperationStatus(operationStatus);
                 asset.setIntroducedDate(LocalDate.now());
                 asset.setConfidentiality(1);
                 asset.setIntegrity(1);
                 asset.setAvailability(1);
                 asset.setNote("Test Note");
                 asset.setManufacturingCompany("Test Manufacturing Company");
-                asset.setOwnership(Ownership.OWNED);
+                //Owenerhip
+                Ownership ownership = Ownership.values()[i % Ownership.values().length];
+                asset.setOwnership(ownership);
                 asset.setPurchaseCost(5000L);
                 asset.setPurchaseDate(LocalDate.now());
                 asset.setUsefulLife(5L);
-                asset.setDepreciationMethod(DepreciationMethod.FIXED_RATE);
+                // 정액법 정률법
+                DepreciationMethod depreciationMethod = DepreciationMethod.values()[i % DepreciationMethod.values().length];
+                asset.setDepreciationMethod(depreciationMethod);
                 asset.setWarrantyDetails("Test Warranty Details");
                 asset.setAttachment("Test Attachment");
                 asset.setPurchaseSource("Test Purchase Source");
@@ -224,6 +235,8 @@ public class DataInitializerService {
                 asset.setUseState(UseState.IN_USE);
                 asset.setAcquisitionRoute("Test Acquisition Route");
                 asset.setMaintenancePeriod(LocalDate.now());
+                asset.setProductSerialNumber("Serial" + i);  // 더미 데이터 반영
+
                 // 기타 필드 설정
                 commonAssetRepository.save(asset);
 
@@ -298,15 +311,14 @@ public class DataInitializerService {
                         patentsAndTrademarks.setApplicationNo("AppNo_" + i);  // 더미 데이터 반영
                         patentsAndTrademarks.setInventor("Inventor " + i);  // 더미 데이터 반영
                         patentsAndTrademarks.setAssignee("Assignee " + i);  // 더미 데이터 반영
-                        patentsAndTrademarks.setRelatedDocuments("Related Docs " + i);  // 더미 데이터 반영
+
                         patentsAndTrademarksRepository.save(patentsAndTrademarks);
                     }
                     case ITSYSTEM_EQUIPMENT -> {
                         ItSystemEquipment itSystemEquipment = new ItSystemEquipment();
                         itSystemEquipment.setAssetNo(commonAsset1);  // 자산 번호 설정
                         itSystemEquipment.setEquipmentType("Type " + i);  // 더미 데이터 반영
-                        // int를 Long으로 변환하여 설정
-                        itSystemEquipment.setRackUnit(Long.valueOf(i));  // Long 타입으로 설정
+
                         itSystemEquipment.setPowerSupply("Power Supply " + i);  // 더미 데이터 반영
                         itSystemEquipment.setCoolingSystem("Cooling System " + i);  // 더미 데이터 반영
                         itSystemEquipment.setInterfacePorts("Port " + i);  // 더미 데이터 반영
@@ -321,6 +333,7 @@ public class DataInitializerService {
                         ItNetworkEquipment itNetworkEquipment = new ItNetworkEquipment();
                         itNetworkEquipment.setAssetNo(commonAsset1);  // 자산 번호 설정
                         itNetworkEquipment.setEquipmentType("Network Equipment Type " + i);  // 더미 데이터 반영
+                        itNetworkEquipment.setRackUnit("Test Rack Unit");
                         itNetworkEquipment.setNumberOfPorts(Long.valueOf(i));  // 더미 데이터 반영
                         itNetworkEquipment.setSupportedProtocols("Protocol " + i);  // 더미 데이터 반영
                         itNetworkEquipment.setFirmwareVersion("v1." + i);  // 더미 데이터 반영
@@ -332,7 +345,6 @@ public class DataInitializerService {
                         Terminal terminal = new Terminal();
                         terminal.setAssetNo(commonAsset1);
                         terminal.setIp("192.168.1." + i);  // 더미 데이터 반영
-                        terminal.setProductSerialNumber("Serial" + i);  // 더미 데이터 반영
                         terminal.setOs("Terminal OS " + i);  // 더미 데이터 반영
                         SecurityControl securityControl = SecurityControl.values()[i % SecurityControl.values().length ];
                         terminal.setSecurityControl(securityControl);

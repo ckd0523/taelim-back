@@ -9,6 +9,7 @@ import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,6 +87,19 @@ public class RegisterService {
         commonAsset.setDemandCheck(Boolean.FALSE);
         commonAsset.setCreateDate(LocalDate.now());
 
+        if(commonAsset.getPurchaseCost() >= 1000000 && commonAsset.getPurchaseCost() < 100000000) {
+            commonAsset.setConfidentiality(2);
+            commonAsset.setIntegrity(2);
+            commonAsset.setAvailability(2);
+        }else if(commonAsset.getPurchaseCost() >= 100000000){
+            commonAsset.setConfidentiality(3);
+            commonAsset.setIntegrity(3);
+            commonAsset.setAvailability(3);
+        }else {
+            commonAsset.setConfidentiality(1);
+            commonAsset.setIntegrity(1);
+            commonAsset.setAvailability(1);
+        }
 
         // 자산코드 생성
         String assetCode = generateAssetCode(commonAsset.getAssetClassification());
@@ -167,9 +181,9 @@ public class RegisterService {
 
     }
 
-    @Transactional
+
     //엑셀로 등록
-    public void excelRegister (ExcelDto excelDto) {
+    public void excelRegister (AssetDto assetDto) {
 
 //        Member assetOwner = memberRepository.findByUName(excelDto.getAssetOwner())
 //                .orElse(new Member(excelDto.getAssetOwner()));
@@ -177,25 +191,96 @@ public class RegisterService {
 //                .orElse(new Member(excelDto.getAssetUser()));
 //        Member assetSecurityManager = memberRepository.findByUName(excelDto.getAssetSecurityManager())
 //                .orElse(new Member(excelDto.getAssetSecurityManager()));
-        CommonAsset commonAsset = excelDto.toExcel();
+        CommonAsset commonAsset = assetDto.toEntity();
 //        commonAsset.setAssetOwner(assetOwner);
 //        commonAsset.setAssetUser(assetUser);
-//
+
+        commonAsset.setApproval(Approval.APPROVE);
+        commonAsset.setDisposalStatus(Boolean.FALSE);
+        commonAsset.setDemandStatus(Boolean.FALSE);
+        commonAsset.setDemandCheck(Boolean.FALSE);
+        commonAsset.setCreateDate(LocalDate.now());
 //        commonAsset.setAssetSecurityManager(assetSecurityManager);
-        commonAssetRepository.save(commonAsset);
+        System.out.println("excel commonAsset : " + commonAsset);
+        String assetCode = generateAssetCode(commonAsset.getAssetClassification());
+        commonAsset.setAssetCode(assetCode);
 
-        CommonAsset commonAsset1 = commonAssetRepository.findTopByOrderByAssetNoDesc();
+        CommonAsset commonAsset1 = commonAssetRepository.save(commonAsset);
 
-        InformationProtectionSystem informationProtectionSystem = excelDto.toExcelInfo();
-        informationProtectionSystem.setAssetNo(commonAsset1);
-
-        informationProtectionSystemRepository.save(informationProtectionSystem);
+        switch (commonAsset.getAssetClassification()){
+            case INFORMATION_PROTECTION_SYSTEM -> {
+                InformationProtectionSystem informationProtectionSystem = assetDto.toInformationProtectionSystem();
+                informationProtectionSystem.setAssetNo(commonAsset1);
+                informationProtectionSystemRepository.save(informationProtectionSystem);
+            }
+            case APPLICATION_PROGRAM -> {
+                ApplicationProgram applicationProgram = assetDto.toApplication();
+                applicationProgram.setAssetNo(commonAsset1);
+                applicationProgramRepository.save(applicationProgram);
+            }
+            case SOFTWARE -> {
+                Software software = assetDto.toSoftware();
+                software.setAssetNo(commonAsset1);
+                softwareRepository.save(software);
+            }
+            case ELECTRONIC_INFORMATION -> {
+                ElectronicInformation electronicInformation = assetDto.toElectronicInformation();
+                electronicInformation.setAssetNo(commonAsset1);
+                electronicInformationRepository.save(electronicInformation);
+            }
+            case DOCUMENT -> {
+                Document document = assetDto.toDocumnet();
+                document.setAssetNo(commonAsset1);
+                documentRepository.save(document);
+            }
+            case PATENTS_AND_TRADEMARKS -> {
+                PatentsAndTrademarks patentsAndTrademarks = assetDto.toPatentsAndTrademarks();
+                patentsAndTrademarks.setAssetNo(commonAsset1);
+                patentsAndTrademarksRepository.save(patentsAndTrademarks);
+            }
+            case ITSYSTEM_EQUIPMENT -> {
+                ItSystemEquipment itSystemEquipment = assetDto.toItSystemEquipment();
+                itSystemEquipment.setAssetNo(commonAsset1);
+                itSystemEquipmentRepository.save(itSystemEquipment);
+            }
+            case ITNETWORK_EQUIPMENT -> {
+                ItNetworkEquipment itNetworkEquipment = assetDto.toItNetworkEquipment();
+                itNetworkEquipment.setAssetNo(commonAsset1);
+                itNetworkEquipmentRepository.save(itNetworkEquipment);
+            }
+            case TERMINAL -> {
+                Terminal terminal = assetDto.toTerminal();
+                terminal.setAssetNo(commonAsset1);
+                terminalRepository.save(terminal);
+            }
+            case FURNITURE -> {
+                Furniture furniture = assetDto.toFurniture();
+                furniture.setAssetNo(commonAsset1);
+                furnitureRepository.save(furniture);
+            }
+            case DEVICES -> {
+                Devices devices = assetDto.toDevices();
+                devices.setAssetNo(commonAsset1);
+                devicesRepository.save(devices);
+            }
+            case CAR -> {
+                Car car = assetDto.toCar();
+                car.setAssetNo(commonAsset1);
+                carRepository.save(car);
+            }
+            case OTHERASSETS -> {
+                OtherAssets otherAssets = assetDto.toOtherAssets();
+                otherAssets.setAssetNo(commonAsset1);
+                otherAssetsRepository.save(otherAssets);
+            }
+        }
 
     }
-    @Transactional
-    public void excelRegisterAll(List<ExcelDto> excelDtos) {
-        for (ExcelDto excelDto : excelDtos) {
+    public void excelRegisterAll(List<AssetDto> excelDtos) {
+
+        for (AssetDto excelDto : excelDtos) {
             excelRegister(excelDto);
+            System.out.println(excelDto);
         }
     }
     public Optional<CommonAsset> findById(Long id) {
@@ -296,9 +381,9 @@ public class RegisterService {
         updateAsset.setAssetBasis(existAsset.getAssetBasis());
         updateAsset.setManufacturingCompany(existAsset.getManufacturingCompany());
         updateAsset.setPurpose(existAsset.getPurpose());
-//        updateAsset.setAssetUser(existAsset.getAssetUser());    // 사용자들은 나중에 바꿔야함
-//        updateAsset.setAssetOwner(existAsset.getAssetOwner());
-//        updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
+        updateAsset.setAssetUser(existAsset.getAssetUser());    // 사용자들은 나중에 바꿔야함
+        updateAsset.setAssetOwner(existAsset.getAssetOwner());
+        updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
 
         // AssetDto에서 업데이트할 필드 설정 (null 체크 후 기존 값 유지)
         updateAsset.setDepartment(assetDto.getDepartment() != null ? assetDto.getDepartment() : existAsset.getDepartment());
@@ -442,6 +527,63 @@ public class RegisterService {
         CommonAsset latestAsset = commonAssetRepository.findTopByOrderByAssetNoDesc();
         // 자산 분류에 따라 관련된 데이터베이스 저장
         saveRelatedEntity(assetDto, latestAsset);
+
+        //파일 복사
+        List<FileDto> files = assetDto.getFiles();
+        for (FileDto fileDto : files) {
+            File file = new File();
+            file.setAssetNo(updateAsset);
+
+            // 기존 파일 이름에서 확장자 추출
+            String originalFileName = fileDto.getOriFileName();
+            String extension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
+
+            // 새로운 UUID로 파일 이름 생성
+            String uuid = UUID.randomUUID().toString();
+            String saveFileName = uuid + extension;
+            String savePath = filePath + saveFileName;
+
+            // 새로운 URL 생성
+            String url = fileUrl + saveFileName; // 저장한 파일의 URL 생성
+            file.setFileURL(url);
+            file.setOriFileName(originalFileName);
+            file.setFileName(saveFileName);
+            file.setFileExt(extension);
+            file.setFileSize(fileDto.getFileSize()); // 기존 파일 크기 사용
+            file.setFileType(fileDto.getFileType()); // 기존 파일 타입 사용
+
+            // 실제 파일 저장 경로 생성
+            try {
+                java.io.File dir = new java.io.File(filePath);  // filePath 에 해당하는 경로를 File 객체로 생성
+                if (!dir.exists()) {
+                    dir.mkdirs(); // 경로가 존재하지 않으면 생성
+                }
+
+                // 기존 URL에서 파일 이름 추출
+                String existingFileName = fileDto.getFileURL().substring(fileDto.getFileURL().lastIndexOf('/') + 1);
+                java.io.File existingFile = new java.io.File(filePath + existingFileName); // 기존 파일 경로
+
+                // 파일 복사
+                try (FileInputStream fis = new FileInputStream(existingFile);
+                     FileOutputStream fos = new FileOutputStream(savePath)) {
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = fis.read(buffer)) > 0) {
+                        fos.write(buffer, 0, length);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace(); // 예외 처리
+                    continue; // 다음 파일로 진행
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace(); // 예외 처리
+                continue; // 다음 파일로 진행
+            }
+
+            // 파일 엔티티 저장
+            fileRepository.save(file);
+        }
 
         // 수정 이력 저장
         Demand demand = new Demand();

@@ -1,13 +1,11 @@
 package com.codehows.taelim.dto;
 
-import com.codehows.taelim.constant.CountryApplication;
-import com.codehows.taelim.constant.PatentClassification;
-import com.codehows.taelim.constant.PatentItem;
-import com.codehows.taelim.constant.PatentTrademarkStatus;
+import com.codehows.taelim.constant.*;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.PatentsAndTrademarks;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -30,7 +28,7 @@ public class PatentsAndTrademarksDto {
     private String applicationNo;
     private String inventor;
     private String assignee;
-    private String relatedDocuments;
+
 
     // DTO에서 엔티티로 변환
     public PatentsAndTrademarks toEntity() {
@@ -47,7 +45,6 @@ public class PatentsAndTrademarksDto {
                 .applicationNo(this.applicationNo)
                 .inventor(this.inventor)
                 .assignee(this.assignee)
-                .relatedDocuments(this.relatedDocuments)
                 .build();
     }
 
@@ -65,8 +62,7 @@ public class PatentsAndTrademarksDto {
                 entity.getPatentItem(),
                 entity.getApplicationNo(),
                 entity.getInventor(),
-                entity.getAssignee(),
-                entity.getRelatedDocuments()
+                entity.getAssignee()
         );
     }
 }

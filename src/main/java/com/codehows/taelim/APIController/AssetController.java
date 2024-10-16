@@ -115,7 +115,7 @@ public class AssetController {
     }
 
     @PostMapping("/excelRegister")
-    public ResponseEntity<?> uploadExcelData(@RequestBody List<ExcelDto> excelDtos) {
+    public ResponseEntity<?> uploadExcelData(@RequestBody List<AssetDto> excelDtos) {
         try{
             System.out.println("Received excel : "+ excelDtos);
 

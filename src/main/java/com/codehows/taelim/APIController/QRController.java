@@ -1,11 +1,14 @@
 package com.codehows.taelim.APIController;
 
 import com.codehows.taelim.constant.Approval;
+import com.codehows.taelim.constant.AssetLocation;
+import com.codehows.taelim.constant.Department;
 import com.codehows.taelim.constant.FileType;
 import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Demand;
 import com.codehows.taelim.repository.CommonAssetRepository;
+import com.codehows.taelim.service.AssetFinalService;
 import com.codehows.taelim.service.AssetService;
 //import com.codehows.taelim.service.QRService;
 import com.codehows.taelim.service.QRService;
@@ -39,9 +42,10 @@ import java.util.zip.ZipOutputStream;
 @RestController
 public class QRController {
 
-    private final QRService qrCodeService;
+//    private final QRService qrCodeService;
     private final UpdateService updateService;
     private final RegisterService registerService;
+    private final AssetFinalService assetFinalService;
     private final CommonAssetRepository commonAssetRepository;
 
     
@@ -315,6 +319,28 @@ public class QRController {
             // 오류 발생 시
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업데이트 중 오류가 발생했습니다: " + e.getMessage());
         }
+    }
+    //검색 api
+    @GetMapping("/getAssetSearch")
+    public ResponseEntity<PaginatedResponse<AssetDto>> searchAssets(
+            @RequestParam(required = false) String assetName,
+            @RequestParam(required = false) String assetLocationString,  // String으로 변경
+            @RequestParam(required = false) AssetLocation assetLocationEnum,  // Enum 추가
+            @RequestParam(required = false) String assetUser,
+            @RequestParam(required = false) String departmentString,  // String으로 변경
+            @RequestParam(required = false) Department departmentEnum,  // Enum 추가
+            @RequestParam(required = false) LocalDate introducedDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        // 검색 결과를 가져옵니다.
+        PaginatedResponse<AssetDto> response = assetFinalService.getAssetSearch(
+                assetName, assetLocationString, assetLocationEnum,
+                assetUser, departmentString, departmentEnum,
+                introducedDate, page, size
+        );
+
+        return ResponseEntity.ok(response);
     }
 }
 

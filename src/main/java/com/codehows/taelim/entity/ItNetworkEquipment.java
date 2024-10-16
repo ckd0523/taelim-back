@@ -27,4 +27,5 @@ public class ItNetworkEquipment {
     private String firmwareVersion;
     private Long networkSpeed;
     private String serviceScope;
+    private String rackUnit;
 }

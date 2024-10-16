@@ -24,7 +24,6 @@ public class Terminal {
     private CommonAsset assetNo;
 
     private String ip;
-    private String productSerialNumber;
     private String os;
 
     @Enumerated(EnumType.STRING)
