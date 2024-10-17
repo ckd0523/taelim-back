@@ -227,7 +227,7 @@ public class QRController {
             for (AssetUpdateDto assetDto : assetDtos) {
                 updateToSend.setAssetDto(assetDto);
                 updateToSend.setAssetNo(assetDto.getAssetNo());
-                Long newAssetNo = registerService.allUpdateDemand(updateToSend, demand);
+                Long newAssetNo = registerService.allUpdateDemand1(updateToSend, demand);
             }
             return ResponseEntity.ok("자산 수정 등록완료");
         } catch (Exception e) {

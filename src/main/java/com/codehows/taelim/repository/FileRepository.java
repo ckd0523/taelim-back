@@ -13,4 +13,5 @@ public interface FileRepository extends JpaRepository<File, Long> , FileReposito
 
     // fileName을 기준으로 파일을 조회하는 메서드
     Optional<File> findByFileName(String fileName);  // UUID 기반의 fileName으로 파일 조회
+
 }
