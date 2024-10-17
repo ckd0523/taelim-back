@@ -145,7 +145,7 @@ public class DataInitializerService {
             // 자산 분류 항목
             AssetClassification[] classifications = AssetClassification.values();
             int classificationIndex = 0;  // 분류 인덱스
-            int assetCountPerClassification = 15;  // 각 분류당 15개씩 생
+            int assetCountPerClassification = 150;  // 각 분류당 15개씩 생
 
             // CommonAsset 첫번째 데이터 삽입
             for (int i = 1; i <= 195; i++) {

@@ -64,7 +64,7 @@ public class AssetFinalService {
         Pageable pageable = PageRequest.of(page, size);
 
         // 검색조건에 따라 페이지네이션된 자산 리스트 조회
-        Page<CommonAsset> assetPage = commonAssetRepository.searchAssets(
+        Page<CommonAsset> assetPage = commonAssetRepository.findApprovedAndNotDisposedAssetsWithSearch(
                 assetName,
                 assetLocationString,
                 assetLocationEnum,
@@ -90,9 +90,10 @@ public class AssetFinalService {
             assetDto.setDepartment(commonAsset.getDepartment());
             assetDto.setAssetLocation(commonAsset.getAssetLocation());
 
-            assetDto.setAssetUser(commonAsset.getAssetUser().getUName());
-            assetDto.setAssetOwner(commonAsset.getAssetOwner().getUName());
-            assetDto.setAssetSecurityManager(commonAsset.getAssetSecurityManager().getUName());
+            // assetUser, assetOwner, assetSecurityManager가 null일 경우 처리
+            assetDto.setAssetUser(commonAsset.getAssetUser() != null ? commonAsset.getAssetUser().getUName() : "Unknown User");
+            assetDto.setAssetOwner(commonAsset.getAssetOwner() != null ? commonAsset.getAssetOwner().getUName() : "Unknown Owner");
+            assetDto.setAssetSecurityManager(commonAsset.getAssetSecurityManager() != null ? commonAsset.getAssetSecurityManager().getUName() : "Unknown Manager");
 
             assetDto.setUsestate(commonAsset.getUseState());
             assetDto.setOperationStatus(commonAsset.getOperationStatus());
