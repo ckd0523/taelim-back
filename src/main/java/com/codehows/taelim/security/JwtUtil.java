@@ -78,6 +78,8 @@ public class JwtUtil {
 
     public Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
+        //System.out.println("만료 시간 : " + expiration);
+        //System.out.println("만료 된거냐? : " + expiration.before(new Date()));
         return expiration.before(new Date());
     }
 }

@@ -38,18 +38,14 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)  // CSRF 보호 비활성화
                 //.cors(AbstractHttpConfigurer::disable)  // CORS 비활성화
                 .authorizeHttpRequests(requests -> {
-                    requests.requestMatchers("/login", "/refresh").permitAll();  // 로그인 경로는 인증 필요 없음
-                    requests.requestMatchers(HttpMethod.POST).authenticated();
-                    requests.requestMatchers(HttpMethod.GET).authenticated();
-                    requests.requestMatchers(HttpMethod.PUT).authenticated();
-                    requests.requestMatchers(HttpMethod.DELETE).authenticated();
+                    requests.requestMatchers("/login", "/refresh", "/logout").permitAll()  // 로그인 경로는 인증 필요 없음
+                    .anyRequest().authenticated();
                 })
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // 세션을 사용하지 않음 (JWT)
                 )
                 //UsernamePasswordAuthentication 필터는 구현 안했는데 어떤 동작을 하는거지
                 //이름만 본다면 유저 이름과 패스워드를 인증하는데 컨트롤러에서 하면 안되나?
-                //일단 월요일에 저거 지워보자
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint((request, response, authException) -> {
@@ -58,7 +54,7 @@ public class WebSecurityConfig {
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                            response.getWriter().write("Access token is invalid");
+                            response.getWriter().write("Refresh token is invalid");
                         })
                 );
 

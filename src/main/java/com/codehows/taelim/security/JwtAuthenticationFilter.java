@@ -43,9 +43,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
 
-            if(jwtUtil.isTokenExpired(jwt)) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access token is invalid");
-            }
+//            if(jwtUtil.isTokenExpired(jwt)) {
+//                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access token is invalid");
+//            }
 
             try {
                 // JWT에서 사용자 이름을 추출
@@ -60,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 //다른 이유로 예외 발생
                 logger.error("JWT token is invalid", e);
                 SecurityContextHolder.clearContext();
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access token is invalid");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access token is missing");
             }
         }
         System.out.println("커스텀 필터2");

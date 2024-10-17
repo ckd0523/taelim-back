@@ -4,8 +4,10 @@ import com.codehows.taelim.dto.LoginRequest;
 import com.codehows.taelim.dto.LoginResponse;
 import com.codehows.taelim.security.JwtUtil;
 import com.codehows.taelim.service.CustomUserDetailsService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -57,6 +59,24 @@ public class LoginController {
                 .body(new LoginResponse(accessToken));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        System.out.println("로그아웃 1");
+        // 리프레시 토큰을 비우고 만료 날짜를 과거로 설정하여 쿠키 삭제
+        ResponseCookie deleteRefreshTokenCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(false) // for HTTPS
+                .path("/")  // 쿠키 경로 설정
+                .maxAge(0)  // 즉시 만료
+                .sameSite("Lax") // Add SameSite attribute
+                .build();
+
+        // 응답 헤더에 쿠키 추가
+        response.addHeader("Set-Cookie", deleteRefreshTokenCookie.toString());
+
+        return ResponseEntity.ok("로그아웃 성공");
+    }
+
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshAccessToken(HttpServletRequest request) {
         System.out.println("리프레시 1");
@@ -72,28 +92,35 @@ public class LoginController {
             }
         }
 
-        if (refreshToken == null) {
-            // 리프레시 토큰이 존재하지 않는 경우
-            System.out.println("리프레시 토큰이 없습니다.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token is missing");
-        }
+//        if (refreshToken == null) {
+//            // 리프레시 토큰이 존재하지 않는 경우
+//            System.out.println("리프레시 토큰이 없습니다.");
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token is missing");
+//        }
 
 
         System.out.println("리프레시 3");
-        if (refreshToken != null && jwtUtil.isTokenExpired(refreshToken)) {
-            // 리프레시 토큰이 유효하면 사용자 정보를 가져옴
-            System.out.println("리프레시 4");
-            String username = jwtUtil.getUsernameFromToken(refreshToken);
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+        try {
+            if (refreshToken != null) {
+                // 리프레시 토큰이 유효하면 사용자 정보를 가져옴
+                System.out.println("리프레시 4");
+                String username = jwtUtil.getUsernameFromToken(refreshToken);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
-            // 새로운 액세스 토큰 발급
-            String newAccessToken = jwtUtil.generateAccessToken(userDetails);
-            System.out.println("리프레시 5");
-            return ResponseEntity.ok(new LoginResponse(newAccessToken));
-        } else {
+                // 새로운 액세스 토큰 발급
+                String newAccessToken = jwtUtil.generateAccessToken(userDetails);
+                System.out.println("리프레시 5 : " + newAccessToken);
+                return ResponseEntity.ok().body(new LoginResponse(newAccessToken));
+            }
+        } catch (ExpiredJwtException e) {
             // 리프레시 토큰이 유효하지 않으면 401 응답
             System.out.println("리프레시 6");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token is invalid");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        System.out.println("리프레시 7");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token is invalid");
     }
 }
