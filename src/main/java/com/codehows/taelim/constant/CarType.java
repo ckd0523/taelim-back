@@ -12,7 +12,8 @@ public enum CarType {
     SEDAN("승용차"),
     SUV("SUV"),
     TRUCK("트럭"),
-    VAN("밴");
+    VAN("밴"),
+    NULL ("");
     private String description;
 
     CarType(String description) {
@@ -37,4 +38,6 @@ public enum CarType {
             throw new IllegalArgumentException("잘못된 값: " + value);
         }
     }
+
+
 }

@@ -309,7 +309,6 @@ public class DataInitializerService {
                         patentsAndTrademarks.setApplicationNo("AppNo_" + i);  // 더미 데이터 반영
                         patentsAndTrademarks.setInventor("Inventor " + i);  // 더미 데이터 반영
                         patentsAndTrademarks.setAssignee("Assignee " + i);  // 더미 데이터 반영
-                        patentsAndTrademarks.setRelatedDocuments("Related Docs " + i);  // 더미 데이터 반영
                         patentsAndTrademarksRepository.save(patentsAndTrademarks);
                     }
                     case ITSYSTEM_EQUIPMENT -> {
@@ -317,7 +316,6 @@ public class DataInitializerService {
                         itSystemEquipment.setAssetNo(commonAsset1);  // 자산 번호 설정
                         itSystemEquipment.setEquipmentType("Type " + i);  // 더미 데이터 반영
                         // int를 Long으로 변환하여 설정
-                        itSystemEquipment.setRackUnit(Long.valueOf(i));  // Long 타입으로 설정
                         itSystemEquipment.setPowerSupply("Power Supply " + i);  // 더미 데이터 반영
                         itSystemEquipment.setCoolingSystem("Cooling System " + i);  // 더미 데이터 반영
                         itSystemEquipment.setInterfacePorts("Port " + i);  // 더미 데이터 반영
@@ -343,7 +341,6 @@ public class DataInitializerService {
                         Terminal terminal = new Terminal();
                         terminal.setAssetNo(commonAsset1);
                         terminal.setIp("192.168.1." + i);  // 더미 데이터 반영
-                        terminal.setProductSerialNumber("Serial" + i);  // 더미 데이터 반영
                         terminal.setOs("Terminal OS " + i);  // 더미 데이터 반영
                         SecurityControl securityControl = SecurityControl.values()[i % SecurityControl.values().length ];
                         terminal.setSecurityControl(securityControl);
