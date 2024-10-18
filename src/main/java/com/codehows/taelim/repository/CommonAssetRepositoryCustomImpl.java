@@ -3,16 +3,22 @@ package com.codehows.taelim.repository;
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
 import com.codehows.taelim.constant.AssetLocation;
+import com.codehows.taelim.constant.Department;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.QCommonAsset;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -277,4 +283,82 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                         .and(commonAsset.approval.eq(Approval.APPROVE)))
                 .fetch();
     }
+
+    @Override
+    public Page<CommonAsset> findApprovedAndNotDisposedAssetsWithSearch(
+            String assetName,
+            String assetLocationString,
+            AssetLocation assetLocationEnum,
+            String assetUser,
+            String departmentString,
+            Department departmentEnum,
+            LocalDate introducedDate,
+            Pageable pageable) {
+
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset;
+
+        excludedAssetCodes.select(subCa.assetCode)
+                .from(subCa)
+                .where(
+                        subCa.approval.eq(Approval.APPROVE)
+                                .and(subCa.disposalStatus.isTrue())
+                )
+                .groupBy(subCa.assetCode);
+
+        // 2. 최신 assetNo를 선택하는 서브 쿼리
+        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+        subQuery.select(ca.assetNo.max())
+                .from(ca)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
+                                .and(ca.approval.eq(Approval.APPROVE)) // 승인된 자산만
+                                .and(ca.disposalStatus.isFalse()) // 폐기되지 않은 자산만
+                )
+                .groupBy(ca.assetCode);
+
+        // 3. 최종 쿼리: 최신 assetNo에 해당하는 자산 조회 + 필터링 조건 추가
+        JPAQuery<CommonAsset> query = new JPAQuery<>(entityManager);
+        BooleanBuilder builder = new BooleanBuilder();
+
+        // 필터 조건을 추가 (각 필드가 null이 아닌 경우에만 조건을 추가)
+        if (assetName != null && !assetName.isEmpty()) {
+            builder.and(ca.assetName.likeIgnoreCase("%" + assetName + "%"));
+        }
+        if (assetLocationEnum != null) {
+            builder.and(
+                    ca.assetLocation.eq(assetLocationEnum)
+            );
+        }
+        if (assetUser != null && !assetUser.isEmpty()) {
+            builder.and(ca.assetUser.uName.likeIgnoreCase("%" + assetUser + "%"));
+        }
+        if (departmentEnum != null) {
+            builder.and(
+                    ca.department.eq(departmentEnum)
+            );
+        }
+        if (introducedDate != null) {
+            builder.and(ca.introducedDate.eq(introducedDate));
+        }
+
+        // 최신 assetNo에 해당하는 자산을 필터링된 결과로 가져오기
+        query.select(ca)
+                .from(ca)
+                .where(ca.assetNo.in(subQuery).and(builder)) // 최신 자산번호 + 필터 조건
+                .orderBy(ca.assetNo.desc()) // assetNo를 내림차순으로 정렬
+                .offset(pageable.getOffset()) // 페이지네이션 처리
+                .limit(pageable.getPageSize());
+
+        List<CommonAsset> assets = query.fetch();
+
+        // 전체 자산 수를 계산하여 페이지네이션 처리
+        long total = query.fetchCount();
+
+        return new PageImpl<>(assets, pageable, total);
+    }
+
 }

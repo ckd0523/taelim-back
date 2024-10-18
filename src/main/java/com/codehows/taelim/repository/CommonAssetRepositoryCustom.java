@@ -3,8 +3,12 @@ package com.codehows.taelim.repository;
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
 import com.codehows.taelim.constant.AssetLocation;
+import com.codehows.taelim.constant.Department;
 import com.codehows.taelim.entity.CommonAsset;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,4 +41,15 @@ public interface CommonAssetRepositoryCustom {
 
     // 코드가 같은 승인된 자산가져오기
     List<CommonAsset> findApprovedAssetsByAssetCode(String assetCode);
+
+    // 새로운 자산조회 - 검색쿼리, page 넣고 자산 조회하기
+    Page<CommonAsset> findApprovedAndNotDisposedAssetsWithSearch(
+            String assetName,
+            String assetLocationString,
+            AssetLocation assetLocationEnum,
+            String assetUser,
+            String departmentString,
+            Department departmentEnum,
+            LocalDate introducedDate,
+            Pageable pageable);
 }
