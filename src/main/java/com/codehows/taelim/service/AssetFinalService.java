@@ -282,6 +282,8 @@ public class AssetFinalService {
                     .map(repairHistory -> {
                         RepairHistoryDto repairHistoryDto = new RepairHistoryDto();
                         repairHistoryDto.setAssetNo(repairHistory.getAssetNo().getAssetNo());
+                        repairHistoryDto.setAssetCode(repairHistory.getAssetNo().getAssetCode());
+                        repairHistoryDto.setAssetName(repairHistory.getAssetNo().getAssetName());
                         repairHistoryDto.setRepairBy(repairHistory.getRepairBy());
                         repairHistoryDto.setRepairStartDate(repairHistory.getRepairStartDate());
                         repairHistoryDto.setRepairEnDate(repairHistory.getRepairEndDate());
