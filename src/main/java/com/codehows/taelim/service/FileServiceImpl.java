@@ -90,12 +90,14 @@ public Resource getImage(String fileName) {
     Resource resource = null;
 
     // fileName을 사용하여 파일 정보를 데이터베이스에서 조회 (Optional 사용)
-    Optional<File> optionalFile = fileRepository.findByFileName(fileName);
+    //Optional<File> optionalFile = fileRepository.findByFileName(fileName);
+//    Optional<File> optionalFile = fileRepository.findByFileName(fileName);
+    File file = fileRepository.findByFileName1(fileName);
 
     // 파일이 존재하지 않을 경우 예외 처리
-    File file = optionalFile.orElseThrow(() ->
-            new RuntimeException("File not found with fileName:" + fileName)
-    );
+//    File file = optionalFile.orElseThrow(() ->
+//            new RuntimeException("File not found with fileName:" + fileName)
+//    );
 
     // 파일 경로 생성
     String fullPath = filePath + file.getFileName();
@@ -117,8 +119,15 @@ public Resource getImage(String fileName) {
 
     return resource;
     }
+
     @Override
     public Optional<File> getFileByFileName(String fileName) {
         return fileRepository.findByFileName(fileName);  // Repository에서 파일 조회
+    }
+
+    @Override
+    public Optional<File> getFileByFileName1(String fileName) {
+        File file = fileRepository.findByFileName1(fileName);
+        return Optional.ofNullable(file);  // file이 null일 수 있으므로 Optional로 감싸서 반환
     }
 }

@@ -145,7 +145,7 @@ public class DataInitializerService {
             // 자산 분류 항목
             AssetClassification[] classifications = AssetClassification.values();
             int classificationIndex = 0;  // 분류 인덱스
-            int assetCountPerClassification = 15;  // 각 분류당 15개씩 생
+            int assetCountPerClassification = 150;  // 각 분류당 15개씩 생
 
             // CommonAsset 첫번째 데이터 삽입
             for (int i = 1; i <= 195; i++) {
@@ -235,6 +235,8 @@ public class DataInitializerService {
                 asset.setUseState(UseState.IN_USE);
                 asset.setAcquisitionRoute("Test Acquisition Route");
                 asset.setMaintenancePeriod(LocalDate.now());
+                asset.setProductSerialNumber("Serial" + i);  // 더미 데이터 반영
+
                 // 기타 필드 설정
                 commonAssetRepository.save(asset);
 
@@ -309,6 +311,7 @@ public class DataInitializerService {
                         patentsAndTrademarks.setApplicationNo("AppNo_" + i);  // 더미 데이터 반영
                         patentsAndTrademarks.setInventor("Inventor " + i);  // 더미 데이터 반영
                         patentsAndTrademarks.setAssignee("Assignee " + i);  // 더미 데이터 반영
+
                         patentsAndTrademarksRepository.save(patentsAndTrademarks);
                     }
                     case ITSYSTEM_EQUIPMENT -> {
@@ -316,6 +319,7 @@ public class DataInitializerService {
                         itSystemEquipment.setAssetNo(commonAsset1);  // 자산 번호 설정
                         itSystemEquipment.setEquipmentType("Type " + i);  // 더미 데이터 반영
                         // int를 Long으로 변환하여 설정
+
                         itSystemEquipment.setPowerSupply("Power Supply " + i);  // 더미 데이터 반영
                         itSystemEquipment.setCoolingSystem("Cooling System " + i);  // 더미 데이터 반영
                         itSystemEquipment.setInterfacePorts("Port " + i);  // 더미 데이터 반영
@@ -330,6 +334,7 @@ public class DataInitializerService {
                         ItNetworkEquipment itNetworkEquipment = new ItNetworkEquipment();
                         itNetworkEquipment.setAssetNo(commonAsset1);  // 자산 번호 설정
                         itNetworkEquipment.setEquipmentType("Network Equipment Type " + i);  // 더미 데이터 반영
+                        itNetworkEquipment.setRackUnit("Test Rack Unit");
                         itNetworkEquipment.setNumberOfPorts(Long.valueOf(i));  // 더미 데이터 반영
                         itNetworkEquipment.setSupportedProtocols("Protocol " + i);  // 더미 데이터 반영
                         itNetworkEquipment.setFirmwareVersion("v1." + i);  // 더미 데이터 반영

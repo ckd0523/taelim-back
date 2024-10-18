@@ -7,4 +7,6 @@ import java.util.List;
 public interface FileRepositoryCustom {
     List<File> findByAssetCode(String assetCode);
 
+    File findByFileName1(String fileName);
+
 }

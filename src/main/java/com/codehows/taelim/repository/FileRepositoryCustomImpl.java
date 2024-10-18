@@ -47,4 +47,18 @@ public class FileRepositoryCustomImpl implements FileRepositoryCustom{
                 .fetch(); // 모든 파일 결과 반환
     }
 
+    @Override
+    public File findByFileName1(String fileName) {
+        QFile file = QFile.file;
+
+        // fileName으로 파일을 조회하고, 최신 fileNo를 기준으로 정렬하여 첫 번째 파일을 반환
+        return new JPAQuery<>(entityManager)
+                .select(file)
+                .from(file)
+                .where(file.fileName.eq(fileName)) // fileName으로 조건 설정
+                .orderBy(file.fileNo.desc()) // 최신 fileNo 기준으로 정렬
+                .fetchFirst(); // 가장 첫 번째 파일 반환
+    }
+
+
 }
