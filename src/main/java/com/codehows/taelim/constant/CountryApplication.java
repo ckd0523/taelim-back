@@ -13,7 +13,8 @@ public enum CountryApplication {
     USA("미국"),
     JAPAN("일본"),
     CHINA("중국"),
-    GERMANY("독일");
+    GERMANY("독일"),
+    NULL("");
     private String description;
 
     CountryApplication(String description) {

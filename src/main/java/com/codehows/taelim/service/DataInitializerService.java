@@ -318,6 +318,7 @@ public class DataInitializerService {
                         ItSystemEquipment itSystemEquipment = new ItSystemEquipment();
                         itSystemEquipment.setAssetNo(commonAsset1);  // 자산 번호 설정
                         itSystemEquipment.setEquipmentType("Type " + i);  // 더미 데이터 반영
+                        // int를 Long으로 변환하여 설정
 
                         itSystemEquipment.setPowerSupply("Power Supply " + i);  // 더미 데이터 반영
                         itSystemEquipment.setCoolingSystem("Cooling System " + i);  // 더미 데이터 반영
