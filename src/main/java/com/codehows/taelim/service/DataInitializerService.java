@@ -5,13 +5,12 @@ import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Furniture;
 import com.codehows.taelim.entity.Member;
 import com.codehows.taelim.entity.Software;
-import com.codehows.taelim.loginEntity.TestMember;
-import com.codehows.taelim.loginRepository.TestMemberRepository;
+import com.codehows.taelim.secondEntity.TestMember;
+import com.codehows.taelim.secondRepository.TestMemberRepository;
 import com.codehows.taelim.repository.*;
 import com.codehows.taelim.security.PasswordHasher2;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -33,13 +32,13 @@ public class DataInitializerService {
         //자산 기준 금액 설정 초기값 설정
         amountSetRepository.insertAmountSet(0L, 0L);
 
-        //두 번째 DB 테스트
+        //두 번째 DB 테스트1
         TestMember testMember = new TestMember();
         testMember.toEntity("user1@example.com", "1234" ,
-                "testUser1", Department.IT_DEPARTMENT, Role.ADMIN);
+                "testUser1", Department.IT_DEPARTMENT.toString(), Role.ADMIN.toString(), true);
         testMemberRepository.save(testMember);
 
-        //두 번째 DB 로그인을 위한 유저 등록 테스트
+        //두 번째 DB 로그인을 위한 유저 등록 테스트2
         TestMember testMember2 = new TestMember();
         String hashedPassword = null;
         try {
@@ -47,8 +46,19 @@ public class DataInitializerService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        testMember2.toEntity("taelim@taelim.com", hashedPassword, "전찬용", Department.IT_DEPARTMENT, Role.ADMIN);
+        testMember2.toEntity("taelim@taelim.com", hashedPassword, "전찬용", Department.IT_DEPARTMENT.toString(), Role.ADMIN.toString(), true);
         testMemberRepository.save(testMember2);
+
+        //두 번째 DB 로그인을 위한 유저 등록 테스트3
+        TestMember testMember3 = new TestMember();
+        String hashedPassword3 = null;
+        try {
+            hashedPassword3 = passwordHasher2.hashPasswordV3("taelim123");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        testMember3.toEntity("taelim123@taelim.com", hashedPassword3, "이창현", Department.IT_DEPARTMENT.toString(), Role.ASSET_MANAGER.toString(), false);
+        testMemberRepository.save(testMember3);
 
 
         // Member 데이터 삽입

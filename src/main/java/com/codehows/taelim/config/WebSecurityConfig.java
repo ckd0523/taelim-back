@@ -37,6 +37,7 @@ public class WebSecurityConfig {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)  // CSRF 보호 비활성화
                 //.cors(AbstractHttpConfigurer::disable)  // CORS 비활성화
+                .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> {
                     requests.requestMatchers("/login", "/refresh", "/logout").permitAll()  // 로그인 경로는 인증 필요 없음
                     .anyRequest().authenticated();

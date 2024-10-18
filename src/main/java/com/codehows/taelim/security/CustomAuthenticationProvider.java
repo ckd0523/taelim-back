@@ -10,6 +10,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.util.Base64;
+
 @Component
 @RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
@@ -24,7 +26,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         System.out.println("커스텀 프로바이더 email : " + email);
         System.out.println("커스텀 프로바이더 password : " + password);
 
-        UserDetails user = customUserDetailsService.loadUserByUsername(email);
+        UserDetails user = customUserDetailsService.loadUserByUsername(Base64.getEncoder().encodeToString(email.getBytes()));
         System.out.println("커스텀 프로바이더 인가?" + user.getAuthorities());
 
         //int[] iterCount = new int[1];  // 반복 횟수를 저장할 배열

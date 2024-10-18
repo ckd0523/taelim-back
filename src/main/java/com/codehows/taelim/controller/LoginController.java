@@ -2,8 +2,11 @@ package com.codehows.taelim.controller;
 
 import com.codehows.taelim.dto.LoginRequest;
 import com.codehows.taelim.dto.LoginResponse;
+import com.codehows.taelim.dto.RefreshResponse;
+import com.codehows.taelim.secondEntity.AspNetUser;
 import com.codehows.taelim.security.JwtUtil;
 import com.codehows.taelim.service.CustomUserDetailsService;
+import com.codehows.taelim.service.LoginTestService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,9 +20,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Base64;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +33,7 @@ public class LoginController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
+    private final LoginTestService loginTestService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -54,12 +61,25 @@ public class LoginController {
                 .build();
         System.out.println("로그인 컨트롤러 3");
 
+        String originalName = loginTestService.getOriginalName(Base64.getEncoder().encodeToString(userDetails.getUsername().getBytes()));
+        System.out.println("로그인 컨트롤러 4");
+        AspNetUser user = loginTestService.getUser(Base64.getEncoder().encodeToString(userDetails.getUsername().getBytes()));
+        System.out.println("실제 DB 환경과 같은 곳에서 가져온 user 정보");
+        System.out.println("이메일 : " + user.getEmail());
+        System.out.println("이름 : " + user.getUsername());
+        System.out.println("권한 : " + user.getUserRoles());
+        System.out.println("로그인 컨트롤러 5");
+        System.out.println("---------------------------------------------");
+        System.out.println("이메일 : " + userDetails.getUsername());
+        System.out.println("이름 : " + originalName);
+        System.out.println("권한 : " + userDetails.getAuthorities());
+        System.out.println("로그인 컨트롤러 6");
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .body(new LoginResponse(accessToken));
+                .body(new LoginResponse(accessToken, userDetails.getUsername(), originalName, userDetails.getAuthorities().toString()));
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
         System.out.println("로그아웃 1");
         // 리프레시 토큰을 비우고 만료 날짜를 과거로 설정하여 쿠키 삭제
@@ -110,7 +130,7 @@ public class LoginController {
                 // 새로운 액세스 토큰 발급
                 String newAccessToken = jwtUtil.generateAccessToken(userDetails);
                 System.out.println("리프레시 5 : " + newAccessToken);
-                return ResponseEntity.ok().body(new LoginResponse(newAccessToken));
+                return ResponseEntity.ok().body(new RefreshResponse(newAccessToken));
             }
         } catch (ExpiredJwtException e) {
             // 리프레시 토큰이 유효하지 않으면 401 응답

@@ -20,7 +20,7 @@ import java.util.Map;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        basePackages = "com.codehows.taelim.loginRepository", // 두 번째 DB용 Repository 패키지
+        basePackages = "com.codehows.taelim.secondRepository", // 두 번째 DB용 Repository 패키지
         entityManagerFactoryRef = "secondaryEntityManagerFactory",
         transactionManagerRef = "secondaryTransactionManager"
 )
@@ -42,7 +42,7 @@ public class SecondaryDataSourceConfig {
 
         return builder
                 .dataSource(dataSource)
-                .packages("com.codehows.taelim.loginEntity")  // 엔티티가 위치한 패키지
+                .packages("com.codehows.taelim.secondEntity")  // 엔티티가 위치한 패키지
                 .persistenceUnit("secondary")
                 .properties(properties)
                 .build();
