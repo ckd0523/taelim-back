@@ -1018,6 +1018,7 @@ public class RegisterService {
 
         return updateAsset.getAssetNo();
     }
+
     public Demand UpdateDemand(AllUpdateDto allUpdateDto){
         Demand demand = new Demand();
         //demand.setDemandBy(); // 추후 사람
@@ -1029,7 +1030,7 @@ public class RegisterService {
     }
 
 
-    //일괄 수정 요청
+    //일괄 수정 요청 파일 복제
     public Long allUpdateDemand(AllUpdateDto allUpdateDto, Demand demand) {
         // Optional 처리 기존 자산 불러오기
         CommonAsset existAsset = commonAssetRepository.findById(allUpdateDto.getAssetNo())
@@ -1105,6 +1106,59 @@ public class RegisterService {
                 e.printStackTrace(); // 예외 처리
                 continue; // 다음 파일로 진행
             }
+
+            // 파일 엔티티 저장
+            fileRepository.save(file);
+        }
+
+        // DemandDtl 테이블 저장
+        DemandDtl demandDtl = new DemandDtl();
+        demandDtl.setAssetNo(updateAsset);
+        demandDtl.setDemandNo(demand);
+        demandDtlRepository.save(demandDtl);
+
+        return updateAsset.getAssetNo();
+    }
+
+    //일괄 수정 요청 파일 복제 말고 DB 복사
+    public Long allUpdateDemand1(AllUpdateDto allUpdateDto, Demand demand) {
+        // Optional 처리 기존 자산 불러오기
+        CommonAsset existAsset = commonAssetRepository.findById(allUpdateDto.getAssetNo())
+                .orElseThrow(() -> new EntityNotFoundException("Asset not found"));
+
+        //기존 자산 Dto로 변환
+        CommonAssetDto commonAssetDto = CommonAssetDto.fromEntity(existAsset);
+        //assetNo를 null로
+        commonAssetDto.setAssetNo(null);
+        //자산정보에 따른 세부 변경사항
+        commonAssetDto.setApproval(Approval.UNCONFIRMED);
+        commonAssetDto.setDisposalStatus(Boolean.FALSE);
+        commonAssetDto.setDemandStatus(Boolean.TRUE);
+        commonAssetDto.setDemandCheck(Boolean.TRUE);
+        commonAssetDto.setCreateDate(LocalDate.now());  // 등록일 갱신
+
+        //Dto를 엔티티로 변환
+        CommonAsset commonAsset = commonAssetDto.toEntity(commonAssetDto);
+        // 저장해서 새로운 자산 만들기
+        CommonAsset updateAsset = commonAssetRepository.save(commonAsset);
+        // 기존자산과 똑같은 서브컬럼 복사
+        updateAssetBasedOnClassification(updateAsset, existAsset);
+
+        //파일 복사
+        List<FileDto> files = allUpdateDto.getAssetDto().getFiles();
+        for (FileDto fileDto : files) {
+            File file = new File();
+            file.setAssetNo(updateAsset);
+
+
+
+            file.setFileURL(fileDto.getFileURL());
+            file.setOriFileName(fileDto.getOriFileName());
+            file.setFileName(fileDto.getFileName());
+            file.setFileExt(fileDto.getFileExt());
+            file.setFileSize(fileDto.getFileSize()); // 기존 파일 크기 사용
+            file.setFileType(fileDto.getFileType()); // 기존 파일 타입 사용
+
 
             // 파일 엔티티 저장
             fileRepository.save(file);
