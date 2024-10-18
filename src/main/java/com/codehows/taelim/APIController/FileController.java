@@ -28,8 +28,9 @@ public class FileController {
 //        return resource;
         // 데이터베이스에서 fileName으로 파일 정보 조회
         // Optional에서 File 추출
-        File file = fileService.getFileByFileName(fileName)
-                .orElseThrow(() -> new RuntimeException("File not found with fileName:" + fileName));
+//        File file = fileService.getFileByFileName(fileName)
+//                .orElseThrow(() -> new RuntimeException("File not found with fileName:" + fileName));
+        File file = fileService.getFileByFileName1(fileName).orElseThrow();
 
 
         if (file == null) {

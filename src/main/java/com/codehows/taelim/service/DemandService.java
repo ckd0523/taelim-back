@@ -56,12 +56,18 @@ public class DemandService {
                     //폐기이력
                     demandHistoryDto.setDemandBy("이창현");
                     demandHistoryDto.setDemandType("delete");
+                    demandHistoryDto.setDisposeLocation(demand1.getDisposeLocation());
+                    demandHistoryDto.setDisposeMethod(demand1.getDisposeMethod());
                 }
+                demandHistoryDto.setAssetName(asset.getAssetName());
+                demandHistoryDto.setDemandReason(demand1.getDemandReason());
+                demandHistoryDto.setDemandDetail(demand1.getDemandDetail());
                 demandHistoryDto.setDemandNo(demandDtl.getDemandNo().getDemandNo());
                 demandHistoryDto.setAssetNo(asset.getAssetNo());
                 demandHistoryDto.setAssetCode(asset.getAssetCode());
                 demandHistoryDto.setDemandDate(asset.getCreateDate());
                 demandHistoryDto.setDemandStatus(asset.getApproval().toString());
+
                 demandHistoryDtos.add(demandHistoryDto);
             }
 

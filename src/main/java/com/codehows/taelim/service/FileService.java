@@ -14,4 +14,8 @@ public interface FileService {
     Resource getImage(String fileName);
     // 파일 이름으로 파일 정보 조회
     Optional<File> getFileByFileName(String fileName);  // 새로운 메서드 추가
+
+    Optional<File> getFileByFileName1(String fileName);
+
+
 }

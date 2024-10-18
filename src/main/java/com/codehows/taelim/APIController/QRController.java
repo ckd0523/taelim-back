@@ -230,7 +230,7 @@ public class QRController {
             for (AssetUpdateDto assetDto : assetDtos) {
                 updateToSend.setAssetDto(assetDto);
                 updateToSend.setAssetNo(assetDto.getAssetNo());
-                Long newAssetNo = registerService.allUpdateDemand(updateToSend, demand);
+                Long newAssetNo = registerService.allUpdateDemand1(updateToSend, demand);
             }
             return ResponseEntity.ok("자산 수정 등록완료");
         } catch (Exception e) {
@@ -309,11 +309,16 @@ public class QRController {
     public ResponseEntity<String> updateAssetFiles(
             @PathVariable String assetCode,
             @RequestParam("files") List<MultipartFile> newFiles,
-            @RequestParam("fileType") FileType fileType) {
+            @RequestParam("fileType") List<FileType> fileTypes) {
+
+        // 파일 수와 fileType 수가 일치하는지 확인
+        if (newFiles.size() != fileTypes.size()) {
+            return ResponseEntity.badRequest().body("파일 수와 파일 타입 수가 일치해야 합니다.");
+        }
 
         try {
             // 파일 업데이트 서비스 호출
-            registerService.updateAssetFiles(assetCode, newFiles, fileType);
+            registerService.updateAssetFiles(assetCode, newFiles, fileTypes);
             return ResponseEntity.ok("파일이 성공적으로 업데이트되었습니다.");
         } catch (Exception e) {
             // 오류 발생 시
@@ -332,6 +337,7 @@ public class QRController {
             @RequestParam(required = false) LocalDate introducedDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
+
 
         // 검색 결과를 가져옵니다.
         PaginatedResponse<AssetDto> response = assetFinalService.getAssetSearch(
