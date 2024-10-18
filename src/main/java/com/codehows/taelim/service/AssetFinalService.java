@@ -304,7 +304,7 @@ public class AssetFinalService {
             List<AssetSurveyDetail> surveyDetailList = assetSurveyDetailRepository.findByAssetCode(commonAsset.getAssetCode());
 
             List<SurveyHistoryDto> surveyHistoryDtos = surveyDetailList.stream()
-                    .map(assetSurveyDetail -> {
+                       .map(assetSurveyDetail -> {
                         SurveyHistoryDto surveyHistoryDto = new SurveyHistoryDto();
                         surveyHistoryDto.setAssetNo(assetSurveyDetail.getAssetNo().getAssetNo());
                         surveyHistoryDto.setAssetSurveyDetailNo(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyNo());
