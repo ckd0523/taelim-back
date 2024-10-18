@@ -318,6 +318,7 @@ public class AssetFinalService {
                         surveyHistoryDto.setExactLocation(assetSurveyDetail.getExactLocation());
                         surveyHistoryDto.setAssetStatus(assetSurveyDetail.getAssetStatus());
                         surveyHistoryDto.setAssetSurveyContent(assetSurveyDetail.getAssetSurveyContent());
+
                         return surveyHistoryDto;
                     }).collect(Collectors.toList());
             assetDto.setSurveyHistory(surveyHistoryDtos);

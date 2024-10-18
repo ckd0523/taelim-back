@@ -65,7 +65,8 @@ public class AssetSurveyDetailRepositoryCustomImpl implements AssetSurveyDetailR
                 .from(assetSurveyDetail)
                 .join(commonAsset).on(assetSurveyDetail.assetNo.assetNo.eq(commonAsset.assetNo))
                 .join(assetSurveyHistory).on(assetSurveyHistory.assetSurveyNo.eq(assetSurveyHistory.assetSurveyNo))
-                .where(commonAsset.assetCode.eq(assetCode))
+                .where(commonAsset.assetCode.eq(assetCode)
+                        .and(assetSurveyHistory.surveyStatus.isTrue())) // surveyStatus가 true인 데이터만 필터링
                 .fetch();
     }
 }
