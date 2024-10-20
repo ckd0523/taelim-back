@@ -134,7 +134,7 @@ public class DataInitializerService {
             amountSetRepository.insertAmountSet(0L, 0L);
 
             // Member 데이터 삽입
-            for (int i = 1; i <= 26; i++) {
+            for (int i = 1; i <= 1950; i++) {
                 Member member = new Member();
                 member.setEmail("user" + i + "@example.com");
                 member.setPassword("password" + i);
@@ -145,10 +145,10 @@ public class DataInitializerService {
             // 자산 분류 항목
             AssetClassification[] classifications = AssetClassification.values();
             int classificationIndex = 0;  // 분류 인덱스
-            int assetCountPerClassification = 2;  // 각 분류당 15개씩 생
+            int assetCountPerClassification = 150;  // 각 분류당 15개씩 생
 
             // CommonAsset 첫번째 데이터 삽입
-            for (int i = 1; i <= 26; i++) {
+            for (int i = 1; i <= 1950; i++) {
 
                 Member member = new Member();
                 member.setEmail("user" + i + "@example.com");
@@ -159,35 +159,35 @@ public class DataInitializerService {
                 CommonAsset asset = new CommonAsset();
 
                 // 자산 분류는 총 13개, 이를 15개씩 순환하며 할당
-                AssetClassification classification = classifications[(i - 1) / 2];
+                AssetClassification classification = classifications[(i - 1) / 150];
                 String assetCode = registerService.generateAssetCode(classification);
                 asset.setAssetCode(assetCode);
 
-                if (i <= 2) {
+                if (i <= 150) {
                     asset.setAssetClassification(AssetClassification.INFORMATION_PROTECTION_SYSTEM);
-                }else if (i <= 4) {
+                }else if (i <= 300) {
                     asset.setAssetClassification(AssetClassification.APPLICATION_PROGRAM);
-                } else if (i <= 6) {
+                } else if (i <= 450) {
                     asset.setAssetClassification(AssetClassification.SOFTWARE);
-                } else if (i <= 8) {
+                } else if (i <= 600) {
                     asset.setAssetClassification(AssetClassification.ELECTRONIC_INFORMATION);
-                } else if (i <= 10) {
+                } else if (i <= 750) {
                     asset.setAssetClassification(AssetClassification.DOCUMENT);
-                } else if (i <= 12) {
+                } else if (i <= 900) {
                     asset.setAssetClassification(AssetClassification.PATENTS_AND_TRADEMARKS);
-                } else if (i <= 14) {
+                } else if (i <= 1050) {
                     asset.setAssetClassification(AssetClassification.ITSYSTEM_EQUIPMENT);
-                } else if (i <= 16) {
+                } else if (i <= 1200) {
                     asset.setAssetClassification(AssetClassification.ITNETWORK_EQUIPMENT);
-                } else if (i <= 18) {
+                } else if (i <= 1350) {
                     asset.setAssetClassification(AssetClassification.TERMINAL);
-                } else if (i <= 20){
+                } else if (i <= 1500){
                     asset.setAssetClassification(AssetClassification.FURNITURE);
-                } else if (i <= 22) {
+                } else if (i <= 1650) {
                     asset.setAssetClassification(AssetClassification.DEVICES);
-                } else if (i <= 24) {
+                } else if (i <= 1800) {
                     asset.setAssetClassification(AssetClassification.CAR);
-                } else if (i <= 26) {
+                } else if (i <= 1950) {
                     asset.setAssetClassification(AssetClassification.OTHERASSETS);
                 }
                 asset.setAssetBasis(AssetBasis.COMMON);

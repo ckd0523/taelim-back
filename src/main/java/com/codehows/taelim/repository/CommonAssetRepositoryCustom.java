@@ -51,5 +51,6 @@ public interface CommonAssetRepositoryCustom {
             String departmentString,
             Department departmentEnum,
             LocalDate introducedDate,
+            AssetClassification assetClassification,
             Pageable pageable);
 }

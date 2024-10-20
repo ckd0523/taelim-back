@@ -293,6 +293,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
             String departmentString,
             Department departmentEnum,
             LocalDate introducedDate,
+            AssetClassification assetClassification,
             Pageable pageable) {
 
         QCommonAsset ca = QCommonAsset.commonAsset;
@@ -343,6 +344,11 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         }
         if (introducedDate != null) {
             builder.and(ca.introducedDate.eq(introducedDate));
+        }
+
+        // AssetClassification 필터 조건 추가
+        if (assetClassification != null) {
+            builder.and(ca.assetClassification.eq(assetClassification));
         }
 
         // 최신 assetNo에 해당하는 자산을 필터링된 결과로 가져오기
