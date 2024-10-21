@@ -8,5 +8,4 @@ import java.io.Serializable;
 public class AspNetUserRoleId implements Serializable {
     private String userId;
     private String roleId;
-
 }

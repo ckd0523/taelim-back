@@ -15,7 +15,7 @@ public class AspNetUserRole {
     @EmbeddedId
     private AspNetUserRoleId id; // 복합키
 
-    @OneToOne
+    @ManyToOne
     @MapsId("userId")
     @JoinColumn(name = "UserId")
     private AspNetUser user;

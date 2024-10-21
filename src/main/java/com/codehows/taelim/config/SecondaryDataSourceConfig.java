@@ -36,9 +36,9 @@ public class SecondaryDataSourceConfig {
     public LocalContainerEntityManagerFactoryBean secondaryEntityManagerFactory(EntityManagerFactoryBuilder builder,
                                                                                 @Qualifier("secondaryDataSource") DataSource dataSource) {
         Map<String, Object> properties = new HashMap<>();
-        properties.put("hibernate.physical_naming_strategy",
-                "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
-        properties.put("hibernate.hbm2ddl.auto", "create");
+        //properties.put("hibernate.physical_naming_strategy",
+        //        "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
+        properties.put("hibernate.hbm2ddl.auto", "validate"); // 무조건 validate로 유지
 
         return builder
                 .dataSource(dataSource)

@@ -23,6 +23,6 @@ public class AspNetRole {
     @Column(name = "Name")
     private String name;
 
-    @ManyToOne
-    private AspNetUserRole userRoles; // AspNetUserRoles와의 관계
+    @OneToMany
+    private List<AspNetUserRole> userRoles; // AspNetUserRoles와의 관계
 }

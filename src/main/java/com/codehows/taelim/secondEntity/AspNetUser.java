@@ -30,8 +30,8 @@ public class AspNetUser {
 
     private boolean emailconfirmed;
 
-    @OneToOne(mappedBy = "user")
-    private AspNetUserRole userRoles; // AspNetUserRoles와의 관계
+    @OneToMany(mappedBy = "user")
+    private List<AspNetUserRole> userRoles; // AspNetUserRoles와의 관계
 
     public AspNetUser toEntity(String email, String password, String username, String department, boolean emailconfirmed) {
         this.email = Base64.getEncoder().encodeToString(email.getBytes());
