@@ -1,5 +1,5 @@
 # 기업연계프로젝트
-# 자산관리시스템
+# 자산관리시스템 / Back-End
 자산의 효율적인 관리를 위한 웹프로그래밍 - 진행중
 ![1](https://github.com/user-attachments/assets/6cd800a5-1138-4f12-85a9-38acf39831d0)
 ![2](https://github.com/user-attachments/assets/438d202f-558f-4f23-89c2-54ac3bc08121)
