@@ -363,95 +363,95 @@ public class AssetFinalService {
         );
     }
 
-    public void exportAssetsToExcel(String assetClassification, HttpServletResponse response) throws IOException {
-        List<CommonAsset> assets = findAssetByExcel(assetClassification); // 자산 목록 조회 메소드
-        Workbook workbook = new XSSFWorkbook();
-
-        // 분류별로 시트 생성
-        for (AssetClassification classification : AssetClassification.values()) {
-            Sheet sheet = workbook.createSheet(classification.getDescription());
-
-            // 헤더 생성
-            Row headerRow = sheet.createRow(8);
-            createHeaderCell(headerRow,0,"No");
-            createHeaderCell(headerRow, 1, "자산 기준");
-            createHeaderCell(headerRow, 2, "자산 코드");
-            createHeaderCell(headerRow,3,"자산명");
-            createHeaderCell(headerRow,4,"자산분류");
-            createHeaderCell(headerRow,5,"목적/기능");
-            createHeaderCell(headerRow, 6 ,"자산 위치");
-            createHeaderCell(headerRow,7,"부서");
-            createHeaderCell(headerRow,8,"사용자");
-            createHeaderCell(headerRow,9, "소유자");
-            createHeaderCell(headerRow,10, "보안담당자");
-            createHeaderCell(headerRow,11, "사용상태");
-            createHeaderCell(headerRow,12, "가동여부");
-            createHeaderCell(headerRow,13, "기밀성");
-            createHeaderCell(headerRow,14, "무결성");
-            createHeaderCell(headerRow,15, "가용성");
-            createHeaderCell(headerRow,16, "중요성점수");
-            createHeaderCell(headerRow,17, "중요성등급");
-            createHeaderCell(headerRow,18, "비고");
-
-
-            // 추가적인 헤더 셀 생성...
-            int rowIndex = 1;
-            for (CommonAsset asset : assets) {
-                if (asset.getAssetClassification() == classification) {
-                    Row row = sheet.createRow(rowIndex++);
-                    row.createCell(0).setCellValue(asset.getAssetNo());
-                    row.createCell(1).setCellValue(asset.getAssetBasis().toString());
-                    row.createCell(2).setCellValue(asset.getAssetCode());
-                    row.createCell(3).setCellValue(asset.getAssetName());
-                    row.createCell(4).setCellValue(asset.getAssetClassification().getDescription());
-
-                    // 자산 분류에 따라 추가적인 정보 처리
-                    switch (classification) {
-                        case SOFTWARE -> {
-                            Software software = softwareRepository.findByAssetNo(asset);
-                            row.createCell(5).setCellValue(software.getIp());
-                            row.createCell(6).setCellValue(software.getOs());
-                            // 기타 소프트웨어 관련 정보 추가
-                        }
-                        case CAR -> {
-                            Car car = carRepository.findByAssetNo(asset);
-                            row.createCell(5).setCellValue(car.getDisplacement());
-                            row.createCell(6).setCellValue(car.getDoorsCount());
-                            // 기타 차량 관련 정보 추가
-                        }
-                        case DEVICES -> {
-                            Devices devices = devicesRepository.findByAssetNo(asset);
-                            row.createCell(5).setCellValue(devices.getDeviceType());
-                            row.createCell(6).setCellValue(devices.getModelNumber());
-                            // 기타 장비 관련 정보 추가
-                        }
-                        // 나머지 분류별 처리 추가...
-                    }
-                }
-            }
-        }
-
-
-        // 응답에 엑셀 파일 작성
-        response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition", "attachment; filename=assets.xlsx");
-        workbook.write(response.getOutputStream());
-        workbook.close();
-    }
-
-    private void createHeaderCell(Row row, int column, String value) {
-        Cell cell = row.createCell(column);
-        cell.setCellValue(value);
-
-        Workbook workbook = row.getSheet().getWorkbook();
-        Font font = workbook.createFont();
-        font.setBold(true);
-
-        CellStyle style = workbook.createCellStyle();
-        style.setFont(font);
-
-        cell.setCellStyle(style);
-    }
+//    public void exportAssetsToExcel(String assetClassification, HttpServletResponse response) throws IOException {
+//        List<CommonAsset> assets = findAssetByExcel(assetClassification); // 자산 목록 조회 메소드
+//        Workbook workbook = new XSSFWorkbook();
+//
+//        // 분류별로 시트 생성
+//        for (AssetClassification classification : AssetClassification.values()) {
+//            Sheet sheet = workbook.createSheet(classification.getDescription());
+//
+//            // 헤더 생성
+//            Row headerRow = sheet.createRow(8);
+//            createHeaderCell(headerRow,0,"No");
+//            createHeaderCell(headerRow, 1, "자산 기준");
+//            createHeaderCell(headerRow, 2, "자산 코드");
+//            createHeaderCell(headerRow,3,"자산명");
+//            createHeaderCell(headerRow,4,"자산분류");
+//            createHeaderCell(headerRow,5,"목적/기능");
+//            createHeaderCell(headerRow, 6 ,"자산 위치");
+//            createHeaderCell(headerRow,7,"부서");
+//            createHeaderCell(headerRow,8,"사용자");
+//            createHeaderCell(headerRow,9, "소유자");
+//            createHeaderCell(headerRow,10, "보안담당자");
+//            createHeaderCell(headerRow,11, "사용상태");
+//            createHeaderCell(headerRow,12, "가동여부");
+//            createHeaderCell(headerRow,13, "기밀성");
+//            createHeaderCell(headerRow,14, "무결성");
+//            createHeaderCell(headerRow,15, "가용성");
+//            createHeaderCell(headerRow,16, "중요성점수");
+//            createHeaderCell(headerRow,17, "중요성등급");
+//            createHeaderCell(headerRow,18, "비고");
+//
+//
+//            // 추가적인 헤더 셀 생성...
+//            int rowIndex = 1;
+//            for (CommonAsset asset : assets) {
+//                if (asset.getAssetClassification() == classification) {
+//                    Row row = sheet.createRow(rowIndex++);
+//                    row.createCell(0).setCellValue(asset.getAssetNo());
+//                    row.createCell(1).setCellValue(asset.getAssetBasis().toString());
+//                    row.createCell(2).setCellValue(asset.getAssetCode());
+//                    row.createCell(3).setCellValue(asset.getAssetName());
+//                    row.createCell(4).setCellValue(asset.getAssetClassification().getDescription());
+//
+//                    // 자산 분류에 따라 추가적인 정보 처리
+//                    switch (classification) {
+//                        case SOFTWARE -> {
+//                            Software software = softwareRepository.findByAssetNo(asset);
+//                            row.createCell(5).setCellValue(software.getIp());
+//                            row.createCell(6).setCellValue(software.getOs());
+//                            // 기타 소프트웨어 관련 정보 추가
+//                        }
+//                        case CAR -> {
+//                            Car car = carRepository.findByAssetNo(asset);
+//                            row.createCell(5).setCellValue(car.getDisplacement());
+//                            row.createCell(6).setCellValue(car.getDoorsCount());
+//                            // 기타 차량 관련 정보 추가
+//                        }
+//                        case DEVICES -> {
+//                            Devices devices = devicesRepository.findByAssetNo(asset);
+//                            row.createCell(5).setCellValue(devices.getDeviceType());
+//                            row.createCell(6).setCellValue(devices.getModelNumber());
+//                            // 기타 장비 관련 정보 추가
+//                        }
+//                        // 나머지 분류별 처리 추가...
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//        // 응답에 엑셀 파일 작성
+//        response.setContentType("application/octet-stream");
+//        response.setHeader("Content-Disposition", "attachment; filename=assets.xlsx");
+//        workbook.write(response.getOutputStream());
+//        workbook.close();
+//    }
+//
+//    private void createHeaderCell(Row row, int column, String value) {
+//        Cell cell = row.createCell(column);
+//        cell.setCellValue(value);
+//
+//        Workbook workbook = row.getSheet().getWorkbook();
+//        Font font = workbook.createFont();
+//        font.setBold(true);
+//
+//        CellStyle style = workbook.createCellStyle();
+//        style.setFont(font);
+//
+//        cell.setCellStyle(style);
+//    }
 
     public List<CommonAsset> findAssetByExcel(AssetClassification assetClassification) {
         // 자산 분류가 null인지 확인하고 기본값 또는 예외 처리 추가

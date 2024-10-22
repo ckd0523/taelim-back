@@ -420,6 +420,7 @@ class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCustom {
                                 .and(commonAsset.assetNo.lt(assetNo)) // 주어진 AssetNo보다 작은 조건
                 )
                 .fetch(); // 결과를 리스트로 반환
+    }
     // 엑셀 출력을 위한 List 전체를 가져오는 조회(조건으로)
     @Override
     public List<CommonAsset> findAssetByExcel(AssetClassification assetClassification) {
