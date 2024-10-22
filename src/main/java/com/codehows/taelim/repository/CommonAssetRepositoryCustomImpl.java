@@ -13,6 +13,7 @@ import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -223,6 +224,45 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                .collect(Collectors.toList());
     }
 
+    @Override
+    public List<CommonAsset> findNextAssetsByAssetNo1(Long assetNo) {
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 주어진 assetNo를 기준으로 자산 코드 가져오기
+        CommonAsset modifiedAsset = queryFactory
+                .selectFrom(ca)
+                .where(ca.assetNo.eq(assetNo)) // 수정된 자산 조회
+                .fetchOne();
+
+        if (modifiedAsset == null) {
+            throw new RuntimeException("해당 assetNo에 대한 자산을 찾을 수 없습니다.");
+        }
+
+        String assetCode = modifiedAsset.getAssetCode();
+
+        // 동일한 assetCode의 자산을 조회 (최신 자산 1개만 가져옴)
+        CommonAsset asset = queryFactory
+                .selectFrom(ca)
+                .where(ca.assetCode.eq(assetCode) // 동일한 assetCode 필터링
+                        .and(ca.approval.eq(Approval.APPROVE)) // 주어진 assetCode에서 approve된 자산 필터링
+                        .and(ca.assetNo.loe(assetNo))) // 주어진 assetNo보다 작은 자산 필터링
+                .orderBy(ca.assetNo.desc()) // 내림차순 정렬 (최신 자산이 먼저 오도록)
+                .limit(1) // 최신 자산 하나만 가져오기
+                .fetchOne();
+
+        // 리스트에 modifiedAsset과 asset을 추가
+        List<CommonAsset> assets = new ArrayList<>();
+        assets.add(modifiedAsset);  // modifiedAsset 추가
+        if (asset != null) {        // asset이 null이 아닐 경우에만 추가
+            assets.add(asset);
+        }
+
+        // 리스트를 assetNo 기준으로 오름차순 정렬
+        return assets.stream()
+                .sorted(Comparator.comparing(CommonAsset::getAssetNo)) // assetNo 기준 오름차순 정렬
+                .collect(Collectors.toList());
+    }
+
     // 자산 수정이력에서 상세정보화면 최신 자산과 그 이전 자산 가져오는 쿼리
     @Override
     public CommonAsset findNextAssetByAssetNo(Long assetNo) {
@@ -276,5 +316,19 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .where(commonAsset.assetCode.eq(assetCode)
                         .and(commonAsset.approval.eq(Approval.APPROVE)))
                 .fetch();
+    }
+
+    // 요청 승인시 이전 요청들 처리하는 로직
+    @Override
+    public List<CommonAsset> findUnconfirmedAssetsWithSameCodeAndLessThanAssetNo(String assetCode, Long assetNo) {
+        QCommonAsset commonAsset = QCommonAsset.commonAsset;
+        return queryFactory
+                .selectFrom(commonAsset)
+                .where(
+                        commonAsset.assetCode.eq(assetCode) // AssetCode가 같은 조건
+                                .and(commonAsset.approval.eq(Approval.UNCONFIRMED)) // Approval이 UNCONFIRMED인 조건
+                                .and(commonAsset.assetNo.lt(assetNo)) // 주어진 AssetNo보다 작은 조건
+                )
+                .fetch(); // 결과를 리스트로 반환
     }
 }

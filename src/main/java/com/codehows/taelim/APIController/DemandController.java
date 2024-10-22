@@ -6,7 +6,9 @@ import com.codehows.taelim.dto.DemandHistoryDto;
 import com.codehows.taelim.dto.UnconfirmedDemandDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Demand;
+import com.codehows.taelim.entity.DemandDtl;
 import com.codehows.taelim.repository.CommonAssetRepository;
+import com.codehows.taelim.repository.DemandDtlRepository;
 import com.codehows.taelim.repository.DemandRepository;
 import com.codehows.taelim.service.DemandService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class DemandController {
     private final DemandService demandService;
     private final DemandRepository demandRepository;
     private final CommonAssetRepository commonAssetRepository;
+    private final DemandDtlRepository demandDtlRepository;
 
     //요청 리스트 가져오기
     @GetMapping("/DemandHistory")
@@ -46,17 +49,16 @@ public class DemandController {
         String reason = request.getReason(); // reason 값
         String actionType = request.getActionType(); // actionType 값
 
-        Demand demand = demandRepository.findById(actionData.getDemandNo()).orElse(null);
-        if (demand != null) {
-            demand.setDemandReason(reason);
-            demandRepository.save(demand);
-        }
         CommonAsset commonAsset = commonAssetRepository.findById(actionData.getAssetNo()).orElse(null);
+        DemandDtl demandDtl = demandDtlRepository.findByAssetNo(commonAsset);
+        demandDtl.setComment(reason);
+        demandDtlRepository.save(demandDtl);
         if (commonAsset != null) {
             if (Objects.equals(actionType, "approve")) {
                 commonAsset.setApproval(Approval.APPROVE);
                 commonAsset.setDemandCheck(true);
                 commonAssetRepository.save(commonAsset);
+                demandService.beforeDemand(actionData.getAssetCode(), actionData.getAssetNo());
             } else {
                 commonAsset.setApproval(Approval.REFUSAL);
                 commonAsset.setDemandCheck(true);
@@ -73,18 +75,17 @@ public class DemandController {
         String reason = request.getReason(); // reason 값
         String actionType = request.getActionType(); // actionType 값
 
-        Demand demand = demandRepository.findById(actionData.getDemandNo()).orElse(null);
-        if (demand != null) {
-            demand.setDemandReason(reason);
-            demandRepository.save(demand);
-        }
         CommonAsset commonAsset = commonAssetRepository.findById(actionData.getAssetNo()).orElse(null);
+        DemandDtl demandDtl = demandDtlRepository.findByAssetNo(commonAsset);
+        demandDtl.setComment(reason);
+        demandDtlRepository.save(demandDtl);
         if (commonAsset != null) {
             if (Objects.equals(actionType, "approve")) {
                 commonAsset.setApproval(Approval.APPROVE);
                 commonAsset.setDisposalStatus(true);
                 commonAsset.setDemandCheck(true);
                 commonAssetRepository.save(commonAsset);
+                demandService.beforeDemand(actionData.getAssetCode(), actionData.getAssetNo());
             } else {
                 commonAsset.setApproval(Approval.REFUSAL);
                 commonAsset.setDemandCheck(true);

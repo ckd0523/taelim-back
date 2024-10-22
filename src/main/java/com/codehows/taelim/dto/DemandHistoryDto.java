@@ -29,5 +29,6 @@ public class DemandHistoryDto {
     private String demandDetail;
     private String disposeMethod;
     private String disposeLocation;
+    private String comment;
 
 }
