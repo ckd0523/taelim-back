@@ -31,7 +31,7 @@ public class RepairHistoryRepositoryCustomImpl implements RepairHistoryRepositor
         return subQurey.select(repairHistory)
                 .from(repairHistory)
                 .join(commonAsset).on(repairHistory.assetNo.assetNo.eq(commonAsset.assetNo)) // RepairHistory와 CommonAsset 조인
-                .join(repairFile).on(repairFile.repairNo.repairNo.eq(repairHistory.repairNo)) // RepairFile의 repairNo를 사용하여 조인
+                .leftJoin(repairFile).on(repairFile.repairNo.repairNo.eq(repairHistory.repairNo)) // RepairFile의 repairNo를 사용하여 조인
                 .where(commonAsset.assetCode.eq(assetCode)) // assetCode로 필터링
                 .fetch(); // 결과 반환
     }

@@ -204,7 +204,7 @@ public class DataInitializerService {
                     asset.setAssetClassification(AssetClassification.ITNETWORK_EQUIPMENT);
                 } else if (i <= 135) {
                     asset.setAssetClassification(AssetClassification.TERMINAL);
-                } else if (i <= 150) {
+                } else if (i <= 150){
                     asset.setAssetClassification(AssetClassification.FURNITURE);
                 } else if (i <= 165) {
                     asset.setAssetClassification(AssetClassification.DEVICES);
@@ -341,6 +341,7 @@ public class DataInitializerService {
                         ItSystemEquipment itSystemEquipment = new ItSystemEquipment();
                         itSystemEquipment.setAssetNo(commonAsset1);  // 자산 번호 설정
                         itSystemEquipment.setEquipmentType("Type " + i);  // 더미 데이터 반영
+                        // int를 Long으로 변환하여 설정
 
                         itSystemEquipment.setPowerSupply("Power Supply " + i);  // 더미 데이터 반영
                         itSystemEquipment.setCoolingSystem("Cooling System " + i);  // 더미 데이터 반영

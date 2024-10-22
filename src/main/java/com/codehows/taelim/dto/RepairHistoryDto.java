@@ -13,9 +13,11 @@ public class RepairHistoryDto {
 
     private Long repairNo;
     private Long assetNo;
+    private String assetCode;
+    private String assetName;
+    private String repairBy;
     private LocalDate repairStartDate;
     private LocalDate repairEnDate;
-    private String repairBy;
     private String repairResult;
 
     private List<RepairFileDto> repairFileDtos; // 리스트로 변경

@@ -3,8 +3,12 @@ package com.codehows.taelim.repository;
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
 import com.codehows.taelim.constant.AssetLocation;
+import com.codehows.taelim.constant.Department;
 import com.codehows.taelim.entity.CommonAsset;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +33,7 @@ public interface CommonAssetRepositoryCustom {
 
     // 최신 자산과 그 이전 자산 가져오는 쿼리
     List<CommonAsset> findNextAssetsByAssetNo(Long assetNo);
+    List<CommonAsset> findNextAssetsByAssetNo1(Long assetNo);
 
     // 이전 자산 들고오는 쿼리
     CommonAsset findNextAssetByAssetNo(Long assetNo);
@@ -37,4 +42,21 @@ public interface CommonAssetRepositoryCustom {
 
     // 코드가 같은 승인된 자산가져오기
     List<CommonAsset> findApprovedAssetsByAssetCode(String assetCode);
+
+    // 새로운 자산조회 - 검색쿼리, page 넣고 자산 조회하기
+    Page<CommonAsset> findApprovedAndNotDisposedAssetsWithSearch(
+            String assetName,
+            String assetLocationString,
+            AssetLocation assetLocationEnum,
+            String assetUser,
+            String departmentString,
+            Department departmentEnum,
+            LocalDate introducedDate,
+            AssetClassification assetClassification,
+            Pageable pageable);
+    // 요청 승인시 이전 요청들 처리하는 로직
+    List<CommonAsset> findUnconfirmedAssetsWithSameCodeAndLessThanAssetNo(String assetCode, Long assetNo);
+
+    // 엑셀 출력을 위한 List 전체를 가져오는 조회(조건으로)
+    List<CommonAsset> findAssetByExcel(AssetClassification assetClassification);
 }

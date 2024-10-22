@@ -56,12 +56,19 @@ public class DemandService {
                     //폐기이력
                     demandHistoryDto.setDemandBy("이창현");
                     demandHistoryDto.setDemandType("delete");
+                    demandHistoryDto.setDisposeLocation(demand1.getDisposeLocation());
+                    demandHistoryDto.setDisposeMethod(demand1.getDisposeMethod());
                 }
+                demandHistoryDto.setAssetName(asset.getAssetName());
+                demandHistoryDto.setDemandReason(demand1.getDemandReason());
+                demandHistoryDto.setDemandDetail(demand1.getDemandDetail());
                 demandHistoryDto.setDemandNo(demandDtl.getDemandNo().getDemandNo());
                 demandHistoryDto.setAssetNo(asset.getAssetNo());
                 demandHistoryDto.setAssetCode(asset.getAssetCode());
                 demandHistoryDto.setDemandDate(asset.getCreateDate());
                 demandHistoryDto.setDemandStatus(asset.getApproval().toString());
+                demandHistoryDto.setComment(demandDtl.getComment());
+
                 demandHistoryDtos.add(demandHistoryDto);
             }
 
@@ -430,5 +437,34 @@ public class DemandService {
 
         return demandHistoryDtos;
     }
+
+    public String beforeDemand(String assetCode, Long assetNo) {
+        List<CommonAsset> demandList = commonAssetRepository.findUnconfirmedAssetsWithSameCodeAndLessThanAssetNo(assetCode, assetNo);
+
+        if (demandList.isEmpty()) {
+            return "No assets found for the given assetCode and assetNo conditions.";
+        }
+
+        int processedCount = 0;  // 처리된 자산 개수
+        int refusalCount = 0;    // 거절된 자산 개수
+
+        for (CommonAsset commonAsset : demandList) {
+            if (!Objects.equals(commonAsset.getAssetNo(), assetNo)) {
+                commonAsset.setApproval(Approval.REFUSAL);
+                commonAsset.setDemandCheck(true);
+                processedCount++;
+                refusalCount++;
+                commonAssetRepository.save(commonAsset);
+                DemandDtl demandDtl = demandDtlRepository.findByAssetNo(commonAsset);
+                demandDtl.setComment("최신 요청으로 반영");
+                demandDtlRepository.save(demandDtl);
+            }
+        }
+
+        return String.format("Processed %d assets. %d assets have been marked as REFUSAL.", processedCount, refusalCount);
+    }
+
+
+
 
 }
