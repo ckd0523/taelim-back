@@ -27,4 +27,6 @@ public class DemandDtl {
     @JoinColumn(name = "demandNo")
     private Demand demandNo;
 
+    private String comment;
+
 }

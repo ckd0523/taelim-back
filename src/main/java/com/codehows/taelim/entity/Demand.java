@@ -30,6 +30,6 @@ public class Demand {
     private String demandDetail;
     private String disposeMethod;
     private String disposeLocation;
-    private String comment;
+
 
 }
