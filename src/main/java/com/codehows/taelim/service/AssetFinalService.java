@@ -364,7 +364,7 @@ public class AssetFinalService {
     }
 
     public void exportAssetsToExcel(String assetClassification, HttpServletResponse response) throws IOException {
-        List<CommonAsset> assets = getAssets(assetClassification); // 자산 목록 조회 메소드
+        List<CommonAsset> assets = findAssetByExcel(assetClassification); // 자산 목록 조회 메소드
         Workbook workbook = new XSSFWorkbook();
 
         // 분류별로 시트 생성
@@ -453,36 +453,16 @@ public class AssetFinalService {
         cell.setCellStyle(style);
     }
 
-    private List<CommonAsset> getAssets(String assetClassification) {
+    public List<CommonAsset> findAssetByExcel(AssetClassification assetClassification) {
         // 자산 분류가 null인지 확인하고 기본값 또는 예외 처리 추가
         if (assetClassification == null) {
-            throw new IllegalArgumentException("Asset classification cannot be null");
+            // assetClassification이 null일 경우 전체 자산 조회
+            return commonAssetRepository.findAssetByExcel(null); // null을 넘겨서 전체 조회를 처리하도록
+        } else {
+            // assetClassification이 있을 경우 해당 분류에 따라 자산 목록을 조회
+            return commonAssetRepository.findAssetByExcel(assetClassification);
         }
 
-        // 자산 분류를 Enum으로 변환
-        AssetClassification classificationEnum;
-        try {
-            classificationEnum = AssetClassification.valueOf(assetClassification);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid asset classification: " + assetClassification, e);
-        }
-
-        // 페이지나 검색 조건 없이 모든 자산을 가져오는 로직 (필요시 페이지네이션 추가 가능)
-        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);  // 전체 자산을 가져오도록 페이지 크기를 크게 설정
-        Page<CommonAsset> assetPage = commonAssetRepository.findApprovedAndNotDisposedAssetsWithSearch(
-                null, // assetName
-                null, // assetLocationString
-                null, // assetLocationEnum
-                null, // assetUser
-                null, // departmentString
-                null, // departmentEnum
-                null, // introducedDate
-                classificationEnum, // 자산 분류에 따른 필터링
-                pageable
-        );
-
-        // 자산 목록 반환
-        return assetPage.getContent();
     }
 
 }

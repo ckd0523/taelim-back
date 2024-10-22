@@ -26,7 +26,8 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Repository
-public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCustom {
+public
+class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
     @PersistenceContext
@@ -367,4 +368,54 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         return new PageImpl<>(assets, pageable, total);
     }
 
+    // 엑셀 출력을 위한 List 전체를 가져오는 조회(조건으로)
+    @Override
+    public List<CommonAsset> findAssetByExcel(AssetClassification assetClassification) {
+
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 1. 폐기된 자산(approval = Approve && disposal = TRUE) 을 가진 assetCode로 필터링
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset;
+
+        excludedAssetCodes.select(subCa.assetCode)
+                .from(subCa)
+                .where(
+                        subCa.approval.eq(Approval.APPROVE)
+                                .and(subCa.disposalStatus.isTrue())
+                )
+                .groupBy(subCa.assetCode);
+
+        // 2. 최신 assetNo를 하나 선택하는 쿼리
+        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+        subQuery.select(ca.assetNo.max())
+                .from(ca)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes) //폐기된 assetCode 자산 제외
+                                .and(ca.approval.eq(Approval.APPROVE)) // 승인된 자산이면서
+                                .and(ca.disposalStatus.isFalse()) // 폐기되지 않은 자산 가져오기
+                )
+                .groupBy(ca.assetCode);
+
+        // 3. 최종 쿼리 : 최신 assetNo에 해당하는 자산조회 + assetClassifiaction 필터링
+        JPAQuery<CommonAsset> query = new JPAQuery<>(entityManager);
+
+        // assetClassification 필터 조건
+        if (assetClassification != null) {
+            query.select(ca)
+                    .from(ca)
+                    .where(ca.assetNo.in(subQuery) // 최신 자산번호 + assetClassification
+                            .and(ca.assetClassification.eq(assetClassification))) // assetClassification 필터링
+                    .orderBy(ca.assetNo.desc()); // assetNo를 내림차순으로 정렬
+        } else {
+            // assetClassification이 null일 경우 전체 자산 조회
+            query.select(ca)
+                    .from(ca)
+                    .where(ca.assetNo.in(subQuery))
+                    .orderBy(ca.assetNo.desc());
+        }
+
+        // 결과 리스트 반환
+        return query.fetch();
+    }
 }

@@ -53,4 +53,7 @@ public interface CommonAssetRepositoryCustom {
             LocalDate introducedDate,
             AssetClassification assetClassification,
             Pageable pageable);
+
+    // 엑셀 출력을 위한 List 전체를 가져오는 조회(조건으로)
+    List<CommonAsset> findAssetByExcel(AssetClassification assetClassification);
 }

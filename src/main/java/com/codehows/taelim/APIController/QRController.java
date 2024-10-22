@@ -344,17 +344,29 @@ public class QRController {
 
         return ResponseEntity.ok(response);
     }
-    @GetMapping("/assets/export")
-    public ResponseEntity<Void> exportAssetsToExcel(
-            @RequestParam(required = false) String assetClassification,
-            HttpServletResponse response) {
+//    @GetMapping("/assets/export")
+//    public ResponseEntity<Void> exportAssetsToExcel(
+//            @RequestParam(required = false) String assetClassification,
+//            HttpServletResponse response) {
+//        try {
+//            assetFinalService.exportAssetsToExcel(assetClassification, response);
+//            return ResponseEntity.ok().build();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.internalServerError().build();
+//        }
+//    }
+    @GetMapping("/assets/excel")
+    public ResponseEntity<List<CommonAsset>> getAssetsByClassification(
+            @RequestParam(required = false)  AssetClassification assetClassification) {
+
         try {
-            assetFinalService.exportAssetsToExcel(assetClassification, response);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
+            List<CommonAsset> assets = assetFinalService.findAssetByExcel(assetClassification);
+            return ResponseEntity.ok(assets);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null); // 잘못된 요청 처리
         }
     }
+
 }
 
