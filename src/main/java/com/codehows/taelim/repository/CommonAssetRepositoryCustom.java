@@ -52,7 +52,11 @@ public interface CommonAssetRepositoryCustom {
             String departmentString,
             Department departmentEnum,
             LocalDate introducedDate,
+            AssetClassification assetClassification,
             Pageable pageable);
     // 요청 승인시 이전 요청들 처리하는 로직
     List<CommonAsset> findUnconfirmedAssetsWithSameCodeAndLessThanAssetNo(String assetCode, Long assetNo);
+
+    // 엑셀 출력을 위한 List 전체를 가져오는 조회(조건으로)
+    List<CommonAsset> findAssetByExcel(AssetClassification assetClassification);
 }

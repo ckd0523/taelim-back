@@ -1,9 +1,6 @@
 package com.codehows.taelim.APIController;
 
-import com.codehows.taelim.constant.Approval;
-import com.codehows.taelim.constant.AssetLocation;
-import com.codehows.taelim.constant.Department;
-import com.codehows.taelim.constant.FileType;
+import com.codehows.taelim.constant.*;
 import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Demand;
@@ -15,6 +12,7 @@ import com.codehows.taelim.service.RegisterService;
 import com.codehows.taelim.service.UpdateService;
 import com.google.zxing.WriterException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -340,6 +338,7 @@ public class QRController {
             @RequestParam(required = false) String departmentString,  // String으로 변경
             @RequestParam(required = false) Department departmentEnum,  // Enum 추가
             @RequestParam(required = false) LocalDate introducedDate,
+            @RequestParam(required = false) AssetClassification assetClassification,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
@@ -348,10 +347,34 @@ public class QRController {
         PaginatedResponse<AssetDto> response = assetFinalService.getAssetSearch(
                 assetName, assetLocationString, assetLocationEnum,
                 assetUser, departmentString, departmentEnum,
-                introducedDate, page, size
+                introducedDate, assetClassification,page, size
         );
 
         return ResponseEntity.ok(response);
     }
+//    @GetMapping("/assets/export")
+//    public ResponseEntity<Void> exportAssetsToExcel(
+//            @RequestParam(required = false) String assetClassification,
+//            HttpServletResponse response) {
+//        try {
+//            assetFinalService.exportAssetsToExcel(assetClassification, response);
+//            return ResponseEntity.ok().build();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.internalServerError().build();
+//        }
+//    }
+    @GetMapping("/assets/excel")
+    public ResponseEntity<List<CommonAsset>> getAssetsByClassification(
+            @RequestParam(required = false)  AssetClassification assetClassification) {
+
+        try {
+            List<CommonAsset> assets = assetFinalService.findAssetByExcel(assetClassification);
+            return ResponseEntity.ok(assets);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null); // 잘못된 요청 처리
+        }
+    }
+
 }
 
