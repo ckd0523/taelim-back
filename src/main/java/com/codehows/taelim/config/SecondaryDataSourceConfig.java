@@ -36,6 +36,7 @@ public class SecondaryDataSourceConfig {
     public LocalContainerEntityManagerFactoryBean secondaryEntityManagerFactory(EntityManagerFactoryBuilder builder,
                                                                                 @Qualifier("secondaryDataSource") DataSource dataSource) {
         Map<String, Object> properties = new HashMap<>();
+        //실제 DB는 카멜케이스로 '_'가 없기때문에 주석 처리
         //properties.put("hibernate.physical_naming_strategy",
         //        "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
         properties.put("hibernate.hbm2ddl.auto", "validate"); // 무조건 validate로 유지

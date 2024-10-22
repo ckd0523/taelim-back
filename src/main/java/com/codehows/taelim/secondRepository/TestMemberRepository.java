@@ -16,5 +16,5 @@ public interface TestMemberRepository extends JpaRepository<TestMember, String> 
 
     //쿼리 어노테이션으로 안하면 TestMember를 반환하려고 하기 때문에 String으로 반환할 시 오류 생김
     @Query("SELECT tm.uName FROM TestMember tm WHERE tm.email = :email")
-    String findUNameByEmail(@Param("email") String email);
+    String findFullNameByEmail(@Param("email") String email);
 }

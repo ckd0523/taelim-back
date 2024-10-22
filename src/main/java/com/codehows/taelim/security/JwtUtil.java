@@ -26,7 +26,7 @@ public class JwtUtil {
     private int accessTokenValiditySeconds; //5분
 
     @Value("${jwt.refresh-token.expiration}")
-    private int refreshTokenValiditySeconds; //10분
+    private int refreshTokenValiditySeconds; //7일
 
     private Key getSigningKey() {
         byte[] keyBytes = SECRET_KEY.getBytes();

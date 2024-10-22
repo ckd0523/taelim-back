@@ -1,6 +1,8 @@
 package com.codehows.taelim.service;
 
+import com.codehows.taelim.secondEntity.AspNetUser;
 import com.codehows.taelim.secondEntity.TestMember;
+import com.codehows.taelim.secondRepository.AspNetUserRepository;
 import com.codehows.taelim.secondRepository.TestMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Base64;
 import java.util.Collections;
@@ -20,29 +23,43 @@ import java.util.List;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final TestMemberRepository testMemberRepository;
+    private final AspNetUserRepository aspNetUserRepository;
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        //데이터베이스에서 사용자 찾기
-        System.out.println("유저 디테일 서비스1 : " + email);
-        TestMember member = testMemberRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + email));
+        
 
-        System.out.println("유저 디테일 서비스2");
-        System.out.println("유저 디테일 서비스3 : " + member.getRole());
-        // 사용자의 권한 설정
-        List<GrantedAuthority> authorities = Collections.singletonList(
-                new SimpleGrantedAuthority(member.getRole())
-        );
+        AspNetUser aspNetUser = aspNetUserRepository.findByUsername(email).orElseThrow(() -> new UsernameNotFoundException("사용자 없음"));
 
-        System.out.println("유저 디테일 서비스4 : " + new String(Base64.getDecoder().decode(member.getEmail())));
+        //유저 정보를 받아올 때 이메일 승인 검증
+        if(!aspNetUser.isEmailconfirmed()) {
+            System.out.println("이메일 미승인");
+            return new User(aspNetUser.getUsername(), "", Collections.emptyList());
+        }
+        
+        List<String> roles = aspNetUser.getUserRoles()
+                .stream().map(userRole -> userRole.getRole().getName())
+                .toList();
+
+        List<GrantedAuthority> authorities;
+
+        if(roles.contains("ADMIN")) {
+            authorities = Collections.singletonList(
+                    new SimpleGrantedAuthority("ADMIN"));
+        } else if(roles.contains("ASSET_MANAGER")) {
+            authorities = Collections.singletonList(
+                    new SimpleGrantedAuthority("ASSET_MANAGER"));
+        } else {
+            authorities = Collections.singletonList(
+                    new SimpleGrantedAuthority("USER"));
+        }
 
         // UserDetails 반환 (Spring Security에서 제공하는 User 객체 사용)
         return new User(
-                new String(Base64.getDecoder().decode(member.getEmail())),
-                member.getPassword(),
+                new String(Base64.getDecoder().decode(aspNetUser.getUsername())),
+                aspNetUser.getPassword(),
                 authorities // 사용자 권한 설정
-                //Collections.emptyList()
         );
     }
 }

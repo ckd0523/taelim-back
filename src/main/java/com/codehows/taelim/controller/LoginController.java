@@ -3,10 +3,10 @@ package com.codehows.taelim.controller;
 import com.codehows.taelim.dto.LoginRequest;
 import com.codehows.taelim.dto.LoginResponse;
 import com.codehows.taelim.dto.RefreshResponse;
-import com.codehows.taelim.secondEntity.AspNetUser;
+import com.codehows.taelim.secondRepository.AspNetUserRepository;
 import com.codehows.taelim.security.JwtUtil;
 import com.codehows.taelim.service.CustomUserDetailsService;
-import com.codehows.taelim.service.LoginTestService;
+import com.codehows.taelim.service.LoginService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +33,7 @@ public class LoginController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
-    private final LoginTestService loginTestService;
+    private final LoginService loginService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -60,20 +60,13 @@ public class LoginController {
                 .sameSite("Lax") // Add SameSite attribute
                 .build();
         System.out.println("로그인 컨트롤러 3");
+        System.out.println("로그인 컨트롤러 이메일 : " + userDetails.getUsername());
 
-        String originalName = loginTestService.getOriginalName(Base64.getEncoder().encodeToString(userDetails.getUsername().getBytes()));
-        System.out.println("로그인 컨트롤러 4");
-        AspNetUser user = loginTestService.getUser(Base64.getEncoder().encodeToString(userDetails.getUsername().getBytes()));
-        System.out.println("실제 DB 환경과 같은 곳에서 가져온 user 정보");
-        System.out.println("이메일 : " + user.getEmail());
-        System.out.println("이름 : " + user.getUsername());
-        System.out.println("권한 : " + user.getUserRoles());
-        System.out.println("로그인 컨트롤러 5");
-        System.out.println("---------------------------------------------");
-        System.out.println("이메일 : " + userDetails.getUsername());
-        System.out.println("이름 : " + originalName);
-        System.out.println("권한 : " + userDetails.getAuthorities());
-        System.out.println("로그인 컨트롤러 6");
+        String originalName = new String(Base64.getDecoder().decode(loginService.getOriginalName(userDetails.getUsername())));
+
+        System.out.println("로그인 컨트롤러 실제 사용자 이름 : " + originalName);
+
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                 .body(new LoginResponse(accessToken, userDetails.getUsername(), originalName, userDetails.getAuthorities().toString()));
@@ -125,7 +118,7 @@ public class LoginController {
                 // 리프레시 토큰이 유효하면 사용자 정보를 가져옴
                 System.out.println("리프레시 4");
                 String username = jwtUtil.getUsernameFromToken(refreshToken);
-                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(Base64.getEncoder().encodeToString(username.getBytes()));
 
                 // 새로운 액세스 토큰 발급
                 String newAccessToken = jwtUtil.generateAccessToken(userDetails);

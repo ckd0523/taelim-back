@@ -18,25 +18,23 @@ public class AspNetUser {
     @Column(name = "Id")
     private String id;
 
-    private String email; //계정명
+    private String username; //계정명
 
     private String password; //hashing된 password
 
-    private String username; //실제 사용자 이름
+    private String fullname; //실제 사용자 이름
 
     private String department; //사용자의 부서
-
-    //private String role; //일반사용자, 자산담당자, 관리자
 
     private boolean emailconfirmed;
 
     @OneToMany(mappedBy = "user")
     private List<AspNetUserRole> userRoles; // AspNetUserRoles와의 관계
 
-    public AspNetUser toEntity(String email, String password, String username, String department, boolean emailconfirmed) {
-        this.email = Base64.getEncoder().encodeToString(email.getBytes());
-        this.password = password;
+    public AspNetUser toEntity(String username, String password, String fullname, String department, boolean emailconfirmed) {
         this.username = Base64.getEncoder().encodeToString(username.getBytes());
+        this.password = password;
+        this.fullname = Base64.getEncoder().encodeToString(fullname.getBytes());
         this.department = Base64.getEncoder().encodeToString(department.getBytes());
         //this.role = role;
         this.emailconfirmed = emailconfirmed;
