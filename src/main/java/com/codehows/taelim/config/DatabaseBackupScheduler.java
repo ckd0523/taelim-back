@@ -20,7 +20,7 @@ public class DatabaseBackupScheduler { //백업 스크립트를 실행할 스케
         try {
             // 백업 스크립트 경로를 지정
             //배시셸을 사용해서, 이 경로에 있는 백업 셸 실행
-            String[] command = {"/bin/bash", "/home/db_backup.sh"};
+            String[] command = {"/bin/sh", "/gen/db_backup.sh"};
 
             // 프로세스를 시작
             ProcessBuilder processBuilder = new ProcessBuilder(command);
