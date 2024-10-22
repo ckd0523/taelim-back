@@ -406,13 +406,13 @@ class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCustom {
                     .from(ca)
                     .where(ca.assetNo.in(subQuery) // 최신 자산번호 + assetClassification
                             .and(ca.assetClassification.eq(assetClassification))) // assetClassification 필터링
-                    .orderBy(ca.assetNo.desc()); // assetNo를 내림차순으로 정렬
+                    .orderBy(ca.assetNo.asc()); // assetNo를 내림차순으로 정렬
         } else {
             // assetClassification이 null일 경우 전체 자산 조회
             query.select(ca)
                     .from(ca)
                     .where(ca.assetNo.in(subQuery))
-                    .orderBy(ca.assetNo.desc());
+                    .orderBy(ca.assetNo.asc());
         }
 
         // 결과 리스트 반환
