@@ -6,7 +6,6 @@ import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Furniture;
 import com.codehows.taelim.entity.Member;
 import com.codehows.taelim.entity.Software;
-import com.codehows.taelim.secondEntity.TestMember;
 import com.codehows.taelim.secondRepository.TestMemberRepository;
 import com.codehows.taelim.repository.*;
 import com.codehows.taelim.security.PasswordHasher2;
@@ -162,7 +161,7 @@ public class DataInitializerService {
                 member.setEmail("user" + i + "@example.com");
                 member.setPassword("password" + i);
                 member.setUName("User Name " + i);
-                member.setRole(i % 10 == 0 ? Role.ADMIN : (i % 2 == 0 ? Role.ASSET_MANAGER : Role.USER));
+                member.setRole(i % 10 == 0 ? Role.ROLE_ADMIN : (i % 2 == 0 ? Role.ROLE_ASSET_MANAGER : Role.ROLE_USER));
                 memberRepository.save(member);
             }
             // 자산 분류 항목
@@ -177,7 +176,7 @@ public class DataInitializerService {
                 member.setEmail("user" + i + "@example.com");
                 member.setPassword("password" + i);
                 member.setUName("User Name " + i);
-                member.setRole(Role.USER);
+                member.setRole(Role.ROLE_USER);
 
                 CommonAsset asset = new CommonAsset();
 
