@@ -18,5 +18,6 @@ public class AllDeleteDto {
     private String disposeLocation;
     private String reason;
     private String detail;
+    private String demandBy;
 
 }

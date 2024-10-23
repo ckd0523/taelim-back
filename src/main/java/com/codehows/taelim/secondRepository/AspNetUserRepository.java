@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface AspNetUserRepository extends JpaRepository<AspNetUser, Long> {
+public interface AspNetUserRepository extends JpaRepository<AspNetUser, String> {
     Optional<AspNetUser> findByUsername(String email);
 
     //쿼리 어노테이션으로 안하면 AspNetUser를 반환하려고 하기 때문에 String으로 반환할 시 오류 생김
@@ -20,7 +20,7 @@ public interface AspNetUserRepository extends JpaRepository<AspNetUser, Long> {
     @Query("SELECT u FROM AspNetUser u WHERE u.fullname LIKE %:encodedFullname%")
     List<AspNetUser> findByEncodedFullname(@Param("encodedFullname") String encodedFullname);
 
-    Optional<AspNetUser> findById(String id);
+    //Optional<AspNetUser> findById(String id);
 
 
 }

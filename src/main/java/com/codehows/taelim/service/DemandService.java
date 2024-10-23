@@ -35,6 +35,7 @@ public class DemandService {
     private final ElectronicInformationRepository electronicInformationRepository;
     private final PatentsAndTrademarksRepository patentsAndTrademarksRepository;
     private final InformationProtectionSystemRepository informationProtectionSystemRepository;
+    private final UserService userService;
 
 
     public List<DemandHistoryDto> getAllDemandHistory() {
@@ -50,11 +51,11 @@ public class DemandService {
                 Demand demand1 = demand.orElseThrow();
                 if(demand1.getDisposeLocation() == null){
                     //수정이력
-                    demandHistoryDto.setDemandBy("이창현");
+                    demandHistoryDto.setDemandBy(userService.getUserById(demand1.getDemandBy()).getFullname());
                     demandHistoryDto.setDemandType("update");
                 }else {
                     //폐기이력
-                    demandHistoryDto.setDemandBy("이창현");
+                    demandHistoryDto.setDemandBy(userService.getUserById(demand1.getDemandBy()).getFullname());
                     demandHistoryDto.setDemandType("delete");
                     demandHistoryDto.setDisposeLocation(demand1.getDisposeLocation());
                     demandHistoryDto.setDisposeMethod(demand1.getDisposeMethod());
@@ -93,11 +94,11 @@ public class DemandService {
                 Demand demand1 = demand.orElseThrow();
                 if(demand1.getDisposeLocation() == null){
                     //수정이력
-                    demandHistoryDto.setDemandBy("이창현");
+                    demandHistoryDto.setDemandBy(userService.getUserById(demand1.getDemandBy()).getFullname());
                     demandHistoryDto.setDemandType("update");
                 }else {
                     //폐기이력
-                    demandHistoryDto.setDemandBy("이창현");
+                    demandHistoryDto.setDemandBy(userService.getUserById(demand1.getDemandBy()).getFullname());
                     demandHistoryDto.setDemandType("delete");
                 }
                 demandHistoryDto.setDemandNo(demandDtl.getDemandNo().getDemandNo());
@@ -131,11 +132,11 @@ public class DemandService {
                     Demand demand1 = demand.orElseThrow();
                     if (demand1.getDisposeLocation() == null) {
                         //수정이력
-                        demandHistoryDto.setDemandBy("이창현");
+                        demandHistoryDto.setDemandBy(userService.getUserById(demand1.getDemandBy()).getFullname());
                         demandHistoryDto.setDemandType("update");
                     } else {
                         //폐기이력
-                        demandHistoryDto.setDemandBy("이창현");
+                        demandHistoryDto.setDemandBy(userService.getUserById(demand1.getDemandBy()).getFullname());
                         demandHistoryDto.setDemandType("delete");
                     }
                     demandHistoryDto.setDemandNo(demandDtl.getDemandNo().getDemandNo());
@@ -362,11 +363,11 @@ public class DemandService {
                 if (asset.getDemandStatus()) {
                     if (demand.getDisposeLocation() == null) {
                         // 수정이력
-                        demandHistoryDto.setDemandBy("이창현");
+                        demandHistoryDto.setDemandBy(userService.getUserById(demand.getDemandBy()).getFullname());
                         demandHistoryDto.setDemandType("update");
                     } else {
                         // 폐기이력
-                        demandHistoryDto.setDemandBy("이창현");
+                        demandHistoryDto.setDemandBy(userService.getUserById(demand.getDemandBy()).getFullname());
                         demandHistoryDto.setDemandType("delete");
                     }
                     demandHistoryDto.setDemandNo(demandDtl2.getDemandNo().getDemandNo());
@@ -392,11 +393,11 @@ public class DemandService {
                     if (asset.getDemandStatus()) {
                         if (demand.getDisposeLocation() == null) {
                             // 수정이력
-                            demandHistoryAllDto.setDemandBy("이창현");
+                            demandHistoryAllDto.setDemandBy(userService.getUserById(demand.getDemandBy()).getFullname());
                             demandHistoryAllDto.setDemandType("allUpdateDemand");
                         } else {
                             // 폐기이력
-                            demandHistoryAllDto.setDemandBy("이창현");
+                            demandHistoryAllDto.setDemandBy(userService.getUserById(demand.getDemandBy()).getFullname());
                             demandHistoryAllDto.setDemandType("allDisposeDemand");
                         }
                         demandHistoryAllDto.setDemandNo(demandDtl.getDemandNo().getDemandNo());
@@ -430,7 +431,7 @@ public class DemandService {
                 }
                 demandHistoryDto1.setSubRows(detailAllDtos);
                 demandHistoryDto1.setDemandDate(demand.getDemandDate());
-                demandHistoryDto1.setDemandBy("이창현");
+                demandHistoryDto1.setDemandBy(userService.getUserById(demand.getDemandBy()).getFullname());
                 demandHistoryDtos.add(demandHistoryDto1);
             }
         }
