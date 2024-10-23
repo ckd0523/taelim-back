@@ -362,19 +362,6 @@ public class RegisterService {
         CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
                 .orElseThrow(() -> new RuntimeException("자산코드를 찾을수 없음 " + assetCode));
 
-//        // 자산 상태가 수정요청일때 Unconfirmed인지 확인
-//        if (existAsset.getApproval() == Approval.UNCONFIRMED) {
-//            // 자산 상태가 UNCONFIRMED이면 수정 요청 불가 메시지 반환
-//            return new AssetUpdateResponse("이미 수정 요청이 들어간 자산입니다.", null);
-//        }
-//
-//        // 자산 상태가 폐기 요청일 떄 Uncofirmed인지 확인
-//        else if (existAsset.getApproval() == Approval.UNCONFIRMED && existAsset.getDisposalStatus() == Boolean.TRUE) {
-//            //
-//            return new AssetUpdateResponse( "이미 폐기 요청이 들어간 자산입니다.", null);
-//        }
-//        else if (existAsset.getApproval() == Approval.REFUSAL || existAsset.getApproval() == Approval.APPROVE) {
-
         // 기존 자산 정보에 새로운 자산 생성
         CommonAsset updateAsset = new CommonAsset();
         updateAsset.setAssetCode(existAsset.getAssetCode()); // 코드 동일하게 유지하고
@@ -389,25 +376,10 @@ public class RegisterService {
         // AssetDto에서 업데이트할 필드 설정 (null 체크 후 기존 값 유지)
         updateAsset.setDepartment(assetDto.getDepartment() != null ? assetDto.getDepartment() : existAsset.getDepartment());
         updateAsset.setAssetLocation(assetDto.getAssetLocation() != null ? assetDto.getAssetLocation() : existAsset.getAssetLocation());
+        updateAsset.setAssetUser(assetDto.getAssetUser() != null ? assetDto.getAssetUser() : existAsset.getAssetUser());
+        updateAsset.setAssetOwner(assetDto.getAssetOwner() != null ? assetDto.getAssetOwner() : existAsset.getAssetOwner());
+        updateAsset.setAssetSecurityManager(assetDto.getAssetSecurityManager() != null ? assetDto.getAssetSecurityManager() : existAsset.getAssetSecurityManager());
 
-            // 이메일을 통해 Member 객체 가져오기
-            if (assetDto.getAssetUser() != null) {
-                updateAsset.setAssetUser(userService.getUserById(assetDto.getAssetUser()).getFullname());
-            } else {
-                updateAsset.setAssetUser(existAsset.getAssetUser());
-            }
-
-            if (assetDto.getAssetOwner() != null) {
-                updateAsset.setAssetOwner(userService.getUserById(assetDto.getAssetOwner()).getFullname());
-            } else {
-                updateAsset.setAssetOwner(existAsset.getAssetOwner());
-            }
-
-            if (assetDto.getAssetSecurityManager() != null) {
-                updateAsset.setAssetSecurityManager(userService.getUserById(assetDto.getAssetSecurityManager()).getFullname());
-            } else {
-                updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
-            }
         updateAsset.setUseState(assetDto.getUseState() != null ? assetDto.getUseState() : existAsset.getUseState());
         updateAsset.setOperationStatus(assetDto.getOperationStatus() != null ? assetDto.getOperationStatus() : existAsset.getOperationStatus());
         updateAsset.setIntroducedDate(assetDto.getIntroducedDate() != null ? assetDto.getIntroducedDate() : existAsset.getIntroducedDate());

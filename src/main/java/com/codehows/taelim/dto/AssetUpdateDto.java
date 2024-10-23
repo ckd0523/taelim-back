@@ -26,9 +26,9 @@ public class AssetUpdateDto {
     private Long quantity;
     private Department department;
     private AssetLocation assetLocation;
-    private String assetUser; // 이부분 나중에 고쳐야함
-    private String assetOwner; // 이부분 나중에 고쳐야함
-    private String assetSecurityManager; // 이부분 나중에 고쳐야함
+    private String assetUser;
+    private String assetOwner;
+    private String assetSecurityManager;
     private OperationStatus operationStatus;
     private LocalDate introducedDate;
     private int confidentiality;
