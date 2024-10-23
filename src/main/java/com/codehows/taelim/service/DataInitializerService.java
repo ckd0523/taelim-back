@@ -173,11 +173,11 @@ public class DataInitializerService {
             // CommonAsset 첫번째 데이터 삽입
             for (int i = 1; i <= 195; i++) {
 
-                Member member = new Member();
-                member.setEmail("user" + i + "@example.com");
-                member.setPassword("password" + i);
-                member.setUName("User Name " + i);
-                member.setRole(Role.USER);
+//                Member member = new Member();
+//                member.setEmail("user" + i + "@example.com");
+//                member.setPassword("password" + i);
+//                member.setUName("User Name " + i);
+//                member.setRole(Role.USER);
 
                 CommonAsset asset = new CommonAsset();
 
@@ -225,9 +225,9 @@ public class DataInitializerService {
                 // Department을 순환하여 설정
                 Department department = Department.values()[i % Department.values().length];
                 asset.setDepartment(department);
-                asset.setAssetUser(member);
-                asset.setAssetOwner(member);
-                asset.setAssetSecurityManager(member);
+                asset.setAssetUser("member");
+                asset.setAssetOwner("member");
+                asset.setAssetSecurityManager("member");
                 // OperationStatus을 순환하여 설정
                 OperationStatus operationStatus = OperationStatus.values()[i % OperationStatus.values().length];
                 asset.setOperationStatus(operationStatus);

@@ -68,19 +68,19 @@ public class AssetService {
 
                     // Null 체크를 추가한 부분
                     if (asset.getAssetUser() != null) {
-                        dto.setAssetUser(asset.getAssetUser().getUName());
+                        dto.setAssetUser(asset.getAssetUser());
                     } else {
                         dto.setAssetUser("N/A"); // 또는 null일 경우의 기본 값 설정
                     }
 
                     if (asset.getAssetOwner() != null) {
-                        dto.setAssetOwner(asset.getAssetOwner().getUName());
+                        dto.setAssetOwner(asset.getAssetOwner());
                     } else {
                         dto.setAssetOwner("N/A"); // 또는 null일 경우의 기본 값 설정
                     }
 
                     if (asset.getAssetSecurityManager() != null) {
-                        dto.setAssetSecurityManager(asset.getAssetSecurityManager().getUName());
+                        dto.setAssetSecurityManager(asset.getAssetSecurityManager());
                     } else {
                         dto.setAssetSecurityManager("N/A"); // 또는 null일 경우의 기본 값 설정
                     }

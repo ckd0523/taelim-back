@@ -38,20 +38,14 @@ public class CommonAsset {
     @Enumerated(EnumType.STRING)
     private AssetLocation assetLocation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assetUser")
-    @JsonIgnore
-    private Member assetUser;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assetOwner")
-    @JsonIgnore
-    private Member assetOwner;
+    private String assetUser;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assetSecurityManager")
-    @JsonIgnore
-    private Member assetSecurityManager;
+
+    private String assetOwner;
+
+
+    private String assetSecurityManager;
     
     @Enumerated(EnumType.STRING)
     private OperationStatus operationStatus;
