@@ -3,6 +3,7 @@ package com.codehows.taelim.controller;
 import com.codehows.taelim.dto.LoginRequest;
 import com.codehows.taelim.dto.LoginResponse;
 import com.codehows.taelim.dto.RefreshResponse;
+import com.codehows.taelim.secondEntity.AspNetUser;
 import com.codehows.taelim.secondRepository.AspNetUserRepository;
 import com.codehows.taelim.security.JwtUtil;
 import com.codehows.taelim.service.CustomUserDetailsService;
@@ -62,14 +63,22 @@ public class LoginController {
         System.out.println("로그인 컨트롤러 3");
         System.out.println("로그인 컨트롤러 이메일 : " + userDetails.getUsername());
 
-        String originalName = new String(Base64.getDecoder().decode(loginService.getOriginalName(userDetails.getUsername())));
+        AspNetUser originalName = loginService.getOriginalName(userDetails.getUsername());
+        String decodeOriginalName = new String(Base64.getDecoder().decode(originalName.getFullname()));
+        String userId = originalName.getId();
 
-        System.out.println("로그인 컨트롤러 실제 사용자 이름 : " + originalName);
+        System.out.println("로그인 컨트롤러 실제 사용자 이름 : " + decodeOriginalName);
+        System.out.println("로그인 컨트롤러 사용자 ID : " + userId);
+
+
+        String authority = userDetails.getAuthorities().toString();
+        //System.out.println("로그인 컨트롤러 권한 : " + authority.substring(6, authority.length()-1));
+        String subedAuthority = authority.substring(6, authority.length()-1);
 
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .body(new LoginResponse(accessToken, userDetails.getUsername(), originalName, userDetails.getAuthorities().toString()));
+                .body(new LoginResponse(accessToken, userDetails.getUsername(), decodeOriginalName, subedAuthority, userId));
     }
 
     @GetMapping("/logout")

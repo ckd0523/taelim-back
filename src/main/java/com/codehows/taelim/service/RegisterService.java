@@ -947,6 +947,9 @@ public class RegisterService {
         commonAssetDto.setDemandStatus(Boolean.FALSE);
         commonAssetDto.setDemandCheck(Boolean.FALSE);
         commonAssetDto.setCreateDate(LocalDate.now());  // 등록일 갱신
+        commonAssetDto.setAssetOwner(allUpdateDto.getAssetOwner());
+        commonAssetDto.setAssetUser(allUpdateDto.getAssetUser());
+        commonAssetDto.setAssetSecurityManager(allUpdateDto.getAssetSecurityManager());
         //Dto를 엔티티로 변환
         CommonAsset commonAsset = commonAssetDto.toEntity(commonAssetDto);
         // 저장해서 새로운 자산 만들기
@@ -974,63 +977,6 @@ public class RegisterService {
             fileRepository.save(file);
         }
 
-        //파일 복사
-//        List<FileDto> files = allUpdateDto.getAssetDto().getFiles();
-//        for (FileDto fileDto : files) {
-//            File file = new File();
-//            file.setAssetNo(updateAsset);
-//
-//            // 기존 파일 이름에서 확장자 추출
-//            String originalFileName = fileDto.getOriFileName();
-//            String extension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
-//
-//            // 새로운 UUID로 파일 이름 생성
-//            String uuid = UUID.randomUUID().toString();
-//            String saveFileName = uuid + extension;
-//            String savePath = filePath + saveFileName;
-//
-//            // 새로운 URL 생성
-//            String url = fileUrl + saveFileName; // 저장한 파일의 URL 생성
-//            file.setFileURL(url);
-//            file.setOriFileName(originalFileName);
-//            file.setFileName(saveFileName);
-//            file.setFileExt(extension);
-//            file.setFileSize(fileDto.getFileSize()); // 기존 파일 크기 사용
-//            file.setFileType(fileDto.getFileType()); // 기존 파일 타입 사용
-//
-//            // 실제 파일 저장 경로 생성
-//            try {
-//                java.io.File dir = new java.io.File(filePath);  // filePath 에 해당하는 경로를 File 객체로 생성
-//                if (!dir.exists()) {
-//                    dir.mkdirs(); // 경로가 존재하지 않으면 생성
-//                }
-//
-//                // 기존 URL에서 파일 이름 추출
-//                String existingFileName = fileDto.getFileURL().substring(fileDto.getFileURL().lastIndexOf('/') + 1);
-//                java.io.File existingFile = new java.io.File(filePath + existingFileName); // 기존 파일 경로
-//
-//                // 파일 복사
-//                try (FileInputStream fis = new FileInputStream(existingFile);
-//                     FileOutputStream fos = new FileOutputStream(savePath)) {
-//                    byte[] buffer = new byte[1024];
-//                    int length;
-//                    while ((length = fis.read(buffer)) > 0) {
-//                        fos.write(buffer, 0, length);
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace(); // 예외 처리
-//                    continue; // 다음 파일로 진행
-//                }
-//
-//            } catch (Exception e) {
-//                e.printStackTrace(); // 예외 처리
-//                continue; // 다음 파일로 진행
-//            }
-//
-//            // 파일 엔티티 저장
-//            fileRepository.save(file);
-//        }
-
         // DemandDtl 테이블 저장
         DemandDtl demandDtl = new DemandDtl();
         demandDtl.setAssetNo(updateAsset);
@@ -1042,103 +988,12 @@ public class RegisterService {
 
     public Demand UpdateDemand(AllUpdateDto allUpdateDto){
         Demand demand = new Demand();
-        //demand.setDemandBy(); // 추후 사람
+        demand.setDemandBy(allUpdateDto.getDemandBy()); // 추후 사람
         demand.setDemandDate(LocalDate.now());
         demand.setDemandReason(allUpdateDto.getReason());
         demand.setDemandDetail(allUpdateDto.getDetail());
 
         return demandRepository.save(demand);
-    }
-
-
-    //일괄 수정 요청 파일 복제
-    public Long allUpdateDemand(AllUpdateDto allUpdateDto, Demand demand) {
-        // Optional 처리 기존 자산 불러오기
-        CommonAsset existAsset = commonAssetRepository.findById(allUpdateDto.getAssetNo())
-                .orElseThrow(() -> new EntityNotFoundException("Asset not found"));
-
-        //기존 자산 Dto로 변환
-        CommonAssetDto commonAssetDto = CommonAssetDto.fromEntity(existAsset);
-        //assetNo를 null로
-        commonAssetDto.setAssetNo(null);
-        //자산정보에 따른 세부 변경사항
-        commonAssetDto.setApproval(Approval.UNCONFIRMED);
-        commonAssetDto.setDisposalStatus(Boolean.FALSE);
-        commonAssetDto.setDemandStatus(Boolean.TRUE);
-        commonAssetDto.setDemandCheck(Boolean.TRUE);
-        commonAssetDto.setCreateDate(LocalDate.now());  // 등록일 갱신
-
-        //Dto를 엔티티로 변환
-        CommonAsset commonAsset = commonAssetDto.toEntity(commonAssetDto);
-        // 저장해서 새로운 자산 만들기
-        CommonAsset updateAsset = commonAssetRepository.save(commonAsset);
-        // 기존자산과 똑같은 서브컬럼 복사
-        updateAssetBasedOnClassification(updateAsset, existAsset);
-
-        //파일 복사
-        List<FileDto> files = allUpdateDto.getAssetDto().getFiles();
-        for (FileDto fileDto : files) {
-            File file = new File();
-            file.setAssetNo(updateAsset);
-
-            // 기존 파일 이름에서 확장자 추출
-            String originalFileName = fileDto.getOriFileName();
-            String extension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
-
-            // 새로운 UUID로 파일 이름 생성
-            String uuid = UUID.randomUUID().toString();
-            String saveFileName = uuid + extension;
-            String savePath = filePath + saveFileName;
-
-            // 새로운 URL 생성
-            String url = fileUrl + saveFileName; // 저장한 파일의 URL 생성
-            file.setFileURL(url);
-            file.setOriFileName(originalFileName);
-            file.setFileName(saveFileName);
-            file.setFileExt(extension);
-            file.setFileSize(fileDto.getFileSize()); // 기존 파일 크기 사용
-            file.setFileType(fileDto.getFileType()); // 기존 파일 타입 사용
-
-            // 실제 파일 저장 경로 생성
-            try {
-                java.io.File dir = new java.io.File(filePath);  // filePath 에 해당하는 경로를 File 객체로 생성
-                if (!dir.exists()) {
-                    dir.mkdirs(); // 경로가 존재하지 않으면 생성
-                }
-
-                // 기존 URL에서 파일 이름 추출
-                String existingFileName = fileDto.getFileURL().substring(fileDto.getFileURL().lastIndexOf('/') + 1);
-                java.io.File existingFile = new java.io.File(filePath + existingFileName); // 기존 파일 경로
-
-                // 파일 복사
-                try (FileInputStream fis = new FileInputStream(existingFile);
-                     FileOutputStream fos = new FileOutputStream(savePath)) {
-                    byte[] buffer = new byte[1024];
-                    int length;
-                    while ((length = fis.read(buffer)) > 0) {
-                        fos.write(buffer, 0, length);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace(); // 예외 처리
-                    continue; // 다음 파일로 진행
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace(); // 예외 처리
-                continue; // 다음 파일로 진행
-            }
-
-            // 파일 엔티티 저장
-            fileRepository.save(file);
-        }
-
-        // DemandDtl 테이블 저장
-        DemandDtl demandDtl = new DemandDtl();
-        demandDtl.setAssetNo(updateAsset);
-        demandDtl.setDemandNo(demand);
-        demandDtlRepository.save(demandDtl);
-
-        return updateAsset.getAssetNo();
     }
 
     //일괄 수정 요청 파일 복제 말고 DB 복사
@@ -1157,6 +1012,9 @@ public class RegisterService {
         commonAssetDto.setDemandStatus(Boolean.TRUE);
         commonAssetDto.setDemandCheck(Boolean.TRUE);
         commonAssetDto.setCreateDate(LocalDate.now());  // 등록일 갱신
+        commonAssetDto.setAssetOwner(allUpdateDto.getAssetOwner());
+        commonAssetDto.setAssetUser(allUpdateDto.getAssetUser());
+        commonAssetDto.setAssetSecurityManager(allUpdateDto.getAssetSecurityManager());
 
         //Dto를 엔티티로 변환
         CommonAsset commonAsset = commonAssetDto.toEntity(commonAssetDto);
@@ -1238,6 +1096,7 @@ public class RegisterService {
         Demand demand = new Demand();
         //demand.setDemandBy;
         demand.setDemandDate(LocalDate.now()); // 폐기 일자 - 추후 자동생성 변경
+        demand.setDemandBy(allDeleteDto.getDemandBy()); // 추후 사람
         demand.setDemandReason(allDeleteDto.getReason()); // 폐기 사유
         demand.setDemandDetail(allDeleteDto.getDetail()); // 폐기내용
         demand.setDisposeMethod(allDeleteDto.getDisposeMethod()); // 폐기 방법

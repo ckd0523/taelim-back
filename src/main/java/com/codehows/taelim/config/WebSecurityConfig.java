@@ -39,7 +39,8 @@ public class WebSecurityConfig {
                 //.cors(AbstractHttpConfigurer::disable)  // CORS 비활성화
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> {
-                    requests.requestMatchers("/login", "/refresh", "/logout").permitAll()  // 로그인 경로는 인증 필요 없음
+                    requests.requestMatchers("/login", "/refresh", "/logout").permitAll() // 로그인 경로는 인증 필요 없음
+                    .requestMatchers("/assetSurveyHistory").hasRole("ADMIN")
                     .anyRequest().authenticated();
                 })
                 .sessionManagement(sessionManagement ->
