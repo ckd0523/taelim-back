@@ -330,7 +330,7 @@ class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCustom {
             String assetName,
             String assetLocationString,
             AssetLocation assetLocationEnum,
-            String assetUser,
+            //String assetUser,
             String departmentString,
             Department departmentEnum,
             LocalDate introducedDate,
@@ -375,9 +375,9 @@ class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCustom {
                     ca.assetLocation.eq(assetLocationEnum)
             );
         }
-        if (assetUser != null && !assetUser.isEmpty()) {
-            builder.and(ca.assetUser.uName.likeIgnoreCase("%" + assetUser + "%"));
-        }
+//        if (assetUser != null && !assetUser.isEmpty()) {
+//            builder.and(ca.assetUser.uName.likeIgnoreCase("%" + assetUser + "%"));
+//        }
         if (departmentEnum != null) {
             builder.and(
                     ca.department.eq(departmentEnum)

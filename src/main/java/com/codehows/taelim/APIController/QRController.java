@@ -346,7 +346,8 @@ public class QRController {
         // 검색 결과를 가져옵니다.
         PaginatedResponse<AssetDto> response = assetFinalService.getAssetSearch(
                 assetName, assetLocationString, assetLocationEnum,
-                assetUser, departmentString, departmentEnum,
+                //assetUser,
+                departmentString, departmentEnum,
                 introducedDate, assetClassification,page, size
         );
 

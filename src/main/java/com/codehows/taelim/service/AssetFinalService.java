@@ -58,7 +58,7 @@ public class AssetFinalService {
             String assetName,
             String assetLocationString,
             AssetLocation assetLocationEnum,
-            String assetUser,
+            //String assetUser,
             String departmentString,
             Department departmentEnum,
             LocalDate introducedDate,
@@ -77,7 +77,7 @@ public class AssetFinalService {
                     assetName,
                     assetLocationString,
                     assetLocationEnum,
-                    assetUser,
+                    //assetUser,
                     departmentString,
                     departmentEnum,
                     introducedDate,
@@ -90,7 +90,7 @@ public class AssetFinalService {
                     assetName,
                     assetLocationString,
                     assetLocationEnum,
-                    assetUser,
+                    //assetUser,
                     departmentString,
                     departmentEnum,
                     introducedDate,
@@ -115,9 +115,9 @@ public class AssetFinalService {
             assetDto.setAssetLocation(commonAsset.getAssetLocation());
 
             // assetUser, assetOwner, assetSecurityManager가 null일 경우 처리
-            assetDto.setAssetUser(commonAsset.getAssetUser() != null ? commonAsset.getAssetUser().getUName() : "Unknown User");
-            assetDto.setAssetOwner(commonAsset.getAssetOwner() != null ? commonAsset.getAssetOwner().getUName() : "Unknown Owner");
-            assetDto.setAssetSecurityManager(commonAsset.getAssetSecurityManager() != null ? commonAsset.getAssetSecurityManager().getUName() : "Unknown Manager");
+            assetDto.setAssetUser(commonAsset.getAssetUser() != null ? commonAsset.getAssetUser() : "Unknown User");
+            assetDto.setAssetOwner(commonAsset.getAssetOwner() != null ? commonAsset.getAssetOwner() : "Unknown Owner");
+            assetDto.setAssetSecurityManager(commonAsset.getAssetSecurityManager() != null ? commonAsset.getAssetSecurityManager() : "Unknown Manager");
 
             assetDto.setUsestate(commonAsset.getUseState());
             assetDto.setOperationStatus(commonAsset.getOperationStatus());

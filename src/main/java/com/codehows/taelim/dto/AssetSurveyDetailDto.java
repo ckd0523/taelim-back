@@ -2,9 +2,11 @@ package com.codehows.taelim.dto;
 
 import com.codehows.taelim.entity.AssetSurveyDetail;
 import com.codehows.taelim.entity.CommonAsset;
+import com.codehows.taelim.service.UserService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Getter
 @Setter
@@ -24,8 +26,8 @@ public class AssetSurveyDetailDto {
     public AssetSurveyDetailDto(CommonAsset commonAsset, AssetSurveyDetail assetSurveyDetail) {
         this.assetCode = commonAsset.getAssetCode();
         this.assetName = commonAsset.getAssetName();
-        this.assetOwner = commonAsset.getAssetOwner().getUName();
-        this.assetSecurityManager = commonAsset.getAssetSecurityManager().getUName();
+        this.assetOwner = commonAsset.getAssetOwner();
+        this.assetSecurityManager = commonAsset.getAssetSecurityManager();
         this.exactLocation = assetSurveyDetail.getExactLocation();
         this.assetStatus = assetSurveyDetail.getAssetStatus();
         this.infoNo = assetSurveyDetail.getInfoNo();

@@ -64,6 +64,7 @@ public class RegisterService {
     private final DemandRepository demandRepository;
     private final DemandDtlRepository demandDtlRepository;
     private final FileRepository fileRepository;
+    private final UserService userService;
     @Value("${file.path}")
     private String filePath;
 
@@ -390,20 +391,20 @@ public class RegisterService {
         updateAsset.setAssetLocation(assetDto.getAssetLocation() != null ? assetDto.getAssetLocation() : existAsset.getAssetLocation());
 
             // 이메일을 통해 Member 객체 가져오기
-            if (assetDto.getAssetUser() != null && assetDto.getAssetUser().getEmail() != null) {
-                updateAsset.setAssetUser(getMemberByEmail(assetDto.getAssetUser().getEmail()));
+            if (assetDto.getAssetUser() != null) {
+                updateAsset.setAssetUser(userService.getUserById(assetDto.getAssetUser()).getFullname());
             } else {
                 updateAsset.setAssetUser(existAsset.getAssetUser());
             }
 
-            if (assetDto.getAssetOwner() != null && assetDto.getAssetOwner().getEmail() != null) {
-                updateAsset.setAssetOwner(getMemberByEmail(assetDto.getAssetOwner().getEmail()));
+            if (assetDto.getAssetOwner() != null) {
+                updateAsset.setAssetOwner(userService.getUserById(assetDto.getAssetOwner()).getFullname());
             } else {
                 updateAsset.setAssetOwner(existAsset.getAssetOwner());
             }
 
-            if (assetDto.getAssetSecurityManager() != null && assetDto.getAssetSecurityManager().getEmail() != null) {
-                updateAsset.setAssetSecurityManager(getMemberByEmail(assetDto.getAssetSecurityManager().getEmail()));
+            if (assetDto.getAssetSecurityManager() != null) {
+                updateAsset.setAssetSecurityManager(userService.getUserById(assetDto.getAssetSecurityManager()).getFullname());
             } else {
                 updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
             }
@@ -553,20 +554,20 @@ public class RegisterService {
         updateAsset.setPurpose(existAsset.getPurpose());
 
             // 이메일을 통해 Member 객체 가져오기
-            if (assetDto.getAssetUser() != null && assetDto.getAssetUser().getEmail() != null) {
-                updateAsset.setAssetUser(getMemberByEmail(assetDto.getAssetUser().getEmail()));
+            if (assetDto.getAssetUser() != null) {
+                updateAsset.setAssetUser(userService.getUserById(assetDto.getAssetUser()).getFullname());
             } else {
                 updateAsset.setAssetUser(existAsset.getAssetUser());
             }
 
-            if (assetDto.getAssetOwner() != null && assetDto.getAssetOwner().getEmail() != null) {
-                updateAsset.setAssetOwner(getMemberByEmail(assetDto.getAssetOwner().getEmail()));
+            if (assetDto.getAssetOwner() != null) {
+                updateAsset.setAssetOwner(userService.getUserById(assetDto.getAssetOwner()).getFullname());
             } else {
                 updateAsset.setAssetOwner(existAsset.getAssetOwner());
             }
 
-            if (assetDto.getAssetSecurityManager() != null && assetDto.getAssetSecurityManager().getEmail() != null) {
-                updateAsset.setAssetSecurityManager(getMemberByEmail(assetDto.getAssetSecurityManager().getEmail()));
+            if (assetDto.getAssetSecurityManager() != null) {
+                updateAsset.setAssetSecurityManager(userService.getUserById(assetDto.getAssetSecurityManager()).getFullname());
             } else {
                 updateAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
             }
