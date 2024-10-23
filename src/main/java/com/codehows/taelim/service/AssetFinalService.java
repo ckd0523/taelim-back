@@ -20,9 +20,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -366,8 +368,7 @@ public class AssetFinalService {
         );
     }
 
-    public void exportAssetsToExcel(String classificationStr, HttpServletResponse response) throws IOException {
-
+    public byte[] exportAssetsToExcel(String classificationStr) throws IOException {
         AssetClassification assetClassification = null;
 
         // 문자열을 AssetClassification Enum으로 변환
@@ -375,199 +376,332 @@ public class AssetFinalService {
             try {
                 assetClassification = AssetClassification.valueOf(classificationStr.toUpperCase());
             } catch (IllegalArgumentException e) {
-                // 잘못된 분류 처리 (예: Bad Request)
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid asset classification");
-                return;
+                throw new IllegalArgumentException("Invalid asset classification");
             }
         }
 
         List<CommonAsset> assets = listAssetByExcel(assetClassification); // 자산 목록 조회 메소드
-        Workbook workbook = new XSSFWorkbook();
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+             Workbook workbook = new XSSFWorkbook()) {
 
         // 분류별로 시트 생성
         for (AssetClassification classification : AssetClassification.values()) {
             Sheet sheet = workbook.createSheet(classification.getDescription());
 
-            // "필수입력사항", "자산 중요성 평가항목", "재무 및 구매 정보" 병합 셀 생성
-            Row titleRow = sheet.createRow(7);  // 7번째 행 생성
-
-            // 각 병합 셀에 값 설정
-            Cell titleCell = titleRow.createCell(0);  // 첫 번째 셀
-            titleCell.setCellValue("필수입력사항");
-
-            Cell titleCell1 = titleRow.createCell(14);  // 14번째 셀
-            titleCell1.setCellValue("자산 중요성 평가항목");
-
-            Cell titleCell2 = titleRow.createCell(21);  // 21번째 셀
-            titleCell2.setCellValue("재무 및 구매 정보");
-
-            // 셀 병합 : A8부터 K8, O8부터 U8, V8부터 AF8까지 병합
-            sheet.addMergedRegion(new CellRangeAddress(7, 7, 0, 10));   // A8-K8 병합
-            sheet.addMergedRegion(new CellRangeAddress(7, 7, 14, 19));  // O8-U8 병합
-            sheet.addMergedRegion(new CellRangeAddress(7, 7, 21, 30));  // V8-AF8 병합
-
-            // 셀 스타일 생성
-            Workbook workbook1 = sheet.getWorkbook();
-            //Workbook workbook2 = sheet.getWorkbook();
-            CellStyle titleStyle = workbook1.createCellStyle();
-            Font titleFont = workbook1.createFont();
-            titleFont.setBold(true); // 글씨를 굵게
-            titleFont.setFontHeightInPoints((short) 9); // 폰트 크기 9
-            titleFont.setFontName("맑은 고딕"); // 폰트 "맑은 고딕"
-            titleStyle.setFont(titleFont);
-            // 배경 색상 설정 (RGB 217, 217, 217)
-            XSSFColor backgroundColor = new XSSFColor(new java.awt.Color(217, 217, 217), null);
-            ((XSSFCellStyle) titleStyle).setFillForegroundColor(backgroundColor);
-            titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND); // 배경색 채우기
-            // 가운데 정렬 추가
-            titleStyle.setAlignment(HorizontalAlignment.CENTER); // 가로 방향 가운데 정렬
-            titleStyle.setVerticalAlignment(VerticalAlignment.CENTER); // 세로 방향 가운데 정렬
-            // 스타일 적용
-            // 스타일 적용 (각 병합된 셀에 동일한 스타일 적용)
-            titleCell.setCellStyle(titleStyle);  // 첫 번째 병합 셀에 스타일 적용
-            titleCell1.setCellStyle(titleStyle);  // 두 번째 병합 셀에 스타일 적용
-            titleCell2.setCellStyle(titleStyle);  // 세 번째 병합 셀에 스타일 적용
-
+            // 병합 셀 생성 및 제목 설정
+            mergeCellsAndSetTitle(sheet);
             // 헤더 생성
-            Row headerRow = sheet.createRow(8);
-            createHeaderCell(headerRow,0,"No");
-            createHeaderCell(headerRow, 1, "자산 기준");
-            createHeaderCell(headerRow, 2, "자산 코드");
-            createHeaderCell(headerRow,3,"자산명");
-            createHeaderCell(headerRow,4,"자산분류");
-            createHeaderCell(headerRow,5,"목적/기능");
-            createHeaderCell(headerRow, 6 ,"자산 위치");
-            createHeaderCell(headerRow,7,"부서");
-            createHeaderCell(headerRow,8,"사용자");
-            createHeaderCell(headerRow,9, "소유자");
-            createHeaderCell(headerRow,10, "보안담당자");
-            createHeaderCell(headerRow,11, "사용상태");
-            createHeaderCell(headerRow,12, "가동여부");
-            createHeaderCell(headerRow,13, "도입일자");
-            createHeaderCell(headerRow,14, "기밀성");
-            createHeaderCell(headerRow,15, "무결성");
-            createHeaderCell(headerRow,16, "가용성");
-            createHeaderCell(headerRow,17, "중요성점수");
-            createHeaderCell(headerRow,18, "중요성등급");
-            createHeaderCell(headerRow,19, "비고");
-
-            createHeaderCell(headerRow,21, "구매비용");
-            createHeaderCell(headerRow,22, "구매날짜");
-            createHeaderCell(headerRow,23, "유지기간");
-            createHeaderCell(headerRow,24, "내용연수");
-            createHeaderCell(headerRow,25, "감각상각방법");
-            createHeaderCell(headerRow,26, "구입처");
-            createHeaderCell(headerRow,27, "구입처 연락처");
-            createHeaderCell(headerRow,28, "취득경로");
-            createHeaderCell(headerRow,29, "잔존가치");
-            createHeaderCell(headerRow,30, "현재가치");
-
+            createHeaderRow(sheet, classification); // 분류 전달
 
             // 데이터 추가 후 가장 긴 길이를 저장할 배열
-            int[] maxColumnLengths = new int[19]; // 0부터 18까지 총 19개의 열
+            int[] maxColumnLengths = new int[41]; // 0부터 18까지 총 19개의 열
 
-            // 추가적인 헤더 셀 생성...
-            int rowIndex = 9;
-            for (CommonAsset asset : assets) {
-                if (asset.getAssetClassification() == classification) {
-                    Row row = sheet.createRow(rowIndex++);
-                    row.createCell(0).setCellValue(asset.getAssetNo());
-                    row.createCell(1).setCellValue(asset.getAssetBasis().toString());
-                    row.createCell(2).setCellValue(asset.getAssetCode());
-                    row.createCell(3).setCellValue(asset.getAssetName());
-                    row.createCell(4).setCellValue(asset.getAssetClassification().getDescription());
-                    row.createCell(5).setCellValue(asset.getPurpose());
-                    row.createCell(6).setCellValue(asset.getAssetLocation().getDescription());
-                    row.createCell(7).setCellValue(asset.getDepartment().getDescription());
-                    row.createCell(8).setCellValue(asset.getAssetUser().getUName());
-                    row.createCell(9).setCellValue(asset.getAssetOwner().getUName());
-                    row.createCell(10).setCellValue(asset.getAssetSecurityManager().getUName());
-                    row.createCell(11).setCellValue(asset.getUseState().getDescription());
-                    row.createCell(12).setCellValue(asset.getOperationStatus().getDescription());
-                    row.createCell(13).setCellValue(asset.getIntroducedDate());
-                    // 기밀성, 무결성, 가용성 데이터 설정
-                    int confidentiality = asset.getConfidentiality();
-                    int integrity = asset.getIntegrity();
-                    int availability = asset.getAvailability();
-                    // 16번째 셀: 기밀성, 무결성, 가용성의 합계
-                    int totalScore = confidentiality + integrity + availability;
-                    row.createCell(14).setCellValue(confidentiality);
-                    row.createCell(15).setCellValue(integrity);
-                    row.createCell(16).setCellValue(availability);
-                    row.createCell(17).setCellValue(totalScore); // 합계 입력
-                    // 17번째 셀: 등급 계산
-                    String grade;
-                    if (totalScore >= 3 && totalScore <= 4) {
-                        grade = "C등급";
-                    } else if (totalScore >= 5 && totalScore <= 6) {
-                        grade = "B등급";
-                    } else if (totalScore >= 7 && totalScore <= 9) {
-                        grade = "A등급";
-                    } else {
-                        grade = "등급 없음"; // 필요에 따라 기본값 설정
-                    }
-                    row.createCell(18).setCellValue(grade); // 등급 입력
+            // 자산별 데이터 행 추가
+            addAssetDataRows(sheet, assets, classification, maxColumnLengths);
 
-                    row.createCell(19).setCellValue(asset.getNote());
+            // 열 너비 조정
+            adjustColumnWidths(sheet, maxColumnLengths);
 
-                    row.createCell(21).setCellValue(asset.getPurchaseCost());
-                    row.createCell(22).setCellValue(asset.getPurchaseDate());
-                    row.createCell(23).setCellValue(asset.getMaintenancePeriod());
-                    row.createCell(24).setCellValue(asset.getUsefulLife());
-                    row.createCell(25).setCellValue(asset.getDepreciationMethod().getDescription());
-                    row.createCell(26).setCellValue(asset.getPurchaseSource());
-                    row.createCell(27).setCellValue(asset.getContactInformation());
-                    row.createCell(28).setCellValue(asset.getAcquisitionRoute());
-                    row.createCell(29).setCellValue(asset.getNote());
-                    row.createCell(30).setCellValue(asset.getNote());
+        }
+            // 응답에 엑셀 파일 작성
+            workbook.write(outputStream);
+            return outputStream.toByteArray();
+        }
+    }
 
-                    // 자산 분류에 따라 추가적인 정보 처리
-//                    switch (classification) {
-//                        case SOFTWARE -> {
-//                            Software software = softwareRepository.findByAssetNo(asset);
-//                            row.createCell(5).setCellValue(software.getIp());
-//                            row.createCell(6).setCellValue(software.getOs());
-//                            // 기타 소프트웨어 관련 정보 추가
-//                        }
-//                        case CAR -> {
-//                            Car car = carRepository.findByAssetNo(asset);
-//                            row.createCell(5).setCellValue(car.getDisplacement());
-//                            row.createCell(6).setCellValue(car.getDoorsCount());
-//                            // 기타 차량 관련 정보 추가
-//                        }
-//                        case DEVICES -> {
-//                            Devices devices = devicesRepository.findByAssetNo(asset);
-//                            row.createCell(5).setCellValue(devices.getDeviceType());
-//                            row.createCell(6).setCellValue(devices.getModelNumber());
-//                            // 기타 장비 관련 정보 추가
-//                        }
-//                        // 나머지 분류별 처리 추가...
-//                    }
-                    // 각 셀의 길이를 기준으로 최대 길이 업데이트
-                    for (int c = 0; c <= 18; c++) {
-                        Cell cell = row.getCell(c);
-                        if (cell != null) {
-                            String cellValue = cell.toString(); // 모든 셀 값을 문자열로 변환
-                            maxColumnLengths[c] = Math.max(maxColumnLengths[c], cellValue.length());
-                        }
-                    }
-                }
-            }
+    private void createHeaderRow(Sheet sheet, AssetClassification classification) {
+        Row headerRow = sheet.createRow(8);
+        String[] headers = {
+                "No", "자산 기준", "자산 코드", "자산명", "자산분류",
+                "목적/기능", "자산 위치", "부서", "사용자", "소유자",
+                "보안담당자", "사용상태", "가동여부", "도입일자", "기밀성",
+                "무결성", "가용성", "중요성점수", "중요성등급", "비고",
+                "구매비용", "구매날짜", "유지기간", "내용연수", "감각상각방법",
+                "구입처", "구입처 연락처", "취득경로", "잔존가치", "현재가치"
+        };
 
-            // 모든 셀을 추가한 후 각 열의 너비를 가장 긴 데이터에 맞추어 조정
-            for (int i = 0; i <= 18; i++) {
-                sheet.setColumnWidth(i, (maxColumnLengths[i] + 4) * 256); // +2는 여백을 위한 것
+        // 기본 헤더 설정
+        for (int i = 0; i < headers.length; i++) {
+            createHeaderCell(headerRow, i, headers[i]);
+        }
+        // 각 자산 분류에 따른 추가 헤더 제목 설정
+        addClassificationHeaders(headerRow, classification);
+    }
+    private void addClassificationHeaders(Row headerRow, AssetClassification classification) {
+        String[][] classificationHeaders = {
+                { "서비스범위" }, // INFORMATION_PROTECTION_SYSTEM
+                { "서비스범위", "OS", "관련 DB", "IP", "화면 수" }, // APPLICATION_PROGRAM
+                { "IP", "Sever ID", "Sever PW", "담당업체", "OS" }, // SOFTWARE
+                { "OS", "시스템", "DB 종류" }, // ELECTRONIC_INFORMATION
+                { "문서 등급", "문서 형태", "문서 링크" }, // DOCUMENT
+                { "출원 일자", "등록 일자", "만료 일자", "특허/상표 상태", "출원국가", "특허분류", "특허세목", "출원번호", "발명자", "권리권자", "관련문서" }, // PATENTS_AND_TRADEMARKS
+                { "장비 유형", "랙유닛", "전원공급장치", "쿨링시스템", "인터페이스 포트", "폼팩터", "확장슬롯수", "그래픽카드", "포트 구성", "모니터 포함여부" }, // ITSYSTEM_EQUIPMENT
+                { "장비 유형", "포트수", "지원프로토콜", "펨웨어 버전", "네트워크 속도", "서비스범위" }, // ITNETWORK_EQUIPMENT
+                { "IP", "제품시리얼번호", "OS", "보안관제", "내부정보 유출 방지", "악성코드, 랜섬웨어 탐지", "안티랜섬웨어", "NAC agent" }, // TERMINAL
+                { "크기" }, // FURNITURE
+                { "기기 유형", "모델번호", "연결방식", "전원사양" }, // DEVICES
+                { "배기량", "차량의 문 수", "엔진형식", "차량종류", "차량 식별번호", "차량 색상", "연식" }, // CAR
+                { "기타 세부 설명", "사용 빈도" } // OTHERASSETS
+        };
+
+        // 추가 헤더 생성
+        int startColumnIndex = 32; // 추가 헤더 시작 열 인덱스
+        for (String header : classificationHeaders[classification.ordinal()]) {
+            createHeaderCell(headerRow, startColumnIndex++, header);
+        }
+    }
+
+    private void addAssetDataRows(Sheet sheet, List<CommonAsset> assets, AssetClassification classification, int[] maxColumnLengths) {
+        int rowIndex = 9;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        for (CommonAsset asset : assets) {
+            if (asset.getAssetClassification() == classification) {
+                Row row = sheet.createRow(rowIndex++);
+                // 기본 자산 데이터 설정
+                addBasicAssetData(row, asset, formatter);
+
+                // 자산 분류별 데이터 처리
+                addClassificationSpecificData(row, asset, classification, formatter);
+
+                // 각 셀의 길이를 기준으로 최대 길이 업데이트
+                updateMaxColumnLengths(row, maxColumnLengths);
             }
         }
+    }
+
+    private void addBasicAssetData(Row row, CommonAsset asset, DateTimeFormatter formatter) {
+        row.createCell(0).setCellValue(asset.getAssetNo());
+        row.createCell(1).setCellValue(asset.getAssetBasis().toString());
+        row.createCell(2).setCellValue(asset.getAssetCode());
+        row.createCell(3).setCellValue(asset.getAssetName());
+        row.createCell(4).setCellValue(asset.getAssetClassification().getDescription());
+        row.createCell(5).setCellValue(asset.getPurpose());
+        row.createCell(6).setCellValue(asset.getAssetLocation().getDescription());
+        row.createCell(7).setCellValue(asset.getDepartment().getDescription());
+        row.createCell(8).setCellValue(asset.getAssetUser().getUName());
+        row.createCell(9).setCellValue(asset.getAssetOwner().getUName());
+        row.createCell(10).setCellValue(asset.getAssetSecurityManager().getUName());
+        row.createCell(11).setCellValue(asset.getUseState().getDescription());
+        row.createCell(12).setCellValue(asset.getOperationStatus().getDescription());
+        row.createCell(13).setCellValue(asset.getIntroducedDate().format(formatter));
+
+        // 기밀성, 무결성, 가용성 처리
+        int confidentiality = asset.getConfidentiality();
+        int integrity = asset.getIntegrity();
+        int availability = asset.getAvailability();
+        int totalScore = confidentiality + integrity + availability;
+
+        row.createCell(14).setCellValue(confidentiality);
+        row.createCell(15).setCellValue(integrity);
+        row.createCell(16).setCellValue(availability);
+        row.createCell(17).setCellValue(totalScore);
+
+        // 중요성 등급 계산
+        String grade = calculateAssetGrade(totalScore);
+        row.createCell(18).setCellValue(grade);
+
+        row.createCell(19).setCellValue(asset.getNote());
+        row.createCell(21).setCellValue(asset.getPurchaseCost());
+        row.createCell(22).setCellValue(asset.getPurchaseDate().format(formatter));
+        row.createCell(23).setCellValue(asset.getMaintenancePeriod().format(formatter));
+        row.createCell(24).setCellValue(asset.getUsefulLife());
+        row.createCell(25).setCellValue(asset.getDepreciationMethod().getDescription());
+        row.createCell(26).setCellValue(asset.getPurchaseSource());
+        row.createCell(27).setCellValue(asset.getContactInformation());
+        row.createCell(28).setCellValue(asset.getAcquisitionRoute());
+        row.createCell(29).setCellValue(asset.getNote());
+        row.createCell(30).setCellValue(asset.getNote());
+    }
+
+    private String calculateAssetGrade(int totalScore) {
+        if (totalScore >= 3 && totalScore <= 4) {
+            return "C등급";
+        } else if (totalScore >= 5 && totalScore <= 6) {
+            return "B등급";
+        } else if (totalScore >= 7 && totalScore <= 9) {
+            return "A등급";
+        } else {
+            return "등급 없음"; // 기본값 설정
+        }
+    }
 
 
+    private void addClassificationSpecificData(Row row, CommonAsset asset, AssetClassification classification, DateTimeFormatter formatter) {
+        //자산 분류에 따라 추가적인 정보 처리
+        switch (classification) {
+            case INFORMATION_PROTECTION_SYSTEM -> {
+                InformationProtectionSystem informationProtectionSystem = informationProtectionSystemRepository.findByAssetNo(asset);
+                row.createCell(32).setCellValue(informationProtectionSystem.getServiceScope());
+            }
+            case APPLICATION_PROGRAM -> {
+                ApplicationProgram applicationProgram = applicationProgramRepository.findByAssetNo(asset);
+                row.createCell(32).setCellValue(applicationProgram.getServiceScope());
+                row.createCell(33).setCellValue(applicationProgram.getOs());
+                row.createCell(34).setCellValue(applicationProgram.getRelatedDB());
+                row.createCell(35).setCellValue(applicationProgram.getIp());
+                row.createCell(36).setCellValue(applicationProgram.getOs());
+            }
+            case SOFTWARE -> {
+                Software software = softwareRepository.findByAssetNo(asset);
+                row.createCell(32).setCellValue(software.getIp());
+                row.createCell(33).setCellValue(software.getServerId());
+                row.createCell(34).setCellValue(software.getServerPassword());
+                row.createCell(35).setCellValue(software.getCompanyManager());
+                row.createCell(36).setCellValue(software.getOs());
+            }
+            case ELECTRONIC_INFORMATION -> {
+                ElectronicInformation electronicInformation = electronicInformationRepository.findByAssetNo(asset);
+                row.createCell(32).setCellValue(electronicInformation.getOs());
+                row.createCell(33).setCellValue(electronicInformation.getSystem());
+                row.createCell(34).setCellValue(electronicInformation.getDbtype());
+            }
+            case DOCUMENT -> {
+                Document document = documentRepository.findByAssetNo(asset);
+                row.createCell(32).setCellValue(document.getDocumentGrade().getDescription());
+                row.createCell(33).setCellValue(document.getDocumentType().getDescription());
+                row.createCell(34).setCellValue(document.getDocumentLink());
+            }
+            case PATENTS_AND_TRADEMARKS -> {
+                PatentsAndTrademarks patentsAndTrademarks = patentsAndTrademarksRepository.findByAssetNo(asset);
+                row.createCell(32).setCellValue(patentsAndTrademarks.getApplicationDate().format(formatter));
+                row.createCell(33).setCellValue(patentsAndTrademarks.getRegistrationDate().format(formatter));
+                row.createCell(34).setCellValue(patentsAndTrademarks.getExpirationDate().format(formatter));
+                row.createCell(35).setCellValue(patentsAndTrademarks.getPatentTrademarkStatus().getDescription());
+                row.createCell(36).setCellValue(patentsAndTrademarks.getCountryApplication().getDescription());
+                row.createCell(37).setCellValue(patentsAndTrademarks.getPatentClassification().getDescription());
+                row.createCell(38).setCellValue(patentsAndTrademarks.getPatentItem().getDescription());
+                row.createCell(39).setCellValue(patentsAndTrademarks.getApplicationNo());
+                row.createCell(40).setCellValue(patentsAndTrademarks.getInventor());
+                row.createCell(41).setCellValue(patentsAndTrademarks.getAssignee());
+                //row.createCell(42).setCellValue(patentsAndTrademarks.getR());
 
+            }
+            case ITSYSTEM_EQUIPMENT -> {
+                ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(asset);
+                row.createCell(32).setCellValue(itSystemEquipment.getEquipmentType());
+                //row.createCell(33).setCellValue(itSystemEquipment.get());
+                row.createCell(34).setCellValue(itSystemEquipment.getPowerSupply());
+                row.createCell(35).setCellValue(itSystemEquipment.getCoolingSystem());
+                row.createCell(36).setCellValue(itSystemEquipment.getInterfacePorts());
+                row.createCell(37).setCellValue(itSystemEquipment.getFormFactor());
+                row.createCell(38).setCellValue(itSystemEquipment.getExpansionSlots());
+                row.createCell(39).setCellValue(itSystemEquipment.getGraphicsCard());
+                row.createCell(40).setCellValue(itSystemEquipment.getPortConfiguration());
+                row.createCell(41).setCellValue(itSystemEquipment.getMonitorIncluded());
+            }
+            case ITNETWORK_EQUIPMENT -> {
+                ItNetworkEquipment itNetworkEquipment = itNetworkEquipmentRepository.findByAssetNo(asset);
+                row.createCell(32).setCellValue(itNetworkEquipment.getEquipmentType());
+                row.createCell(33).setCellValue(itNetworkEquipment.getNumberOfPorts());
+                row.createCell(34).setCellValue(itNetworkEquipment.getSupportedProtocols());
+                row.createCell(35).setCellValue(itNetworkEquipment.getFirmwareVersion());
+                row.createCell(36).setCellValue(itNetworkEquipment.getNetworkSpeed());
+                row.createCell(37).setCellValue(itNetworkEquipment.getServiceScope());
+            }
+            case TERMINAL -> {
+                Terminal terminal = terminalRepository.findByAssetNo(asset);
+                row.createCell(32).setCellValue(terminal.getIp());
+                //row.createCell(33).setCellValue(terminal.());
+                row.createCell(34).setCellValue(terminal.getOs());
+                row.createCell(35).setCellValue(terminal.getSecurityControl().getDescription());
+                row.createCell(36).setCellValue(terminal.getKaitsKeeper().format(formatter));
+                row.createCell(37).setCellValue(terminal.getV3OfficeSecurity().format(formatter));
+                row.createCell(38).setCellValue(terminal.getAppCheckPro().format(formatter));
+                row.createCell(39).setCellValue(terminal.getTgate().format(formatter));
+            }
+            case FURNITURE -> {
+                Furniture furniture = furnitureRepository.findByAssetNo(asset);
+                row.createCell(32).setCellValue(furniture.getFurnitureSize());
+            }
+            case DEVICES -> {
+                Devices devices = devicesRepository.findByAssetNo(asset);
+                row.createCell(32).setCellValue(devices.getDeviceType());
+                row.createCell(33).setCellValue(devices.getModelNumber());
+                row.createCell(34).setCellValue(devices.getConnectionType());
+                row.createCell(35).setCellValue(devices.getPowerSpecifications());
+            }
+            case CAR -> {
+                Car car = carRepository.findByAssetNo(asset);
+                row.createCell(32).setCellValue(car.getDisplacement());
+                row.createCell(33).setCellValue(car.getDoorsCount());
+                row.createCell(34).setCellValue(car.getEngineType().getDescription());
+                row.createCell(35).setCellValue(car.getCarType().getDescription());
+                row.createCell(36).setCellValue(car.getIdentificationNo());
+                row.createCell(37).setCellValue(car.getCarColor());
+                row.createCell(38).setCellValue(car.getModelYear());
+            }
+            case OTHERASSETS -> {
+                OtherAssets otherAssets = otherAssetsRepository.findByAssetNo(asset);
+                row.createCell(32).setCellValue(otherAssets.getOtherDescription());
+                row.createCell(33).setCellValue(otherAssets.getUsageFrequency());
+            }
+            // 나머지 분류별 처리 추가...
+        }
+    }
 
-        // 응답에 엑셀 파일 작성
-        response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition", "attachment; filename=assets.xlsx");
-        workbook.write(response.getOutputStream());
-        workbook.close();
+    private void updateMaxColumnLengths(Row row, int[] maxColumnLengths) {
+        for (int c = 0; c <= 40; c++) {
+            Cell cell = row.getCell(c);
+            if (cell != null) {
+                String cellValue = cell.toString(); // 모든 셀 값을 문자열로 변환
+                maxColumnLengths[c] = Math.max(maxColumnLengths[c], cellValue.length());
+            }
+        }
+    }
+    private void adjustColumnWidths(Sheet sheet, int[] maxColumnLengths) {
+        for (int i = 0; i <= 39; i++) {
+            sheet.setColumnWidth(i, (maxColumnLengths[i] + 4) * 256); // +4는 여백을 위한 것
+        }
+    }
+    
+    // 일단 셀병합 부터 빼기
+    private void mergeCellsAndSetTitle(Sheet sheet) {
+        Row titleRow = sheet.createRow(7);  // 7번째 행 생성
+
+        // 각 병합 셀에 값 설정
+        Cell titleCell = titleRow.createCell(0);  // 첫 번째 셀
+        titleCell.setCellValue("필수입력사항");
+
+        Cell titleCell1 = titleRow.createCell(14);  // 14번째 셀
+        titleCell1.setCellValue("자산 중요성 평가항목");
+
+        Cell titleCell2 = titleRow.createCell(21);  // 21번째 셀
+        titleCell2.setCellValue("재무 및 구매 정보");
+
+        // 셀 병합 : A8부터 K8, O8부터 U8, V8부터 AF8까지 병합
+        sheet.addMergedRegion(new CellRangeAddress(7, 7, 0, 10));   // A8-K8 병합
+        sheet.addMergedRegion(new CellRangeAddress(7, 7, 14, 19));  // O8-U8 병합
+        sheet.addMergedRegion(new CellRangeAddress(7, 7, 21, 30));  // V8-AF8 병합
+
+        // 셀 스타일 생성
+        CellStyle titleStyle = createTitleStyle(sheet);
+
+        // 스타일 적용 (각 병합된 셀에 동일한 스타일 적용)
+        titleCell.setCellStyle(titleStyle);
+        titleCell1.setCellStyle(titleStyle);
+        titleCell2.setCellStyle(titleStyle);
+    }
+
+    private CellStyle createTitleStyle(Sheet sheet) {
+        Workbook workbook = sheet.getWorkbook();
+        CellStyle titleStyle = workbook.createCellStyle();
+
+        Font titleFont = workbook.createFont();
+        titleFont.setBold(true); // 글씨를 굵게
+        titleFont.setFontHeightInPoints((short) 9); // 폰트 크기 9
+        titleFont.setFontName("맑은 고딕"); // 폰트 "맑은 고딕"
+        titleStyle.setFont(titleFont);
+
+        // 배경 색상 설정 (RGB 217, 217, 217)
+        XSSFColor backgroundColor = new XSSFColor(new java.awt.Color(217, 217, 217), null);
+        ((XSSFCellStyle) titleStyle).setFillForegroundColor(backgroundColor);
+        titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND); // 배경색 채우기
+        // 가운데 정렬 추가
+        titleStyle.setAlignment(HorizontalAlignment.CENTER); // 가로 방향 가운데 정렬
+        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER); // 세로 방향 가운데 정렬
+
+        return titleStyle;
     }
 
     private void createHeaderCell(Row row, int column, String value) {

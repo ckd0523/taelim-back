@@ -352,18 +352,18 @@ public class QRController {
 
         return ResponseEntity.ok(response);
     }
-    @GetMapping("/assets/export")
-    public ResponseEntity<Void> exportAssetsToExcel(
-            @RequestParam(required = false) String assetClassification,
-            HttpServletResponse response) {
-        try {
-            assetFinalService.exportAssetsToExcel(assetClassification, response);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
-        }
-    }
+//    @GetMapping("/assets/export")
+//    public ResponseEntity<Void> exportAssetsToExcel(
+//            @RequestParam(required = false) String assetClassification,
+//            HttpServletResponse response) {
+//        try {
+//            assetFinalService.exportAssetsToExcel(assetClassification, response);
+//            return ResponseEntity.ok().build();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.internalServerError().build();
+//        }
+//    }
     @GetMapping("/assets/excel")
     public ResponseEntity<List<CommonAsset>> getAssetsByClassification(
             @RequestParam(required = false)  AssetClassification assetClassification) {
@@ -375,6 +375,23 @@ public class QRController {
             return ResponseEntity.badRequest().body(null); // 잘못된 요청 처리
         }
     }
-
+    @GetMapping("/assets/export")
+    public ResponseEntity<byte[]> exportAssetsToExcel(
+            @RequestParam(required = false) String assetClassification) {
+        try {
+            byte[] excelFile = assetFinalService.exportAssetsToExcel(assetClassification);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=assets.xlsx");
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(excelFile);
+        }  catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage().getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }
 
