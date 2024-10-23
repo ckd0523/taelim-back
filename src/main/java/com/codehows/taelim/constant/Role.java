@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 //권한
 public enum Role {
-    USER("일반사용자"),
-    ASSET_MANAGER("자산담당자"),
-    ADMIN("관리자");
+    ROLE_USER("일반사용자"),
+    ROLE_ASSET_MANAGER("자산담당자"),
+    ROLE_ADMIN("관리자");
     private final String description;
 }
