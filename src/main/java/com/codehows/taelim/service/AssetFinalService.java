@@ -63,7 +63,7 @@ public class AssetFinalService {
             String assetName,
             String assetLocationString,
             AssetLocation assetLocationEnum,
-            //String assetUser,
+            String assetUserId,
             String departmentString,
             Department departmentEnum,
             LocalDate introducedDate,
@@ -82,7 +82,7 @@ public class AssetFinalService {
                     assetName,
                     assetLocationString,
                     assetLocationEnum,
-                    //assetUser,
+                    assetUserId,
                     departmentString,
                     departmentEnum,
                     introducedDate,
@@ -95,7 +95,7 @@ public class AssetFinalService {
                     assetName,
                     assetLocationString,
                     assetLocationEnum,
-                    //assetUser,
+                    assetUserId,
                     departmentString,
                     departmentEnum,
                     introducedDate,
@@ -479,9 +479,9 @@ public class AssetFinalService {
         row.createCell(5).setCellValue(asset.getPurpose());
         row.createCell(6).setCellValue(asset.getAssetLocation().getDescription());
         row.createCell(7).setCellValue(asset.getDepartment().getDescription());
-        row.createCell(8).setCellValue(asset.getAssetUser().getUName());
-        row.createCell(9).setCellValue(asset.getAssetOwner().getUName());
-        row.createCell(10).setCellValue(asset.getAssetSecurityManager().getUName());
+//        row.createCell(8).setCellValue(asset.getAssetUser().getUName());
+//        row.createCell(9).setCellValue(asset.getAssetOwner().getUName());
+//        row.createCell(10).setCellValue(asset.getAssetSecurityManager().getUName());
         row.createCell(11).setCellValue(asset.getUseState().getDescription());
         row.createCell(12).setCellValue(asset.getOperationStatus().getDescription());
         row.createCell(13).setCellValue(asset.getIntroducedDate().format(formatter));

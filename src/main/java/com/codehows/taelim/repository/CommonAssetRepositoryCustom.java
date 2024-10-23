@@ -48,7 +48,7 @@ public interface CommonAssetRepositoryCustom {
             String assetName,
             String assetLocationString,
             AssetLocation assetLocationEnum,
-            //String assetUser,
+            String assetUserId,
             String departmentString,
             Department departmentEnum,
             LocalDate introducedDate,

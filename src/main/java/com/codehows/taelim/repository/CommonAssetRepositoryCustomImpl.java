@@ -6,6 +6,9 @@ import com.codehows.taelim.constant.AssetLocation;
 import com.codehows.taelim.constant.Department;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.QCommonAsset;
+import com.codehows.taelim.secondEntity.AspNetUser;
+import com.codehows.taelim.secondRepository.AspNetUserRepository;
+import com.codehows.taelim.service.UserService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -19,20 +22,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Repository
-public
-class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCustom {
+public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+
+
     @PersistenceContext
     private EntityManager entityManager;
+    private final AspNetUserRepository aspNetUserRepository;
+    private final UserService userService;
 
     //자산코드로 하나의 자산 공통정보 가져오기 - 조건 : 폐기여부 F and 폐기여부 T + 요청 미확인 and 폐기여부 T + 요청 거절  하나 조회
     @Override
@@ -330,7 +333,7 @@ class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCustom {
             String assetName,
             String assetLocationString,
             AssetLocation assetLocationEnum,
-            //String assetUser,
+            String assetUserId,  // 외부 DB의 user ID
             String departmentString,
             Department departmentEnum,
             LocalDate introducedDate,
@@ -378,6 +381,13 @@ class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCustom {
 //        if (assetUser != null && !assetUser.isEmpty()) {
 //            builder.and(ca.assetUser.uName.likeIgnoreCase("%" + assetUser + "%"));
 //        }
+
+        // 외부 DB에서 username 가져오기
+        if (assetUserId != null && !assetUserId.isEmpty()) {
+            String fullname = userService.findFullnameById(assetUserId);
+            builder.and(ca.assetUser.likeIgnoreCase("%" + fullname + "%")); // fullname으로 검색
+        }
+
         if (departmentEnum != null) {
             builder.and(
                     ca.department.eq(departmentEnum)

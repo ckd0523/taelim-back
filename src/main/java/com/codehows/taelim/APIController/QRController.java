@@ -334,7 +334,7 @@ public class QRController {
             @RequestParam(required = false) String assetName,
             @RequestParam(required = false) String assetLocationString,  // String으로 변경
             @RequestParam(required = false) AssetLocation assetLocationEnum,  // Enum 추가
-            @RequestParam(required = false) String assetUser,
+            @RequestParam(required = false) String assetUserId,
             @RequestParam(required = false) String departmentString,  // String으로 변경
             @RequestParam(required = false) Department departmentEnum,  // Enum 추가
             @RequestParam(required = false) LocalDate introducedDate,
@@ -346,7 +346,7 @@ public class QRController {
         // 검색 결과를 가져옵니다.
         PaginatedResponse<AssetDto> response = assetFinalService.getAssetSearch(
                 assetName, assetLocationString, assetLocationEnum,
-                //assetUser,
+                assetUserId,
                 departmentString, departmentEnum,
                 introducedDate, assetClassification,page, size
         );

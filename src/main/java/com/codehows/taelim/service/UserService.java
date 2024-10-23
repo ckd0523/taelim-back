@@ -59,4 +59,10 @@ public class UserService {
         userDto.setDepartment(decodeBase64(user.getDepartment()));
         return userDto;
     }
+
+    public String findFullnameById(String id) {
+        return aspNetUserRepository.findById(id)
+                .map(aspNetUser -> new String(Base64.getDecoder().decode(aspNetUser.getUsername())))
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    }
 }
