@@ -222,7 +222,7 @@ public class DemandService {
                     .depreciationMethod(asset.getDepreciationMethod())
                     .purchaseSource(asset.getPurchaseSource())
                     .contactInformation(asset.getContactInformation())
-                    .usestate(asset.getUseState())
+                    .useStated(asset.getUseStated())
                     .acquisitionRoute(asset.getAcquisitionRoute())
                     .maintenancePeriod(asset.getMaintenancePeriod())
                     .assetOwner(assetOwnerFullname)

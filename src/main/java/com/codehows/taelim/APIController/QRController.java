@@ -63,10 +63,10 @@ public class QRController {
     private final AssetService assetService;
     
     //목록 조회
-    @GetMapping("/assets/approved-not-disposed")
-    public List<AssetDto> getApprovedAndNotDisposedAssets() {
-        return assetService.getApprovedAndNotDisposedAssets();
-    }
+//    @GetMapping("/assets/approved-not-disposed")
+//    public List<AssetDto> getApprovedAndNotDisposedAssets() {
+//        return assetService.getApprovedAndNotDisposedAssets();
+//    }
 
     //상세조회 (공통 칼럼)
     @GetMapping("/assets/{assetCode}")
@@ -88,11 +88,11 @@ public class QRController {
 //        return assetService.getAssetDetail(assetCode);
 //    }
 
-    //상세조회 (공통 및 서브 칼럼)
-    @GetMapping("/asset/{assetCode}")
-    public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
-        return assetService.getAssetDetail(assetCode);
-    }
+//    //상세조회 (공통 및 서브 칼럼)
+//    @GetMapping("/asset/{assetCode}")
+//    public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
+//        return assetService.getAssetDetail(assetCode);
+//    }
 
         //상세조회 (공통 및 서브 칼럼)
         //@GetMapping("/asset/{assetCode}")
@@ -100,12 +100,12 @@ public class QRController {
         //    return assetService.getAssetDetail(assetCode);
         //}
 
-        //상세조회 (공통 및 서브 칼럼)
-        @GetMapping("/asset1/{assetCode}")
-        public Map<String, Object> getAssetDetail2 (@PathVariable("assetCode") String assetCode){
-            return assetService.getAssetDetail2(assetCode);
-
-        }
+//        //상세조회 (공통 및 서브 칼럼)
+//        @GetMapping("/asset1/{assetCode}")
+//        public Map<String, Object> getAssetDetail2 (@PathVariable("assetCode") String assetCode){
+//            return assetService.getAssetDetail2(assetCode);
+//
+//        }
 
     //상세조회 (공통 및 서브 칼럼)
     @GetMapping("/test/{assetNo}")
@@ -299,12 +299,12 @@ public class QRController {
         }
     }
 
-
-        // 자산 조회 - 상세정보 화면 까지 다 가져오는 테스트
-        @GetMapping("/assets/test")
-        public List<AssetDto> test() {
-            return assetService.getAssetDetail3();
-        }
+//
+//        // 자산 조회 - 상세정보 화면 까지 다 가져오는 테스트
+//        @GetMapping("/assets/test")
+//        public List<AssetDto> test() {
+//            return assetService.getAssetDetail3();
+//        }
 
 
     // 파일 업데이트 API
