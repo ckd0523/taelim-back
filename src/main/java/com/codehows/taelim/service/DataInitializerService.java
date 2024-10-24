@@ -1,11 +1,14 @@
 package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.*;
+import com.codehows.taelim.dto.UserDto;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Furniture;
 import com.codehows.taelim.entity.Member;
 import com.codehows.taelim.entity.Software;
+import com.codehows.taelim.secondEntity.AspNetUser;
+import com.codehows.taelim.secondRepository.AspNetUserRepository;
 import com.codehows.taelim.secondRepository.TestMemberRepository;
 import com.codehows.taelim.repository.*;
 import com.codehows.taelim.security.PasswordHasher2;
@@ -14,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -38,6 +42,8 @@ public class DataInitializerService {
     private final AmountSetRepository amountSetRepository;
     private final TestMemberRepository testMemberRepository;
     private final PasswordHasher2 passwordHasher2;
+    private final UserService userService;
+    private final AspNetUserRepository aspNetUserRepository;
 
     // @Transactional
     // public void insertDummyData() {
@@ -154,7 +160,7 @@ public class DataInitializerService {
         public void insertDummyData() {
             //자산 기준 금액 설정 초기값 설정
             amountSetRepository.insertAmountSet(0L, 0L);
-
+            // UserDto를 DB에서 가져오는 서비스 메서드
             // Member 데이터 삽입
             for (int i = 1; i <= 195; i++) {
                 Member member = new Member();
@@ -168,6 +174,9 @@ public class DataInitializerService {
             AssetClassification[] classifications = AssetClassification.values();
             int classificationIndex = 0;  // 분류 인덱스
             int assetCountPerClassification = 15;  // 각 분류당 15개씩 생
+
+            // AspNetUser 데이터를 DB에서 가져옴
+            List<AspNetUser> userList = aspNetUserRepository.findAll();  // AspNetUser 엔티티를 모두 조회
 
             // CommonAsset 첫번째 데이터 삽입
             for (int i = 1; i <= 195; i++) {
@@ -224,9 +233,12 @@ public class DataInitializerService {
                 // Department을 순환하여 설정
                 Department department = Department.values()[i % Department.values().length];
                 asset.setDepartment(department);
-                asset.setAssetUser("1");
-                asset.setAssetOwner("2");
-                asset.setAssetSecurityManager("3");
+
+                // userList에서 데이터를 순환하여 할당 (예시로 i % userList.size() 사용)
+                AspNetUser aspNetUser = userList.get(i % userList.size());
+                asset.setAssetUser(aspNetUser.getId());
+                asset.setAssetOwner(aspNetUser.getId());
+                asset.setAssetSecurityManager(aspNetUser.getId());
                 // OperationStatus을 순환하여 설정
                 OperationStatus operationStatus = OperationStatus.values()[i % OperationStatus.values().length];
                 asset.setOperationStatus(operationStatus);

@@ -27,8 +27,11 @@ public class AssetDto {
     private Department department;
     private AssetLocation assetLocation;
     private String assetUser;
+    private String assetUserId;
     private String assetOwner;
+    private String assetOwnerId;
     private String assetSecurityManager;
+    private String assetSecurityManagerId;
     private OperationStatus operationStatus;
     private LocalDate introducedDate;
     private int confidentiality;
