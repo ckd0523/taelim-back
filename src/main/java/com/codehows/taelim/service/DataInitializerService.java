@@ -266,7 +266,7 @@ public class DataInitializerService {
                 asset.setApproval(Approval.APPROVE);
                 asset.setDemandCheck(Boolean.FALSE);
                 asset.setCreateDate(LocalDate.now());
-                asset.setUseState(UseState.IN_USE);
+                asset.setUseStated(UseStated.IN_USE);
                 asset.setAcquisitionRoute("Test Acquisition Route");
                 asset.setMaintenancePeriod(LocalDate.now());
                 asset.setProductSerialNumber("Serial" + i);  // 더미 데이터 반영

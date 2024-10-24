@@ -49,7 +49,7 @@ public class AssetDisposeDto {
     private Approval approval;
     private Boolean demandCheck;
     private LocalDate createDate;
-    private UseState useState;
+    private UseStated useStated;
     private String acquisitionRoute;
     private LocalDate maintenancePeriod;
 

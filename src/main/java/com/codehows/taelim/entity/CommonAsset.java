@@ -81,7 +81,7 @@ public class CommonAsset {
     private LocalDate createDate;
 
     @Enumerated(EnumType.STRING)
-    private UseState useState;
+    private UseStated useStated;
 
     private String acquisitionRoute;
     private LocalDate maintenancePeriod;

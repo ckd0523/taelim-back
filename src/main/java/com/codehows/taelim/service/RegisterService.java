@@ -378,7 +378,7 @@ public class RegisterService {
         updateAsset.setAssetLocation(assetDto.getAssetLocation() != null ? assetDto.getAssetLocation() : existAsset.getAssetLocation());
 
 
-        updateAsset.setUseState(assetDto.getUseState() != null ? assetDto.getUseState() : existAsset.getUseState());
+        updateAsset.setUseStated(assetDto.getUseStated() != null ? assetDto.getUseStated() : existAsset.getUseStated());
         updateAsset.setOperationStatus(assetDto.getOperationStatus() != null ? assetDto.getOperationStatus() : existAsset.getOperationStatus());
         updateAsset.setIntroducedDate(assetDto.getIntroducedDate() != null ? assetDto.getIntroducedDate() : existAsset.getIntroducedDate());
         updateAsset.setOwnership(assetDto.getOwnership() != null ? assetDto.getOwnership() : existAsset.getOwnership()); // 소유 enum 추가
@@ -467,7 +467,7 @@ public class RegisterService {
         updateAsset.setDepartment(assetDto.getDepartment() != null ? assetDto.getDepartment() : existAsset.getDepartment());
         updateAsset.setAssetLocation(assetDto.getAssetLocation() != null ? assetDto.getAssetLocation() : existAsset.getAssetLocation());
 
-        updateAsset.setUseState(assetDto.getUseState() != null ? assetDto.getUseState() : existAsset.getUseState());
+        updateAsset.setUseStated(assetDto.getUseStated() != null ? assetDto.getUseStated() : existAsset.getUseStated());
         updateAsset.setOperationStatus(assetDto.getOperationStatus() != null ? assetDto.getOperationStatus() : existAsset.getOperationStatus());
         updateAsset.setIntroducedDate(assetDto.getIntroducedDate() != null ? assetDto.getIntroducedDate() : existAsset.getIntroducedDate());
         updateAsset.setOwnership(assetDto.getOwnership() != null ? assetDto.getOwnership() : existAsset.getOwnership()); // 소유 enum 추가
@@ -635,7 +635,7 @@ public class RegisterService {
         // AssetDto에서 업데이트할 필드 설정 (null 체크 후 기존 값 유지)
         demandAsset.setDepartment(existAsset.getDepartment());
         demandAsset.setAssetLocation(existAsset.getAssetLocation());
-        demandAsset.setUseState(existAsset.getUseState());
+        demandAsset.setUseStated(existAsset.getUseStated());
         demandAsset.setOperationStatus(existAsset.getOperationStatus());
         demandAsset.setIntroducedDate(existAsset.getIntroducedDate());
         // int 필드에 대해 기본값 처리

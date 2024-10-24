@@ -203,7 +203,7 @@ public class DemandService {
                     .depreciationMethod(asset.getDepreciationMethod())
                     .purchaseSource(asset.getPurchaseSource())
                     .contactInformation(asset.getContactInformation())
-                    .usestate(asset.getUseState())
+                    .useStated(asset.getUseStated())
                     .acquisitionRoute(asset.getAcquisitionRoute())
                     .maintenancePeriod(asset.getMaintenancePeriod())
                     .build(); // 공통필드 builder 하고

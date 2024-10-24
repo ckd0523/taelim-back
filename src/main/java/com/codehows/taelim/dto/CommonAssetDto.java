@@ -46,7 +46,7 @@ public class CommonAssetDto {
     private Approval approval;
     private Boolean demandCheck;
     private LocalDate createDate;
-    private UseState useState;
+    private UseStated useStated;
     private String acquisitionRoute;
     private LocalDate maintenancePeriod;
 
@@ -86,7 +86,7 @@ public class CommonAssetDto {
                 .approval(this.approval)
                 .demandCheck(this.demandCheck)
                 .createDate(this.createDate)
-                .useState(this.useState)
+                .useStated(this.useStated)
                 .acquisitionRoute(this.acquisitionRoute)
                 .maintenancePeriod(this.maintenancePeriod)
                 .build();
@@ -128,7 +128,7 @@ public class CommonAssetDto {
                 entity.getApproval(),
                 entity.getDemandCheck(),
                 entity.getCreateDate(),
-                entity.getUseState(),
+                entity.getUseStated(),
                 entity.getAcquisitionRoute(),
                 entity.getMaintenancePeriod()
         );
