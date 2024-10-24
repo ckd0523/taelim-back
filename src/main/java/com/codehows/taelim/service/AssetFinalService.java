@@ -717,11 +717,25 @@ public class AssetFinalService {
         Workbook workbook = row.getSheet().getWorkbook();
         Font font = workbook.createFont();
         font.setBold(true);
+        font.setFontHeightInPoints((short) 9); // 폰트 크기 9
+        font.setFontName("맑은 고딕"); // 폰트 "맑은 고딕"
 
         CellStyle style = workbook.createCellStyle();
         style.setFont(font);
 
+        // 배경 색상 설정 (RGB 217, 217, 217)
+        XSSFColor backgroundColor = new XSSFColor(new java.awt.Color(217, 217, 217), null);
+        ((XSSFCellStyle) style).setFillForegroundColor(backgroundColor);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND); // 배경색 채우기
+
+        // 가운데 정렬 추가
+        style.setAlignment(HorizontalAlignment.CENTER); // 가로 방향 가운데 정렬
+        style.setVerticalAlignment(VerticalAlignment.CENTER); // 세로 방향 가운데 정렬
+
         cell.setCellStyle(style);
+        // 기본 행 높이 설정 (엑셀 기준 30포인트)
+        row.setHeightInPoints(30);
+
     }
 
     public List<CommonAsset> listAssetByExcel(AssetClassification assetClassification) {
