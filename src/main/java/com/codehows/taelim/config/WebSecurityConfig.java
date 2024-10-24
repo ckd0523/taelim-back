@@ -69,6 +69,22 @@ public class WebSecurityConfig {
                             .requestMatchers("/allDelete").hasRole("ADMIN")
                             .requestMatchers("/allDeleteDemand").hasRole("ASSET_MANAGER")
                             //asset excel은 아직 하고 있음
+                            //AmountSetController
+                            .requestMatchers("/getAmountSet").hasRole("ADMIN")
+                            .requestMatchers("/changeAmountSet").hasRole("ADMIN")
+                            //AssetSurveyController
+                            .requestMatchers("/assetSurveyHistory").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/register").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/deleteAssetSurvey").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/assetSurveyDetail/").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/checkLocation/").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/completeSurvey/").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/updateAssetSurveyDetail").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/updateAssetSurveyDetail2").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            //BackUpHistoryController
+                            .requestMatchers("/backUpHistory").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            //LoginController
+
                     .anyRequest().authenticated();
                 })
                 .sessionManagement(sessionManagement ->
