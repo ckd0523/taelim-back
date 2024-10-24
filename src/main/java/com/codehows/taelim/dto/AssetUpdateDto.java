@@ -29,6 +29,9 @@ public class AssetUpdateDto {
     private String assetUser;
     private String assetOwner;
     private String assetSecurityManager;
+    private String assetUserId;
+    private String assetOwnerId;
+    private String assetSecurityManagerId;
     private OperationStatus operationStatus;
     private LocalDate introducedDate;
     private int confidentiality;

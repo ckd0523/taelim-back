@@ -137,7 +137,7 @@ public class QRController {
                 @PathVariable("assetCode") String assetCode,
                 @RequestBody AssetDisposeDto assetDisposeDto) {
             try {
-                AssetUpdateResponse response = assetService.DisposeAsset(assetCode, assetDisposeDto);
+                AssetUpdateResponse response = assetFinalService.DisposeAsset(assetCode, assetDisposeDto);
                 // 성공적인 응답을 위해 200 OK 상태 반환
                 return ResponseEntity.ok(response);
             } catch (RuntimeException e) {
@@ -157,20 +157,20 @@ public class QRController {
         // 폐기이력 불러오기
         @GetMapping("/deleteHistory")
         public List<DeleteHistoryDto> getDeleteHistory () {
-            return assetService.getDeleteHistory();
+            return assetFinalService.getDeleteHistory();
         }
 
         // 수정이력 불러오기
         @GetMapping("/updateHistory")
         public List<UpdateHistoryDto> getUpDateHistory() {
-            return assetService.getUpDateHistory();
+            return assetFinalService.getUpDateHistory();
         }
 
         // 자산 상세화면 가져오기
         @GetMapping("/list/{assetNo}")
         public ResponseEntity<List<AssetDto>> getAssetList(@PathVariable Long assetNo) {
             System.out.println("Requested assetNo: " + assetNo); // 로그 추가
-            List<AssetDto> assets = assetService.getLatestAndPreviousAssets(assetNo);
+            List<AssetDto> assets = assetFinalService.getLatestAndPreviousAssets(assetNo);
             return ResponseEntity.ok(assets);
         }
 

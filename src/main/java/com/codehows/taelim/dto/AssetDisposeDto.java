@@ -23,9 +23,9 @@ public class AssetDisposeDto {
     private Long quantity;
     private Department department;
     private AssetLocation assetLocation;
-    private Member assetUser; // 이부분 나중에 고쳐야함
-    private Member assetOwner; // 이부분 나중에 고쳐야함
-    private Member assetSecurityManager; // 이부분 나중에 고쳐야함
+    private String assetUser;
+    private String assetOwner;
+    private String assetSecurityManager;
     private OperationStatus operationStatus;
     private LocalDate introducedDate;
     private int confidentiality;

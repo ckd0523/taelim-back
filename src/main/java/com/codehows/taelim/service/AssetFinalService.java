@@ -1,6 +1,7 @@
 package com.codehows.taelim.service;
 
 
+import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
 import com.codehows.taelim.constant.AssetLocation;
 import com.codehows.taelim.constant.Department;
@@ -55,7 +56,7 @@ public class AssetFinalService {
     private final EmailServcie emailService;
     private final DemandService demandService;
     private final AssetSurveyDetailRepository assetSurveyDetailRepository;
-
+    private final UserService userService;
 
 
     // 자산 상세 조회 - 이걸로 리스트 검색쿼리 + pageNation 까지 해보기
@@ -120,9 +121,12 @@ public class AssetFinalService {
             assetDto.setAssetLocation(commonAsset.getAssetLocation());
 
             // assetUser, assetOwner, assetSecurityManager가 null일 경우 처리
-            assetDto.setAssetUser(commonAsset.getAssetUser() != null ? commonAsset.getAssetUser() : "Unknown User");
-            assetDto.setAssetOwner(commonAsset.getAssetOwner() != null ? commonAsset.getAssetOwner() : "Unknown Owner");
-            assetDto.setAssetSecurityManager(commonAsset.getAssetSecurityManager() != null ? commonAsset.getAssetSecurityManager() : "Unknown Manager");
+            assetDto.setAssetUser(userService.getUserById(commonAsset.getAssetUser()).getFullname() != null ? userService.getUserById(commonAsset.getAssetUser()).getFullname() : "Unknown User");
+            assetDto.setAssetOwner(userService.getUserById(commonAsset.getAssetOwner()).getFullname() != null ? userService.getUserById(commonAsset.getAssetOwner()).getFullname() : "Unknown Owner");
+            assetDto.setAssetSecurityManager(userService.getUserById(commonAsset.getAssetSecurityManager()).getFullname() != null ? userService.getUserById(commonAsset.getAssetSecurityManager()).getFullname() : "Unknown Manager");
+            assetDto.setAssetUserId(commonAsset.getAssetUser());  // ID 값 저장
+            assetDto.setAssetOwnerId(commonAsset.getAssetOwner());  // ID 값 저장
+            assetDto.setAssetSecurityManagerId(commonAsset.getAssetSecurityManager());  // ID 값 저장
 
             assetDto.setUsestate(commonAsset.getUseState());
             assetDto.setOperationStatus(commonAsset.getOperationStatus());
@@ -299,7 +303,7 @@ public class AssetFinalService {
                         updateHistoryDto.setAssetCode(demandDtl.getAssetNo().getAssetCode());
                         updateHistoryDto.setAssetName(demandDtl.getAssetNo().getAssetName());
                         updateHistoryDto.setUpdateDate(demandDtl.getDemandNo().getDemandDate());
-                        //updateHistoryDto.setUpdateBy(demandDtl.getDemandNo().getDemandBy());
+                        updateHistoryDto.setUpdateBy(userService.getUserById(demandDtl.getDemandNo().getDemandBy()).getFullname());
                         updateHistoryDto.setUpdateReason(demandDtl.getDemandNo().getDemandReason());
                         updateHistoryDto.setUpdateDetail(demandDtl.getDemandNo().getDemandDetail());
 
@@ -317,6 +321,7 @@ public class AssetFinalService {
                         repairHistoryDto.setAssetCode(repairHistory.getAssetNo().getAssetCode());
                         repairHistoryDto.setAssetName(repairHistory.getAssetNo().getAssetName());
                         repairHistoryDto.setRepairBy(repairHistory.getRepairBy());
+                        //repairHistoryDto.setRepairBy(userService.getUserById(repairHistory.getRepairBy()).getFullname());
                         repairHistoryDto.setRepairStartDate(repairHistory.getRepairStartDate());
                         repairHistoryDto.setRepairEnDate(repairHistory.getRepairEndDate());
                         repairHistoryDto.setRepairResult(repairHistory.getRepairResult());
@@ -347,6 +352,7 @@ public class AssetFinalService {
                         surveyHistoryDto.setAssetSurveyStartDate(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyStartDate());
                         surveyHistoryDto.setAssetSurveyEndDate(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyEndDate());
                         surveyHistoryDto.setAssetSurveyBy(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyBy().getUName());
+                        //surveyHistoryDto.setAssetSurveyBy(userService.getUserById(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyBy()).getFullname());
                         surveyHistoryDto.setExactLocation(assetSurveyDetail.getExactLocation());
                         surveyHistoryDto.setAssetStatus(assetSurveyDetail.getAssetStatus());
                         surveyHistoryDto.setAssetSurveyContent(assetSurveyDetail.getAssetSurveyContent());
@@ -728,6 +734,267 @@ public class AssetFinalService {
             return commonAssetRepository.findAssetByExcel(assetClassification);
         }
 
+    }
+
+    //  DeleteHistory의 폐기 이력 List 보여주기 -- 폐기자 (접속자)까지 넣었음
+     public List<DeleteHistoryDto> getDeleteHistory() {
+        List<DemandDtl> deleteList = demandDtlRepository.findDeleteHistory();
+
+        List<DeleteHistoryDto> deleteHistoryList = new ArrayList<>();
+
+        for (DemandDtl demandDtl : deleteList) {
+            DeleteHistoryDto dto = new DeleteHistoryDto();
+            CommonAsset asset = demandDtl.getAssetNo();
+            Demand demand = demandDtl.getDemandNo();
+
+            dto.setAssetCode(asset.getAssetCode());
+            dto.setAssetName(asset.getAssetName());
+            dto.setDeleteBy(userService.getUserById(demand.getDemandBy()).getFullname());
+            dto.setDeleteReason(demand.getDemandReason());
+            dto.setDeleteDetail(demand.getDemandDetail());
+            dto.setDeleteMethod(demand.getDisposeMethod());
+            dto.setDeleteLocation(demand.getDisposeLocation());
+            dto.setDeleteDate(demand.getDemandDate());
+
+            deleteHistoryList.add(dto);
+        }
+
+        return deleteHistoryList;
+    }
+
+    // UpdateHistory 의 수정 이력 List 보여주기 - 수정자 (접속자) 까지 넣었음
+    public List<UpdateHistoryDto> getUpDateHistory() {
+        List<DemandDtl> updateList = demandDtlRepository.findUpdateHistory();
+
+        List<UpdateHistoryDto> updateHistoryDtoList = new ArrayList<>();
+
+        for (DemandDtl demandDtl : updateList) {
+            UpdateHistoryDto dto = new UpdateHistoryDto();
+            CommonAsset asset = demandDtl.getAssetNo();
+            Demand demand = demandDtl.getDemandNo();
+            dto.setAssetNo(asset.getAssetNo());
+            dto.setAssetCode(asset.getAssetCode());
+            dto.setAssetName(asset.getAssetName());
+            dto.setUpdateBy(userService.getUserById(demand.getDemandBy()).getFullname());
+            dto.setUpdateReason(demand.getDemandReason());
+            dto.setUpdateDetail(demand.getDemandDetail());
+            dto.setUpdateDate(demand.getDemandDate());
+
+            updateHistoryDtoList.add(dto);
+        }
+        return updateHistoryDtoList;
+    }
+
+    // UpdateHistory 의 수정 이력에서 modal 창을 눌렀을 시, approve의 기존 자산과 바뀐 자산 2개 보여주기
+    public List<AssetDto> getLatestAndPreviousAssets(Long assetNo) {
+
+        // 자산코드 (assetCode)로  최신 자산(수정) 과 그 이전 자산 가져오기
+        List<CommonAsset> assets = commonAssetRepository.findNextAssetsByAssetNo(assetNo);
+        System.out.println("ssss"+assets.size());
+        if (assets.size() < 2) {
+            throw new RuntimeException("이전 자산 정보를 찾을 수 없습니다.");
+        }
+        // 이미 존재하는 AssetUpdateDto를 그대로 사용하여 리스트로 반환
+        List<AssetDto> assetDtos = new ArrayList<>();
+        for (CommonAsset asset : assets) {
+            AssetDto dto = AssetDto.builder()
+                    .assetNo(asset.getAssetNo())
+                    .assetClassification(asset.getAssetClassification())
+                    .assetBasis(asset.getAssetBasis())
+                    .assetCode(asset.getAssetCode())
+                    .assetName(asset.getAssetName())
+                    .purpose(asset.getPurpose())
+                    .quantity(asset.getQuantity())
+                    .department(asset.getDepartment())
+                    .assetLocation(asset.getAssetLocation())
+                    .assetUser(userService.getUserById(asset.getAssetUser()).getFullname())
+                    .assetOwner(userService.getUserById(asset.getAssetOwner()).getFullname())
+                    .assetSecurityManager(userService.getUserById(asset.getAssetSecurityManager()).getFullname())
+                    .operationStatus(asset.getOperationStatus())
+                    .introducedDate(asset.getIntroducedDate())
+                    .confidentiality(asset.getConfidentiality())
+                    .integrity(asset.getIntegrity())
+                    .availability(asset.getAvailability())
+                    .note(asset.getNote())
+                    .manufacturingCompany(asset.getManufacturingCompany())
+                    .ownership(asset.getOwnership())
+                    .purchaseCost(asset.getPurchaseCost())
+                    .purchaseDate(asset.getPurchaseDate())
+                    .usefulLife(asset.getUsefulLife())
+                    .depreciationMethod(asset.getDepreciationMethod())
+                    .purchaseSource(asset.getPurchaseSource())
+                    .contactInformation(asset.getContactInformation())
+                    .usestate(asset.getUseState())
+                    .acquisitionRoute(asset.getAcquisitionRoute())
+                    .maintenancePeriod(asset.getMaintenancePeriod())
+                    .build(); // 공통필드 builder 하고
+
+            // classification에 따라 추가 엔티티 정보를 조회
+            switch (asset.getAssetClassification()) {
+                case INFORMATION_PROTECTION_SYSTEM -> {
+                    InformationProtectionSystem informationProtectionSystem = informationProtectionSystemRepository.findByAssetNo(asset);
+                    if (informationProtectionSystem != null) {
+                        dto.setServiceScope(informationProtectionSystem.getServiceScope());
+                    }
+                }
+                case APPLICATION_PROGRAM -> {
+                    ApplicationProgram applicationProgram = applicationProgramRepository.findByAssetNo(asset);
+                    if (applicationProgram != null) {
+                        dto.setServiceScope(applicationProgram.getServiceScope());
+                        dto.setOs(applicationProgram.getOs());
+                        dto.setRelatedDB(applicationProgram.getRelatedDB());
+                        dto.setIp(applicationProgram.getIp());
+                        dto.setScreenNumber(applicationProgram.getScreenNumber());
+                    }
+                }
+                case SOFTWARE -> {
+                    Software software = softwareRepository.findByAssetNo(asset);
+                    if (software != null) {
+                        dto.setIp(software.getIp());
+                        dto.setServerId(software.getServerId());
+                        dto.setServerPassword(software.getServerPassword());
+                        dto.setCompanyManager(software.getCompanyManager());
+                        dto.setOs(software.getOs());
+                    }
+                }
+                case ELECTRONIC_INFORMATION -> {
+                    ElectronicInformation electronicInformation = electronicInformationRepository.findByAssetNo(asset);
+                    if (electronicInformation != null) {
+                        dto.setOs(electronicInformation.getOs());
+                        dto.setSystem(electronicInformation.getSystem());
+                        dto.setDbtype(electronicInformation.getDbtype());
+                    }
+                }
+                case DOCUMENT -> {
+                    Document document = documentRepository.findByAssetNo(asset);
+                    if (document != null) {
+                        dto.setDocumentGrade(document.getDocumentGrade());
+                        dto.setDocumentType(document.getDocumentType());
+                        dto.setDocumentLink(document.getDocumentLink());
+                    }
+                }
+                case PATENTS_AND_TRADEMARKS -> {
+                    PatentsAndTrademarks patentsAndTrademarks = patentsAndTrademarksRepository.findByAssetNo(asset);
+                    if (patentsAndTrademarks != null) {
+                        dto.setApplicationDate(patentsAndTrademarks.getApplicationDate());
+                        dto.setRegistrationDate(patentsAndTrademarks.getRegistrationDate());
+                        dto.setExpirationDate(patentsAndTrademarks.getExpirationDate());
+                        dto.setPatentTrademarkStatus(patentsAndTrademarks.getPatentTrademarkStatus());
+                        dto.setCountryApplication(patentsAndTrademarks.getCountryApplication());
+                        dto.setPatentClassification(patentsAndTrademarks.getPatentClassification());
+                        dto.setPatentItem(patentsAndTrademarks.getPatentItem());
+                        dto.setApplicationNo(patentsAndTrademarks.getApplicationNo());
+                        dto.setInventor(patentsAndTrademarks.getInventor());
+                        dto.setAssignee(patentsAndTrademarks.getAssignee());
+                    }
+                }
+                case ITSYSTEM_EQUIPMENT -> {
+                    ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(asset);
+                    if (itSystemEquipment != null) {
+                        dto.setEquipmentType(itSystemEquipment.getEquipmentType());
+                        dto.setPowerSupply(itSystemEquipment.getPowerSupply());
+                        dto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
+                        dto.setInterfacePorts(itSystemEquipment.getInterfacePorts());
+                        dto.setFormFactor(itSystemEquipment.getFormFactor());
+                        dto.setExpansionSlots(itSystemEquipment.getExpansionSlots());
+                        dto.setGraphicsCard(itSystemEquipment.getGraphicsCard());
+                        dto.setPortConfiguration(itSystemEquipment.getPortConfiguration());
+                        dto.setMonitorIncluded(itSystemEquipment.getMonitorIncluded());
+                    }
+                }
+                case ITNETWORK_EQUIPMENT -> {
+                    ItNetworkEquipment itNetworkEquipment = itNetworkEquipmentRepository.findByAssetNo(asset);
+                    if (itNetworkEquipment != null) {
+                        dto.setEquipmentType(itNetworkEquipment.getEquipmentType());
+                        dto.setNumberOfPorts(itNetworkEquipment.getNumberOfPorts());
+                        dto.setSupportedProtocols(itNetworkEquipment.getSupportedProtocols());
+                        dto.setFirmwareVersion(itNetworkEquipment.getFirmwareVersion());
+                        dto.setNetworkSpeed(itNetworkEquipment.getNetworkSpeed());
+                        dto.setServiceScope(itNetworkEquipment.getServiceScope());
+                    }
+                }
+                case TERMINAL -> {
+                    Terminal terminal = terminalRepository.findByAssetNo(asset);
+                    if (terminal != null) {
+                        dto.setIp(terminal.getIp());
+                        dto.setOs(terminal.getOs());
+                        dto.setSecurityControl(terminal.getSecurityControl());
+                        dto.setKaitsKeeper(terminal.getKaitsKeeper());
+                        dto.setV3OfficeSecurity(terminal.getV3OfficeSecurity());
+                        dto.setAppCheckPro(terminal.getAppCheckPro());
+                        dto.setTgate(terminal.getTgate());
+                    }
+                }
+                case FURNITURE -> {
+                    Furniture furniture = furnitureRepository.findByAssetNo(asset);
+                    if (furniture != null) {
+                        dto.setFurnitureSize(furniture.getFurnitureSize());
+                    }
+                }
+                case DEVICES -> {
+                    Devices devices = devicesRepository.findByAssetNo(asset);
+                    if (devices != null) {
+                        dto.setDeviceType(devices.getDeviceType());
+                        dto.setModelNumber(devices.getModelNumber());
+                        dto.setConnectionType(devices.getConnectionType());
+                        dto.setPowerSpecifications(devices.getPowerSpecifications());
+                    }
+                }
+                case CAR -> {
+                    Car car = carRepository.findByAssetNo(asset);
+                    if (car != null) {
+                        dto.setDisplacement(car.getDisplacement());
+                        dto.setDoorsCount(car.getDoorsCount());
+                        dto.setEngineType(car.getEngineType());
+                        dto.setCarType(car.getCarType());
+                        dto.setIdentificationNo(car.getIdentificationNo());
+                        dto.setCarColor(car.getCarColor());
+                        dto.setModelYear(car.getModelYear());
+                    }
+                }
+                case OTHERASSETS -> {
+                    OtherAssets otherAssets = otherAssetsRepository.findByAssetNo(asset);
+                    if (otherAssets != null) {
+                        dto.setOtherDescription(otherAssets.getOtherDescription());
+                        dto.setUsageFrequency(otherAssets.getUsageFrequency());
+                    }
+                }
+            }
+            assetDtos.add(dto);
+        }
+        return assetDtos;
+    }
+
+
+    // 자산 폐기 동작 (자산 하나 폐기) - ADMIN 권한임
+    public AssetUpdateResponse  DisposeAsset(String assetCode, AssetDisposeDto assetDisposeDto) {
+
+        // 기존 입력되어 있는 assetCode 조회
+        CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode)
+                .orElseThrow(() -> new RuntimeException("자산코드를 찾을 수 없음: " + assetCode));
+
+        commonAsset.setApproval(Approval.APPROVE);
+        commonAsset.setDisposalStatus(Boolean.TRUE);
+        commonAssetRepository.save(commonAsset);
+
+        // 폐기 이력 저장
+        Demand demand = new Demand();
+        demand.setDemandBy(assetDisposeDto.getDisposeUser());
+        demand.setDemandDate(LocalDate.now()); // 폐기 일자 - 추후 자동생성 변경
+        demand.setDemandReason(assetDisposeDto.getDisposeReason()); // 폐기 사유
+        demand.setDemandDetail(assetDisposeDto.getDisposeDetail()); // 폐기내용
+        demand.setDisposeMethod(assetDisposeDto.getDisposeMethod()); // 폐기 방법
+        demand.setDisposeLocation(assetDisposeDto.getDisposeLocation());  // 폐기 위치
+        demandRepository.save(demand);
+
+        // DemandDtl 테이블에 저장
+        DemandDtl demandDtl = new DemandDtl();
+        demandDtl.setAssetNo(commonAsset);  // CommonAsset과 연관 설정
+        demandDtl.setDemandNo(demand);  // Demand와 연관 설정
+        demandDtlRepository.save(demandDtl); // DemandDtl 테이블에 저장
+        //return commonAsset;
+        // 자산 폐기 성공 메시지 반환
+        return new AssetUpdateResponse("자산 폐기 등록 완료: " + commonAsset.getAssetNo(), commonAsset.getAssetNo());
     }
 
 }
