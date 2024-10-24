@@ -182,7 +182,6 @@ public class RegisterService {
 
     }
 
-
     //엑셀로 등록
     public void excelRegister (AssetDto assetDto) {
 
@@ -287,29 +286,6 @@ public class RegisterService {
     public Optional<CommonAsset> findById(Long id) {
         return commonAssetRepository.findById(id);
     }
-    public List<AssetDto> findAll() {
-        List<CommonAsset> assets = commonAssetRepository.findAll();
-        return assets.stream()
-                .map(asset -> {
-                    AssetDto dto = new AssetDto();
-                    dto.setAssetNo(asset.getAssetNo());
-                    dto.setAssetClassification(asset.getAssetClassification());
-                    dto.setAssetBasis(asset.getAssetBasis());
-                    dto.setAssetCode(asset.getAssetCode());
-                    dto.setAssetName(asset.getAssetName());
-                    dto.setPurpose(asset.getPurpose());
-                    dto.setDepartment(asset.getDepartment());
-                    dto.setAssetLocation(asset.getAssetLocation());
-                    dto.setOperationStatus(asset.getOperationStatus());
-                    dto.setPurchaseDate(asset.getPurchaseDate());
-                    dto.setManufacturingCompany(asset.getManufacturingCompany());
-                    dto.setWarrantyDetails(asset.getWarrantyDetails());
-                    dto.setApproval(asset.getApproval());
-                    dto.setAttachment(asset.getAttachment());
-                    return dto;
-                })
-                .collect(Collectors.toList());
-    }
 
     // 자산 코드 생성
     public String generateAssetCode(AssetClassification classification) {
@@ -356,6 +332,7 @@ public class RegisterService {
         return String.format("%s%s-%05d", prefix, classificationCode, newAssetNumber);
     }
 
+    // 자산 조회  - 자산 1개 수정 동작 - ADMIN권한 (권)
     public AssetUpdateResponse updateAssetCode(String assetCode, AssetUpdateDto assetDto) {
 
         // 기존 입력되어있는 assetCode 조회
@@ -447,6 +424,7 @@ public class RegisterService {
         return new AssetUpdateResponse("자산 수정 완료 : " + newAssetNo, newAssetNo);
     }
 
+    // 자산 조회  - 자산 1개 수정 요청 동작 - AssetManager권한 (권)
     public AssetUpdateResponse updatedemandAssetCode(String assetCode, AssetUpdateDto assetDto) {
 
         // 기존 입력되어있는 assetCode 조회
@@ -540,6 +518,8 @@ public class RegisterService {
 
 
     }
+
+    // 자산 복사 시 , 세부칼럼들 나눠서 가져오기
     private void saveRelatedEntity(AssetUpdateDto assetDto, CommonAsset latestAsset) {
         if (latestAsset.getAssetClassification() == null) {
             throw new IllegalArgumentException("Asset classification cannot be null.");
@@ -615,7 +595,7 @@ public class RegisterService {
         }
     }
 
-    // 폐기 담당자 요청처리 에  새로운 자산을 만들어서 처리하는 개념
+    // 자산조회 : 휴지통 - 자산 폐기 요청 동작 (자산 하나 폐기) - AssetManager 자산담당자가 폐기 요청 (권)
     public Long DisposeDemand(String assetCode, AssetDisposeDto assetDisposeDto) {
 
         // 1. 기존 입력되어있는 assetCode 조회
@@ -886,16 +866,12 @@ public class RegisterService {
         for (FileDto fileDto : files) {
             File file = new File();
             file.setAssetNo(updateAsset);
-
-
-
             file.setFileURL(fileDto.getFileURL());
             file.setOriFileName(fileDto.getOriFileName());
             file.setFileName(fileDto.getFileName());
             file.setFileExt(fileDto.getFileExt());
             file.setFileSize(fileDto.getFileSize()); // 기존 파일 크기 사용
             file.setFileType(fileDto.getFileType()); // 기존 파일 타입 사용
-
 
             // 파일 엔티티 저장
             fileRepository.save(file);

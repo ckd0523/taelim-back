@@ -121,9 +121,14 @@ public class AssetFinalService {
             assetDto.setAssetLocation(commonAsset.getAssetLocation());
 
             // assetUser, assetOwner, assetSecurityManager가 null일 경우 처리
-            assetDto.setAssetUser(userService.getUserById(commonAsset.getAssetUser()).getFullname() != null ? userService.getUserById(commonAsset.getAssetUser()).getFullname() : "Unknown User");
-            assetDto.setAssetOwner(userService.getUserById(commonAsset.getAssetOwner()).getFullname() != null ? userService.getUserById(commonAsset.getAssetOwner()).getFullname() : "Unknown Owner");
-            assetDto.setAssetSecurityManager(userService.getUserById(commonAsset.getAssetSecurityManager()).getFullname() != null ? userService.getUserById(commonAsset.getAssetSecurityManager()).getFullname() : "Unknown Manager");
+            UserDto assetUser = userService.getUserById(commonAsset.getAssetUser());
+            assetDto.setAssetUser(assetUser != null ? assetUser.getFullname() : "Unknown User");
+
+            UserDto assetOwner = userService.getUserById(commonAsset.getAssetOwner());
+            assetDto.setAssetOwner(assetOwner != null ? assetOwner.getFullname() : "Unknown Owner");
+
+            UserDto assetSecurityManager = userService.getUserById(commonAsset.getAssetSecurityManager());
+            assetDto.setAssetSecurityManager(assetSecurityManager != null ? assetSecurityManager.getFullname() : "Unknown Manager");
             assetDto.setAssetUserId(commonAsset.getAssetUser());  // ID 값 저장
             assetDto.setAssetOwnerId(commonAsset.getAssetOwner());  // ID 값 저장
             assetDto.setAssetSecurityManagerId(commonAsset.getAssetSecurityManager());  // ID 값 저장
