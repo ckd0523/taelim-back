@@ -55,7 +55,7 @@ public class WebSecurityConfig {
                             .requestMatchers("/demandAction").hasRole("ADMIN")
                             //FileController and File 등록 요청은 등록 요청이 완료 되어야 요청이 오기 때문에 인가 설정 제외
                             //MaintainController
-                            .requestMatchers("/maintain/**").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/maintain/**").permitAll()
                             //QRController, 여기 잘 봐야함
                             .requestMatchers("/disposeAsset/").hasRole("ADMIN")
                             .requestMatchers("/disposeDemand/").hasRole("ASSET_MANAGER")
