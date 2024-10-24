@@ -41,6 +41,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(requests -> {
                     requests.requestMatchers("/login", "/refresh", "/logout").permitAll() // 로그인 경로는 인증 필요 없음
                             //각 요청에 대한 인가 설정
+                            //Constant와 UserDetail에 role이 ROLE_로 시작해야 시큐리티가 인식함
                             //AssetController
                             .requestMatchers("/asset/register").hasAnyRole("ADMIN", "ASSET_MANAGER")
                             .requestMatchers("/asset/update/").hasRole("ADMIN")
@@ -54,9 +55,7 @@ public class WebSecurityConfig {
                             .requestMatchers("/demandAction").hasRole("ADMIN")
                             //FileController and File 등록 요청은 등록 요청이 완료 되어야 요청이 오기 때문에 인가 설정 제외
                             //MaintainController
-                            .requestMatchers("/maintain/register").hasAnyRole("ADMIN", "ASSET_MANAGER")
-                            .requestMatchers("/maintain/update/").hasAnyRole("ADMIN", "ASSET_MANAGER")
-                            .requestMatchers("/maintain/get").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/maintain/**").permitAll()
                             //QRController, 여기 잘 봐야함
                             .requestMatchers("/disposeAsset/").hasRole("ADMIN")
                             .requestMatchers("/disposeDemand/").hasRole("ASSET_MANAGER")

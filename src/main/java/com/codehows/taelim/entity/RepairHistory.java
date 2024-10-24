@@ -41,6 +41,7 @@ public class RepairHistory {
                 .assetNo(assetNo.getAssetNo())
                 .assetCode(assetNo.getAssetCode())
                 .assetName(assetNo.getAssetName())
+                .repairBy(repairBy)
                 .repairResult(repairResult)
                 .repairStartDate(repairStartDate)
                 .repairEndDate(repairEndDate)

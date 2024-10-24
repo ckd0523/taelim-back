@@ -74,6 +74,9 @@ dependencies {
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna
     implementation 'net.java.dev.jna:jna:4.1.0'
 
+    // jsoup HTML parser library @ https://jsoup.org/
+    implementation 'org.jsoup:jsoup:1.18.1'
+
 }
 
 tasks.named('test') {
