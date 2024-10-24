@@ -50,13 +50,16 @@ public class UserService {
     }
 
     public UserDto getUserById(String id) {
-        AspNetUser user = aspNetUserRepository.findById(id).orElseThrow();
-
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setUsername(decodeBase64(user.getUsername()));
-        userDto.setFullname(decodeBase64(user.getFullname()));
-        userDto.setDepartment(decodeBase64(user.getDepartment()));
-        return userDto;
+        if(id == null || id.isEmpty()) {
+            return null;
+        } else {
+            AspNetUser user = aspNetUserRepository.findById(id).orElseThrow();
+            UserDto userDto = new UserDto();
+            userDto.setId(user.getId());
+            userDto.setUsername(decodeBase64(user.getUsername()));
+            userDto.setFullname(decodeBase64(user.getFullname()));
+            userDto.setDepartment(decodeBase64(user.getDepartment()));
+            return userDto;
+        }
     }
 }

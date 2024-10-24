@@ -43,6 +43,7 @@ public class AssetService {
     private final EmailServcie emailService;
     private final DemandService demandService;
     private final AssetSurveyDetailRepository assetSurveyDetailRepository;
+    private final UserService userService;
 
     //자산코드로 하나의 자산 공통정보 가져오기
     public Optional<CommonAsset> getCommonAsset(String assetCode) {
@@ -934,6 +935,19 @@ public class AssetService {
         // 이미 존재하는 AssetUpdateDto를 그대로 사용하여 리스트로 반환
         List<AssetDto> assetDtos = new ArrayList<>();
         for (CommonAsset asset : assets) {
+
+            String assetOwnerFullname = userService.getUserById(asset.getAssetOwner()) != null
+                    ? userService.getUserById(asset.getAssetOwner()).getFullname()
+                    : "Unknown Owner";
+
+            String assetUserFullname = userService.getUserById(asset.getAssetUser()) != null
+                    ? userService.getUserById(asset.getAssetUser()).getFullname()
+                    : "Unknown User";
+
+            String assetSecurityManagerFullname = userService.getUserById(asset.getAssetSecurityManager()) != null
+                    ? userService.getUserById(asset.getAssetSecurityManager()).getFullname()
+                    : "Unknown Security Manager";
+
             AssetDto dto = AssetDto.builder()
                     .assetNo(asset.getAssetNo())
                     .assetClassification(asset.getAssetClassification())
@@ -961,6 +975,9 @@ public class AssetService {
                     .usestate(asset.getUseState())
                     .acquisitionRoute(asset.getAcquisitionRoute())
                     .maintenancePeriod(asset.getMaintenancePeriod())
+                    .assetOwner(assetOwnerFullname)
+                    .assetUser(assetUserFullname)
+                    .assetSecurityManager(assetSecurityManagerFullname)
                     .build(); // 공통필드 builder 하고
 
             // classification에 따라 추가 엔티티 정보를 조회

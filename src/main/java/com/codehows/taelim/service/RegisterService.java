@@ -947,9 +947,23 @@ public class RegisterService {
         commonAssetDto.setDemandStatus(Boolean.FALSE);
         commonAssetDto.setDemandCheck(Boolean.FALSE);
         commonAssetDto.setCreateDate(LocalDate.now());  // 등록일 갱신
-        commonAssetDto.setAssetOwner(allUpdateDto.getAssetOwner());
-        commonAssetDto.setAssetUser(allUpdateDto.getAssetUser());
-        commonAssetDto.setAssetSecurityManager(allUpdateDto.getAssetSecurityManager());
+
+        if(!Objects.equals(allUpdateDto.getAssetLocation(), "")){
+            commonAssetDto.setAssetLocation(AssetLocation.valueOf(allUpdateDto.getAssetLocation()));
+        }
+        if(!Objects.equals(allUpdateDto.getDepartment(), "")){
+            commonAssetDto.setDepartment(Department.valueOf(allUpdateDto.getDepartment()));
+        }
+        if(!Objects.equals(allUpdateDto.getAssetOwner(), "")){
+            commonAssetDto.setAssetOwner(allUpdateDto.getAssetOwner());
+        }
+        if(!Objects.equals(allUpdateDto.getAssetUser(), "")){
+            commonAssetDto.setAssetUser(allUpdateDto.getAssetUser());
+        }
+        if(!Objects.equals(allUpdateDto.getAssetSecurityManager(), "")){
+            commonAssetDto.setAssetSecurityManager(allUpdateDto.getAssetSecurityManager());
+        }
+
         //Dto를 엔티티로 변환
         CommonAsset commonAsset = commonAssetDto.toEntity(commonAssetDto);
         // 저장해서 새로운 자산 만들기
@@ -1012,9 +1026,21 @@ public class RegisterService {
         commonAssetDto.setDemandStatus(Boolean.TRUE);
         commonAssetDto.setDemandCheck(Boolean.TRUE);
         commonAssetDto.setCreateDate(LocalDate.now());  // 등록일 갱신
-        commonAssetDto.setAssetOwner(allUpdateDto.getAssetOwner());
-        commonAssetDto.setAssetUser(allUpdateDto.getAssetUser());
-        commonAssetDto.setAssetSecurityManager(allUpdateDto.getAssetSecurityManager());
+        if(!Objects.equals(allUpdateDto.getAssetLocation(), "")){
+            commonAssetDto.setAssetLocation(AssetLocation.valueOf(allUpdateDto.getAssetLocation()));
+        }
+        if(!Objects.equals(allUpdateDto.getDepartment(), "")){
+            commonAssetDto.setDepartment(Department.valueOf(allUpdateDto.getDepartment()));
+        }
+        if(!Objects.equals(allUpdateDto.getAssetOwner(), "")){
+            commonAssetDto.setAssetOwner(allUpdateDto.getAssetOwner());
+        }
+        if(!Objects.equals(allUpdateDto.getAssetUser(), "")){
+            commonAssetDto.setAssetUser(allUpdateDto.getAssetUser());
+        }
+        if(!Objects.equals(allUpdateDto.getAssetSecurityManager(), "")){
+            commonAssetDto.setAssetSecurityManager(allUpdateDto.getAssetSecurityManager());
+        }
 
         //Dto를 엔티티로 변환
         CommonAsset commonAsset = commonAssetDto.toEntity(commonAssetDto);
