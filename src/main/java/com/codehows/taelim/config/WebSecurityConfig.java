@@ -40,7 +40,51 @@ public class WebSecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> {
                     requests.requestMatchers("/login", "/refresh", "/logout").permitAll() // 로그인 경로는 인증 필요 없음
-                    .requestMatchers("/assetSurveyHistory").hasRole("ADMIN")
+                            //각 요청에 대한 인가 설정
+                            //AssetController
+                            .requestMatchers("/asset/register").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/asset/update/").hasRole("ADMIN")
+                            .requestMatchers("/asset/updateDemand/").hasRole("ASSET_MANAGER")
+                            .requestMatchers("/asset/excelRegister").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            //DemandController
+                            .requestMatchers("/DemandHistory").hasRole("ADMIN")
+                            .requestMatchers("/DemandList").hasRole("ADMIN")
+                            .requestMatchers("/updateAction").hasRole("ADMIN")
+                            .requestMatchers("/deleteAction").hasRole("ADMIN")
+                            .requestMatchers("/demandAction").hasRole("ADMIN")
+                            //FileController and File 등록 요청은 등록 요청이 완료 되어야 요청이 오기 때문에 인가 설정 제외
+                            //MaintainController
+                            .requestMatchers("/maintain/register").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/maintain/update/").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/maintain/get").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            //QRController, 여기 잘 봐야함
+                            .requestMatchers("/disposeAsset/").hasRole("ADMIN")
+                            .requestMatchers("/disposeDemand/").hasRole("ASSET_MANAGER")
+                            .requestMatchers("/deleteHistory").hasAnyRole("ADMIN","ASSET_MANAGER")
+                            .requestMatchers("/updateHistory").hasAnyRole("ADMIN","ASSET_MANAGER")
+                            .requestMatchers("/list/").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/list1/").hasRole("ADMIN")
+                            .requestMatchers("/allUpdate").hasRole("ADMIN")
+                            .requestMatchers("/allUpdateDemand").hasRole("ASSET_MANAGER")
+                            .requestMatchers("/allDelete").hasRole("ADMIN")
+                            .requestMatchers("/allDeleteDemand").hasRole("ASSET_MANAGER")
+                            //asset excel은 아직 하고 있음
+                            //AmountSetController
+                            .requestMatchers("/getAmountSet").hasRole("ADMIN")
+                            .requestMatchers("/changeAmountSet").hasRole("ADMIN")
+                            //AssetSurveyController
+                            .requestMatchers("/assetSurveyHistory").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/register").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/deleteAssetSurvey").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/assetSurveyDetail/").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/checkLocation/").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/completeSurvey/").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/updateAssetSurveyDetail").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            .requestMatchers("/updateAssetSurveyDetail2").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            //BackUpHistoryController
+                            .requestMatchers("/backUpHistory").hasAnyRole("ADMIN", "ASSET_MANAGER")
+                            //LoginController
+
                     .anyRequest().authenticated();
                 })
                 .sessionManagement(sessionManagement ->
