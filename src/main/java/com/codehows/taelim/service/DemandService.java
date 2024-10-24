@@ -48,7 +48,7 @@ public class DemandService {
             DemandHistoryDto demandHistoryDto = new DemandHistoryDto();
             if(asset.getDemandStatus()){
                 Optional<Demand> demand = demandRepository.findById(demandDtl.getDemandNo().getDemandNo());
-                Demand demand1 = demand.orElseThrow();
+                Demand demand1 = demand.get();
                 if(demand1.getDisposeLocation() == null){
                     //수정이력
                     demandHistoryDto.setDemandBy(userService.getUserById(demand1.getDemandBy()).getFullname());
@@ -125,6 +125,7 @@ public class DemandService {
         for(DemandDtl demandDtl : demandDtls){
             Optional<CommonAsset> commonAsset = commonAssetRepository.findById(demandDtl.getAssetNo().getAssetNo());
             CommonAsset asset = commonAsset.orElseThrow();
+
             DemandHistoryDto demandHistoryDto = new DemandHistoryDto();
             if(asset.getDemandStatus()) {
                 if (asset.getApproval() == Approval.UNCONFIRMED) {
@@ -134,14 +135,20 @@ public class DemandService {
                         //수정이력
                         demandHistoryDto.setDemandBy(userService.getUserById(demand1.getDemandBy()).getFullname());
                         demandHistoryDto.setDemandType("update");
+
                     } else {
                         //폐기이력
                         demandHistoryDto.setDemandBy(userService.getUserById(demand1.getDemandBy()).getFullname());
+                        demandHistoryDto.setDisposeMethod(demand1.getDisposeMethod());
+                        demandHistoryDto.setDisposeLocation(demand1.getDisposeLocation());
                         demandHistoryDto.setDemandType("delete");
                     }
+                    demandHistoryDto.setDemandReason(demand1.getDemandReason());
+                    demandHistoryDto.setDemandDetail(demand1.getDemandDetail());
                     demandHistoryDto.setDemandNo(demandDtl.getDemandNo().getDemandNo());
                     demandHistoryDto.setAssetNo(asset.getAssetNo());
                     demandHistoryDto.setAssetCode(asset.getAssetCode());
+                    demandHistoryDto.setAssetName(asset.getAssetName());
                     demandHistoryDto.setDemandDate(asset.getCreateDate());
                     demandHistoryDto.setDemandStatus(asset.getApproval().toString());
                     demandHistoryDtos.add(demandHistoryDto);
@@ -179,6 +186,18 @@ public class DemandService {
         // 이미 존재하는 AssetUpdateDto를 그대로 사용하여 리스트로 반환
         List<AssetDto> assetDtos = new ArrayList<>();
         for (CommonAsset asset : assets) {
+            String assetOwnerFullname = userService.getUserById(asset.getAssetOwner()) != null
+                    ? userService.getUserById(asset.getAssetOwner()).getFullname()
+                    : "Unknown Owner";
+
+            String assetUserFullname = userService.getUserById(asset.getAssetUser()) != null
+                    ? userService.getUserById(asset.getAssetUser()).getFullname()
+                    : "Unknown User";
+
+            String assetSecurityManagerFullname = userService.getUserById(asset.getAssetSecurityManager()) != null
+                    ? userService.getUserById(asset.getAssetSecurityManager()).getFullname()
+                    : "Unknown Security Manager";
+
             AssetDto dto = AssetDto.builder()
                     .assetNo(asset.getAssetNo())
                     .assetClassification(asset.getAssetClassification())
@@ -206,6 +225,9 @@ public class DemandService {
                     .usestate(asset.getUseState())
                     .acquisitionRoute(asset.getAcquisitionRoute())
                     .maintenancePeriod(asset.getMaintenancePeriod())
+                    .assetOwner(assetOwnerFullname)
+                    .assetUser(assetUserFullname)
+                    .assetSecurityManager(assetSecurityManagerFullname)
                     .build(); // 공통필드 builder 하고
 
             // classification에 따라 추가 엔티티 정보를 조회

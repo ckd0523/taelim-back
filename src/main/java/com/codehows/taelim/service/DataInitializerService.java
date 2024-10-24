@@ -224,9 +224,9 @@ public class DataInitializerService {
                 // Department을 순환하여 설정
                 Department department = Department.values()[i % Department.values().length];
                 asset.setDepartment(department);
-                asset.setAssetUser("member");
-                asset.setAssetOwner("member");
-                asset.setAssetSecurityManager("member");
+                asset.setAssetUser("1");
+                asset.setAssetOwner("2");
+                asset.setAssetSecurityManager("3");
                 // OperationStatus을 순환하여 설정
                 OperationStatus operationStatus = OperationStatus.values()[i % OperationStatus.values().length];
                 asset.setOperationStatus(operationStatus);

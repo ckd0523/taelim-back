@@ -62,9 +62,9 @@ public class CommonAssetDto {
                 .quantity(this.quantity)
                 .department(this.department)
                 .assetLocation(this.assetLocation)
-                .assetUser(assetUser)
-                .assetOwner(assetOwner)
-                .assetSecurityManager(assetSecurityManager)
+                .assetUser(this.assetUser)
+                .assetOwner(this.assetOwner)
+                .assetSecurityManager(this.assetSecurityManager)
                 .operationStatus(this.operationStatus)
                 .introducedDate(this.introducedDate)
                 .confidentiality(this.confidentiality)
@@ -104,9 +104,9 @@ public class CommonAssetDto {
                 entity.getQuantity(),
                 entity.getDepartment(),
                 entity.getAssetLocation(),
-                entity.getAssetUser() != null ? entity.getAssetUser() : null,
-                entity.getAssetOwner() != null ? entity.getAssetOwner() : null,
-                entity.getAssetSecurityManager() != null ? entity.getAssetSecurityManager() : null,
+                entity.getAssetUser(),
+                entity.getAssetOwner(),
+                entity.getAssetSecurityManager(),
                 entity.getOperationStatus(),
                 entity.getIntroducedDate(),
                 entity.getConfidentiality(),
