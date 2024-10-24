@@ -17,6 +17,7 @@ public class EmailServcie {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
+        helper.setFrom("태림 메일");  // 보내는 사람 설정
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(body, true);

@@ -5,11 +5,8 @@ import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Demand;
 import com.codehows.taelim.repository.CommonAssetRepository;
-import com.codehows.taelim.service.AssetFinalService;
-import com.codehows.taelim.service.AssetService;
+import com.codehows.taelim.service.*;
 //import com.codehows.taelim.service.QRService;
-import com.codehows.taelim.service.RegisterService;
-import com.codehows.taelim.service.UpdateService;
 import com.google.zxing.WriterException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,6 +40,7 @@ public class QRController {
     private final RegisterService registerService;
     private final AssetFinalService assetFinalService;
     private final CommonAssetRepository commonAssetRepository;
+    //private final EmailServcie emailServcie;
 
     //QR 생성하는곳
 //    @PostMapping("/generateQRCode")
@@ -209,7 +207,7 @@ public class QRController {
                     updateToSend.setAssetNo(assetDto.getAssetNo());
                     Long newAssetNo = registerService.allUpdate(updateToSend, demand);
                 }
-
+                //emailServcie.sendEmail("","", "" );
                 return ResponseEntity.ok("자산 수정 등록완료");
             } catch (Exception e) {
                 // 예외 메시지 로깅
