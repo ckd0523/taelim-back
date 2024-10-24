@@ -40,6 +40,7 @@ public class QRController {
     private final RegisterService registerService;
     private final AssetFinalService assetFinalService;
     private final CommonAssetRepository commonAssetRepository;
+    private final DemandService demandService;
     //private final EmailServcie emailServcie;
 
     //QR 생성하는곳
@@ -206,6 +207,9 @@ public class QRController {
                     updateToSend.setAssetDto(assetDto);
                     updateToSend.setAssetNo(assetDto.getAssetNo());
                     Long newAssetNo = registerService.allUpdate(updateToSend, demand);
+                    System.out.println("디버그 : " + assetDto.getAssetCode() +"디버그 2 : "+ assetDto.getAssetNo());
+                    demandService.beforeDemand(assetDto.getAssetCode(), newAssetNo);
+
                 }
                 //emailServcie.sendEmail("","", "" );
                 return ResponseEntity.ok("자산 수정 등록완료");
@@ -260,6 +264,8 @@ public class QRController {
                 disposeToSend.setAssetDto(assetDto);
                 disposeToSend.setAssetNo(assetDto.getAssetNo());
                 Long newAssetNo = registerService.allDelete(disposeToSend, demand);
+
+                demandService.beforeDemand(assetDto.getAssetCode(), newAssetNo);
             }
             return ResponseEntity.ok("자산 폐기 등록완료");
         } catch (Exception e) {
