@@ -67,6 +67,7 @@ public class WebSecurityConfig {
                             .requestMatchers("/allUpdateDemand").hasRole("ASSET_MANAGER")
                             .requestMatchers("/allDelete").hasRole("ADMIN")
                             .requestMatchers("/allDeleteDemand").hasRole("ASSET_MANAGER")
+                            .requestMatchers("/asset1/").hasAnyRole("ADMIN", "ASSET_MANAGER", "USER")
                             //asset excel은 아직 하고 있음
                             //AmountSetController
                             .requestMatchers("/getAmountSet").hasRole("ADMIN")
