@@ -53,14 +53,25 @@ public class AssetService {
         CommonAssetDto assetDto = new CommonAssetDto();
         Optional<CommonAsset> commonAssetObj = commonAssetRepository.findLatestApprovedAsset(assetCode);
         CommonAsset commonAsset = commonAssetObj.get();
+        String assetOwnerFullname = userService.getUserById(commonAsset.getAssetOwner()) != null
+                ? userService.getUserById(commonAsset.getAssetOwner()).getFullname()
+                : "Unknown Owner";
+
+        String assetUserFullname = userService.getUserById(commonAsset.getAssetUser()) != null
+                ? userService.getUserById(commonAsset.getAssetUser()).getFullname()
+                : "Unknown User";
+
+        String assetSecurityManagerFullname = userService.getUserById(commonAsset.getAssetSecurityManager()) != null
+                ? userService.getUserById(commonAsset.getAssetSecurityManager()).getFullname()
+                : "Unknown Security Manager";
         assetDto.setAssetNo(commonAsset.getAssetNo());
         assetDto.setAssetBasis(commonAsset.getAssetBasis());
         assetDto.setAssetCode(commonAsset.getAssetCode());
         assetDto.setAssetClassification(commonAsset.getAssetClassification());
         assetDto.setAssetName(commonAsset.getAssetName());
-        assetDto.setAssetOwner(userService.getUserById(commonAsset.getAssetOwner()).getFullname());
-        assetDto.setAssetUser(userService.getUserById(commonAsset.getAssetUser()).getFullname());
-        assetDto.setAssetSecurityManager(userService.getUserById(commonAsset.getAssetSecurityManager()).getFullname());
+        assetDto.setAssetOwner(assetOwnerFullname);
+        assetDto.setAssetUser(assetUserFullname);
+        assetDto.setAssetSecurityManager(assetSecurityManagerFullname);
         assetDto.setManufacturingCompany(commonAsset.getManufacturingCompany());
         assetDto.setPurpose(commonAsset.getPurpose());
         assetDto.setDepartment(commonAsset.getDepartment());
