@@ -17,7 +17,8 @@ public class CrawlingService {
 
         List<ProductDto> productDTOList = new ArrayList<>();
         try {
-            String url = "https://prod.danawa.com/list/?cate=112758";
+//            String url = "https://prod.danawa.com/list/?cate=112758";
+            String url = "https://prod.danawa.com/list/?cate=15237574";
             Document doc = Jsoup.connect(url).get();
             System.out.println("Page title : " + doc.title());
 

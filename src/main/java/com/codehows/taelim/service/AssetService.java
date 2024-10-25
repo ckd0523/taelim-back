@@ -268,7 +268,7 @@ public class AssetService {
                     surveyHistoryDto.setAssetSurveyLocation(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyLocation());
                     surveyHistoryDto.setAssetSurveyStartDate(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyStartDate());
                     surveyHistoryDto.setAssetSurveyEndDate(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyEndDate());
-                    surveyHistoryDto.setAssetSurveyBy(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyBy().getUName());
+                    surveyHistoryDto.setAssetSurveyBy(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyBy());
                     surveyHistoryDto.setExactLocation(assetSurveyDetail.getExactLocation());
                     surveyHistoryDto.setAssetStatus(assetSurveyDetail.getAssetStatus());
                     surveyHistoryDto.setAssetSurveyContent(assetSurveyDetail.getAssetSurveyContent());
