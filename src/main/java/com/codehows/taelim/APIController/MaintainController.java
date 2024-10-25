@@ -114,7 +114,7 @@ public class MaintainController {
     }
 
 
-    @GetMapping(value = "/{fileName}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
+    @GetMapping(value = "/img/{fileName}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE})
     public Resource getImage(@PathVariable("fileName") String fileName) {
         Resource resource;
         resource = fileService.getImage(fileName);
