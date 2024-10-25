@@ -341,6 +341,9 @@ public class AssetService {
         assetDto.setAssetCode(commonAsset.getAssetCode());
         assetDto.setAssetClassification(commonAsset.getAssetClassification());
         assetDto.setAssetName(commonAsset.getAssetName());
+        assetDto.setAssetOwner(userService.getUserById(commonAsset.getAssetOwner()).getFullname());
+        assetDto.setAssetUser(userService.getUserById(commonAsset.getAssetUser()).getFullname());
+        assetDto.setAssetSecurityManager(userService.getUserById(commonAsset.getAssetSecurityManager()).getFullname());
         assetDto.setManufacturingCompany(commonAsset.getManufacturingCompany());
         assetDto.setPurpose(commonAsset.getPurpose());
         assetDto.setDepartment(commonAsset.getDepartment());
@@ -369,6 +372,7 @@ public class AssetService {
         assetDto.setApproval(commonAsset.getApproval());
         assetDto.setDemandCheck(commonAsset.getDemandCheck());
         assetDto.setCreateDate(commonAsset.getCreateDate());
+
         AssetClassification AssetClassification = commonAsset.getAssetClassification();
         switch (AssetClassification) {
             case SOFTWARE -> {
