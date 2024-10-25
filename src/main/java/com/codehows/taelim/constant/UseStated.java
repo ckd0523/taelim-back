@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 //사용상태
-public enum UseState {
+public enum UseStated {
 
     NEW("신규"),
     IN_USE("사용중"),
@@ -17,7 +17,7 @@ public enum UseState {
     RETIRED_DISCARDED("퇴직/폐기");
     private String description;
 
-    UseState(String description) {
+    UseStated(String description) {
         this.description = description;
     }
 
@@ -27,14 +27,14 @@ public enum UseState {
     }
 
     @JsonCreator
-    public static UseState from(String value){
-        for(UseState useState : UseState.values()) {
+    public static UseStated from(String value){
+        for(UseStated useState : UseStated.values()) {
             if(useState.description.equals(value)) {
                 return useState;
             }
         }
         try {
-            return UseState.valueOf(value);
+            return UseStated.valueOf(value);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("잘못된 값: " + value);
         }

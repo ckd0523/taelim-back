@@ -62,12 +62,11 @@ public class AssetFinalService {
     // 자산 상세 조회 - 이걸로 리스트 검색쿼리 + pageNation 까지 해보기
     public PaginatedResponse<AssetDto> getAssetSearch(
             String assetName,
-            String assetLocationString,
             AssetLocation assetLocationEnum,
-            String assetUserId,
-            String departmentString,
+            String assetUser,
             Department departmentEnum,
-            LocalDate introducedDate,
+            LocalDate startDate, // 검색 범위 시작 날짜
+            LocalDate endDate,   // 검색 범위 종료 날짜
             AssetClassification assetClassification,  // 추가된 assetClassification 파라미터
             int page,
             int size) {
@@ -76,17 +75,17 @@ public class AssetFinalService {
         Pageable pageable = PageRequest.of(page, size);
 
         Page<CommonAsset> assetPage;
+
         // assetClassification이 null인지 체크
         if (assetClassification == null) {
             // 전체 자산 조회 로직
             assetPage = commonAssetRepository.findApprovedAndNotDisposedAssetsWithSearch(
                     assetName,
-                    assetLocationString,
-                    assetLocationEnum,
-                    assetUserId,
-                    departmentString,
+                    assetLocationEnum, // assetLocationString 제거
+                    assetUser,
                     departmentEnum,
-                    introducedDate,
+                    startDate, // 검색 범위 시작 날짜
+                    endDate,   // 검색 범위 종료 날짜
                     null, // assetClassification을 null로 설정
                     pageable
             );
@@ -94,12 +93,11 @@ public class AssetFinalService {
             // 분류별 자산 조회 로직
             assetPage = commonAssetRepository.findApprovedAndNotDisposedAssetsWithSearch(
                     assetName,
-                    assetLocationString,
-                    assetLocationEnum,
-                    assetUserId,
-                    departmentString,
+                    assetLocationEnum, // assetLocationString 제거
+                    assetUser,
                     departmentEnum,
-                    introducedDate,
+                    startDate, // 검색 범위 시작 날짜
+                    endDate,   // 검색 범위 종료 날짜
                     assetClassification, // 분류 정보 전달
                     pageable
             );
@@ -121,14 +119,19 @@ public class AssetFinalService {
             assetDto.setAssetLocation(commonAsset.getAssetLocation());
 
             // assetUser, assetOwner, assetSecurityManager가 null일 경우 처리
-            assetDto.setAssetUser(userService.getUserById(commonAsset.getAssetUser()).getFullname() != null ? userService.getUserById(commonAsset.getAssetUser()).getFullname() : "Unknown User");
-            assetDto.setAssetOwner(userService.getUserById(commonAsset.getAssetOwner()).getFullname() != null ? userService.getUserById(commonAsset.getAssetOwner()).getFullname() : "Unknown Owner");
-            assetDto.setAssetSecurityManager(userService.getUserById(commonAsset.getAssetSecurityManager()).getFullname() != null ? userService.getUserById(commonAsset.getAssetSecurityManager()).getFullname() : "Unknown Manager");
+            UserDto userAsset  = userService.getUserById(commonAsset.getAssetUser());
+            assetDto.setAssetUser(userAsset  != null ? userAsset.getFullname() : "Unknown User");
+
+            UserDto assetOwner = userService.getUserById(commonAsset.getAssetOwner());
+            assetDto.setAssetOwner(assetOwner != null ? assetOwner.getFullname() : "Unknown Owner");
+
+            UserDto assetSecurityManager = userService.getUserById(commonAsset.getAssetSecurityManager());
+            assetDto.setAssetSecurityManager(assetSecurityManager != null ? assetSecurityManager.getFullname() : "Unknown Manager");
             assetDto.setAssetUserId(commonAsset.getAssetUser());  // ID 값 저장
             assetDto.setAssetOwnerId(commonAsset.getAssetOwner());  // ID 값 저장
             assetDto.setAssetSecurityManagerId(commonAsset.getAssetSecurityManager());  // ID 값 저장
 
-            assetDto.setUsestate(commonAsset.getUseState());
+            assetDto.setUseStated(commonAsset.getUseStated());
             assetDto.setOperationStatus(commonAsset.getOperationStatus());
             assetDto.setIntroducedDate(commonAsset.getIntroducedDate());
             assetDto.setQuantity(commonAsset.getQuantity());
@@ -396,6 +399,10 @@ public class AssetFinalService {
 
             // 병합 셀 생성 및 제목 설정
             mergeCellsAndSetTitle(sheet);
+
+            // 정보자산 중요성 등급 테이블 추가
+            addImportanceGradeInfo(sheet);
+
             // 헤더 생성
             createHeaderRow(sheet, classification); // 분류 전달
 
@@ -488,7 +495,7 @@ public class AssetFinalService {
 //        row.createCell(8).setCellValue(asset.getAssetUser().getUName());
 //        row.createCell(9).setCellValue(asset.getAssetOwner().getUName());
 //        row.createCell(10).setCellValue(asset.getAssetSecurityManager().getUName());
-        row.createCell(11).setCellValue(asset.getUseState().getDescription());
+        row.createCell(11).setCellValue(asset.getUseStated().getDescription());
         row.createCell(12).setCellValue(asset.getOperationStatus().getDescription());
         row.createCell(13).setCellValue(asset.getIntroducedDate().format(formatter));
 
@@ -663,9 +670,10 @@ public class AssetFinalService {
     
     // 일단 셀병합 부터 빼기
     private void mergeCellsAndSetTitle(Sheet sheet) {
+
         Row titleRow = sheet.createRow(7);  // 7번째 행 생성
 
-        // 각 병합 셀에 값 설정
+        // 기존 병합 셀들
         Cell titleCell = titleRow.createCell(0);  // 첫 번째 셀
         titleCell.setCellValue("필수입력사항");
 
@@ -687,7 +695,18 @@ public class AssetFinalService {
         titleCell.setCellStyle(titleStyle);
         titleCell1.setCellStyle(titleStyle);
         titleCell2.setCellStyle(titleStyle);
+
+        // 새로운 병합 셀 (D2-R5 범위)
+        Cell mergedTitleCell = sheet.createRow(1).createCell(3);  // D2 위치에 셀 생성
+        mergedTitleCell.setCellValue("정보자산 목록 및 중요성 평가");
+
+        // 셀 병합 : D2-R5 병합
+        sheet.addMergedRegion(new CellRangeAddress(1, 4, 3, 17));  // D2-R5 범위 병합
+
+        // 병합된 셀에 동일한 스타일 적용
+        mergedTitleCell.setCellStyle(titleStyle);
     }
+
 
     private CellStyle createTitleStyle(Sheet sheet) {
         Workbook workbook = sheet.getWorkbook();
@@ -717,12 +736,66 @@ public class AssetFinalService {
         Workbook workbook = row.getSheet().getWorkbook();
         Font font = workbook.createFont();
         font.setBold(true);
+        font.setFontHeightInPoints((short) 9); // 폰트 크기 9
+        font.setFontName("맑은 고딕"); // 폰트 "맑은 고딕"
 
         CellStyle style = workbook.createCellStyle();
         style.setFont(font);
 
+        // 배경 색상 설정 (RGB 217, 217, 217)
+        XSSFColor backgroundColor = new XSSFColor(new java.awt.Color(217, 217, 217), null);
+        ((XSSFCellStyle) style).setFillForegroundColor(backgroundColor);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND); // 배경색 채우기
+
+        // 가운데 정렬 추가
+        style.setAlignment(HorizontalAlignment.CENTER); // 가로 방향 가운데 정렬
+        style.setVerticalAlignment(VerticalAlignment.CENTER); // 세로 방향 가운데 정렬
+
         cell.setCellStyle(style);
+        // 기본 행 높이 설정 (엑셀 기준 30포인트)
+        row.setHeightInPoints(30);
+
     }
+
+    private void addImportanceGradeInfo(Sheet sheet) {
+        // 정보자산 중요성 등급 설정
+        Row row2 = sheet.createRow(1);
+        Cell cellS2 = row2.createCell(18);
+        cellS2.setCellValue("※정보자산 중요성 등급");
+
+        // S3~T6에 점수, 등급 입력
+        String[][] gradeData = {
+                {"점수", "등급"},
+                {"7 ~ 9 점", "A 급"},
+                {"5 ~ 6 점", "B 급"},
+                {"3 ~ 4 점", "C 급"}
+        };
+
+        // 폰트 스타일 생성 (맑은 고딕, 사이즈 8)
+        Font font = sheet.getWorkbook().createFont();
+        font.setFontName("맑은 고딕");
+        font.setFontHeightInPoints((short) 8);
+
+        // 셀 스타일 생성
+        CellStyle style = sheet.getWorkbook().createCellStyle();
+        style.setFont(font);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setAlignment(HorizontalAlignment.CENTER); // 가로 방향 가운데 정렬
+        style.setVerticalAlignment(VerticalAlignment.CENTER); // 세로 방향 가운데 정렬
+
+        for (int i = 0; i < gradeData.length; i++) {
+            Row row = sheet.createRow(2 + i);
+            for (int j = 0; j < gradeData[i].length; j++) {
+                Cell cell = row.createCell(18 + j); // S 열은 18번째, T 열은 19번째
+                cell.setCellValue(gradeData[i][j]);
+                cell.setCellStyle(style); // 스타일 적용
+            }
+        }
+    }
+
 
     public List<CommonAsset> listAssetByExcel(AssetClassification assetClassification) {
         // 자산 분류가 null인지 확인하고 기본값 또는 예외 처리 추가
@@ -824,7 +897,7 @@ public class AssetFinalService {
                     .depreciationMethod(asset.getDepreciationMethod())
                     .purchaseSource(asset.getPurchaseSource())
                     .contactInformation(asset.getContactInformation())
-                    .usestate(asset.getUseState())
+                    .useStated(asset.getUseStated())
                     .acquisitionRoute(asset.getAcquisitionRoute())
                     .maintenancePeriod(asset.getMaintenancePeriod())
                     .build(); // 공통필드 builder 하고

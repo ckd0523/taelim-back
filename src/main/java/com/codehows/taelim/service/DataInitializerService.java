@@ -45,131 +45,21 @@ public class DataInitializerService {
     private final UserService userService;
     private final AspNetUserRepository aspNetUserRepository;
 
-    // @Transactional
-    // public void insertDummyData() {
-        
-
-    //     //두 번째 DB 테스트
-    //     TestMember testMember = new TestMember();
-    //     testMember.toEntity("user1@example.com", "1234" ,
-    //             "testUser1", Department.IT_DEPARTMENT, Role.ADMIN);
-    //     testMemberRepository.save(testMember);
-
-        //두 번째 DB 로그인을 위한 유저 등록 테스트2
-        // TestMember testMember2 = new TestMember();
-        // String hashedPassword = null;
-        // try {
-        //     hashedPassword = passwordHasher2.hashPasswordV3("taelim");
-        // } catch (Exception e) {
-        //     throw new RuntimeException(e);
-        // }
-        // testMember2.toEntity("taelim@taelim.com", hashedPassword, "전찬용", Department.IT_DEPARTMENT.toString(), Role.ADMIN.toString(), true);
-        // testMemberRepository.save(testMember2);
-
-        // //두 번째 DB 로그인을 위한 유저 등록 테스트3
-        // TestMember testMember3 = new TestMember();
-        // String hashedPassword3 = null;
-        // try {
-        //     hashedPassword3 = passwordHasher2.hashPasswordV3("taelim123");
-        // } catch (Exception e) {
-        //     throw new RuntimeException(e);
-        // }
-        // testMember3.toEntity("taelim123@taelim.com", hashedPassword3, "이창현", Department.IT_DEPARTMENT.toString(), Role.ASSET_MANAGER.toString(), false);
-        // testMemberRepository.save(testMember3);
-
-
-    //     // Member 데이터 삽입
-    //     for (int i = 1; i <= 40; i++) {
-    //         Member member = new Member();
-    //         member.setEmail("user" + i + "@example.com");
-    //         member.setPassword("password" + i);
-    //         member.setUName("User Name " + i);
-    //         member.setRole(i % 10 == 0 ? Role.ADMIN : (i % 2 == 0 ? Role.ASSET_MANAGER : Role.USER));
-    //         memberRepository.save(member);
-    //     }
-
-    //     // CommonAsset 첫번째 데이터 삽입
-    //     for (int i = 1; i <= 40; i++) {
-
-    //         Member member = new Member();
-    //         member.setEmail("user" + i + "@example.com");
-    //         member.setPassword("password" + i);
-    //         member.setUName("User Name " + i);
-    //         member.setRole(Role.USER);
-
-    //         CommonAsset asset = new CommonAsset();
-    //         if (i <= 5) {
-    //             asset.setAssetClassification(AssetClassification.SOFTWARE);
-    //         }else {
-    //             asset.setAssetClassification(AssetClassification.FURNITURE);
-    //         }
-    //         asset.setAssetBasis(AssetBasis.COMMON);
-    //         asset.setAssetCode(String.format("ASSET%03d", i));
-    //         asset.setAssetName("Asset " + i);
-    //         asset.setPurpose("Test Purpose");
-    //         asset.setQuantity(1L);
-    //         asset.setDepartment(Department.IT_DEPARTMENT);
-    //         asset.setAssetLocation(AssetLocation.MAIN_1F);
-    //         asset.setAssetUser(member);
-    //         asset.setAssetOwner(member);
-    //         asset.setAssetSecurityManager(member);
-    //         asset.setOperationStatus(OperationStatus.OPERATING);
-    //         asset.setIntroducedDate(LocalDate.now());
-    //         asset.setConfidentiality(1);
-    //         asset.setIntegrity(1);
-    //         asset.setAvailability(1);
-    //         asset.setNote("Test Note");
-    //         asset.setManufacturingCompany("Test Manufacturing Company");
-    //         asset.setOwnership(Ownership.OWNED);
-    //         asset.setPurchaseCost(5000L);
-    //         asset.setPurchaseDate(LocalDate.now());
-    //         asset.setUsefulLife(5L);
-    //         asset.setDepreciationMethod(DepreciationMethod.FIXED_RATE);
-    //         asset.setWarrantyDetails("Test Warranty Details");
-    //         asset.setAttachment("Test Attachment");
-    //         asset.setPurchaseSource("Test Purchase Source");
-    //         asset.setContactInformation("010-0000-0000");
-    //         asset.setDisposalStatus(Boolean.FALSE);
-    //         asset.setDemandStatus(Boolean.FALSE);
-    //         asset.setApproval(Approval.APPROVE);
-    //         asset.setDemandCheck(Boolean.FALSE);
-    //         asset.setCreateDate(LocalDate.now());
-    //         asset.setUseState(UseState.IN_USE);
-    //         asset.setAcquisitionRoute("Test Acquisition Route");
-    //         asset.setMaintenancePeriod(LocalDate.now());
-    //         // 기타 필드 설정
-    //         commonAssetRepository.save(asset);
-    //         if(i<=5) {
-    //             Software software = new Software();
-    //             software.setAssetNo(asset);
-    //             software.setIp("192.168.1." + i);
-    //             software.setServerId("server" + String.format("%02d", i));
-    //             software.setServerPassword("pass" + i);
-    //             software.setCompanyManager("Manager " + i);
-    //             software.setOs("Windows Server 2022");
-    //             softwareRepository.save(software);
-    //         } else {
-    //             Furniture furniture = new Furniture();
-    //             furniture.setAssetNo(asset);
-    //             furniture.setFurnitureSize("500");
-    //             furnitureRepository.save(furniture);
-    //         }
-    //     }
 
         @Transactional
         public void insertDummyData() {
             //자산 기준 금액 설정 초기값 설정
             amountSetRepository.insertAmountSet(0L, 0L);
             // UserDto를 DB에서 가져오는 서비스 메서드
-            // Member 데이터 삽입
-            for (int i = 1; i <= 195; i++) {
-                Member member = new Member();
-                member.setEmail("user" + i + "@example.com");
-                member.setPassword("password" + i);
-                member.setUName("User Name " + i);
-                member.setRole(i % 10 == 0 ? Role.ROLE_ADMIN : (i % 2 == 0 ? Role.ROLE_ASSET_MANAGER : Role.ROLE_USER));
-                memberRepository.save(member);
-            }
+//            // Member 데이터 삽입
+//            for (int i = 1; i <= 195; i++) {
+//                Member member = new Member();
+//                member.setEmail("user" + i + "@example.com");
+//                member.setPassword("password" + i);
+//                member.setUName("User Name " + i);
+//                member.setRole(i % 10 == 0 ? Role.ROLE_ADMIN : (i % 2 == 0 ? Role.ROLE_ASSET_MANAGER : Role.ROLE_USER));
+//                memberRepository.save(member);
+//            }
             // 자산 분류 항목
             AssetClassification[] classifications = AssetClassification.values();
             int classificationIndex = 0;  // 분류 인덱스
@@ -178,17 +68,14 @@ public class DataInitializerService {
             // AspNetUser 데이터를 DB에서 가져옴
             List<AspNetUser> userList = aspNetUserRepository.findAll();  // AspNetUser 엔티티를 모두 조회
 
+            // 2024년 10월 1일부터 31일까지의 날짜 범위
+            LocalDate startDate = LocalDate.of(2024, 10, 1);
+            LocalDate endDate = LocalDate.of(2024, 10, 31);
+
             // CommonAsset 첫번째 데이터 삽입
             for (int i = 1; i <= 195; i++) {
 
-//                Member member = new Member();
-//                member.setEmail("user" + i + "@example.com");
-//                member.setPassword("password" + i);
-//                member.setUName("User Name " + i);
-//                member.setRole(Role.USER);
-
                 CommonAsset asset = new CommonAsset();
-
                 // 자산 분류는 총 13개, 이를 15개씩 순환하며 할당
                 AssetClassification classification = classifications[(i - 1) / 15];
                 String assetCode = registerService.generateAssetCode(classification);
@@ -242,7 +129,10 @@ public class DataInitializerService {
                 // OperationStatus을 순환하여 설정
                 OperationStatus operationStatus = OperationStatus.values()[i % OperationStatus.values().length];
                 asset.setOperationStatus(operationStatus);
-                asset.setIntroducedDate(LocalDate.now());
+
+                // 2024년 10월 1일부터 31일까지의 날짜 순환 설정
+                LocalDate introducedDate = startDate.plusDays((i - 1) % 31); // 0부터 30까지 순환
+                asset.setIntroducedDate(introducedDate);
                 asset.setConfidentiality(1);
                 asset.setIntegrity(1);
                 asset.setAvailability(1);
@@ -266,7 +156,7 @@ public class DataInitializerService {
                 asset.setApproval(Approval.APPROVE);
                 asset.setDemandCheck(Boolean.FALSE);
                 asset.setCreateDate(LocalDate.now());
-                asset.setUseState(UseState.IN_USE);
+                asset.setUseStated(UseStated.IN_USE);
                 asset.setAcquisitionRoute("Test Acquisition Route");
                 asset.setMaintenancePeriod(LocalDate.now());
                 asset.setProductSerialNumber("Serial" + i);  // 더미 데이터 반영

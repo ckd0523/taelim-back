@@ -12,6 +12,9 @@ import java.util.Optional;
 public interface AspNetUserRepository extends JpaRepository<AspNetUser, String> {
     Optional<AspNetUser> findByUsername(String email);
 
+    //자산 조회에서 사용자를 위한 검색 조건에 필요한거
+    List<AspNetUser> findByFullnameContaining(String fullname);
+
     
     
 

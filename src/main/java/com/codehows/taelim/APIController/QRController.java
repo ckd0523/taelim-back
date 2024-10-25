@@ -35,7 +35,7 @@ import java.util.zip.ZipOutputStream;
 @RestController
 public class QRController {
 
-//    private final QRService qrCodeService;
+//  private final QRService qrCodeService;
     private final UpdateService updateService;
     private final RegisterService registerService;
     private final AssetFinalService assetFinalService;
@@ -60,118 +60,61 @@ public class QRController {
 //    }
 
     private final AssetService assetService;
-    
-    //목록 조회
-    @GetMapping("/assets/approved-not-disposed")
-    public List<AssetDto> getApprovedAndNotDisposedAssets() {
-        return assetService.getApprovedAndNotDisposedAssets();
+
+    @PostMapping("/dispose/{assetCode}")
+    public ResponseEntity<CommonAsset> disposeAsset (@PathVariable("assetCode") String assetCode){
+        assetService.DisposeApprove(assetCode);
+        return ResponseEntity.ok().build();
     }
 
-    //상세조회 (공통 칼럼)
-    @GetMapping("/assets/{assetCode}")
-    public CommonAssetDto getCommonAsset(@PathVariable("assetCode") String assetCode) {
-        CommonAsset commonAsset = assetService.getCommonAsset(assetCode).orElse(null);
-        CommonAssetDto commonAssetDto = new CommonAssetDto();
-        commonAssetDto.setAssetCode(assetCode);
-        commonAssetDto.setAssetName(commonAsset.getAssetName());
-        commonAssetDto.setAssetBasis(commonAsset.getAssetBasis());
-        commonAssetDto.setAssetClassification(commonAsset.getAssetClassification());
-        commonAssetDto.setAssetNo(commonAsset.getAssetNo());
-        return commonAssetDto;
-    }
-
-
-//    //상세조회 (공통 및 서브 칼럼)
-//    @GetMapping("/asset/{assetCode}")
-//    public Map<String, Object> getAssetDetail(@PathVariable("assetCode") String assetCode) {
-//        return assetService.getAssetDetail(assetCode);
-//    }
-
-    //상세조회 (공통 및 서브 칼럼)
-    @GetMapping("/asset/{assetCode}")
-    public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
-        return assetService.getAssetDetail(assetCode);
-    }
-
-        //상세조회 (공통 및 서브 칼럼)
-        //@GetMapping("/asset/{assetCode}")
-        // public AssetDto getAssetDetail(@PathVariable("assetCode") String assetCode) {
-        //    return assetService.getAssetDetail(assetCode);
-        //}
-
-        //상세조회 (공통 및 서브 칼럼) QR조회 화면
-        @GetMapping("/asset1/{assetCode}")
-        public Map<String, Object> getAssetDetail2 (@PathVariable("assetCode") String assetCode){
-            return assetService.getAssetDetail2(assetCode);
-
+    // 자산조회 : 휴지통 - 자산 폐기 동작 (자산 하나 폐기) - ADMIN 권한임 (권)
+    @PostMapping("/disposeAsset/{assetCode}")
+    public ResponseEntity<AssetUpdateResponse> disposeitem (
+            @PathVariable("assetCode") String assetCode, @RequestBody AssetDisposeDto assetDisposeDto) {
+        try {
+            AssetUpdateResponse response = assetFinalService.DisposeAsset(assetCode, assetDisposeDto);
+            // 성공적인 응답을 위해 200 OK 상태 반환
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            // 오류 발생 시 400 Bad Request 상태 반환
+            return ResponseEntity.badRequest().body(new AssetUpdateResponse(e.getMessage(), null));
         }
+    }
 
-    //상세조회 (공통 및 서브 칼럼)
-    @GetMapping("/test/{assetNo}")
-    public CommonAsset getAssetDetail3 (@PathVariable("assetNo") Long assetNo){
-        CommonAssetDto commonAssetDto = CommonAssetDto.fromEntity(commonAssetRepository.findById(assetNo).orElseThrow());
-        commonAssetDto.setAssetNo(null);
-        CommonAsset commonAsset = commonAssetDto.toEntity(commonAssetDto);
-        CommonAsset commonAsset1 = commonAssetRepository.save(commonAsset);
-        return commonAsset1;
+    // 자산조회 : 휴지통 - 자산 폐기 요청 동작 (자산 하나 폐기) - AssetManager 자산담당자가 폐기 요청 (권)
+    @PostMapping("/disposeDemand/{assetCode}")
+    public ResponseEntity<CommonAsset> disposedemand1 (
+            @PathVariable("assetCode") String assetCode, @RequestBody AssetDisposeDto assetDisposeDto ){
+        registerService.DisposeDemand(assetCode, assetDisposeDto);
+        return ResponseEntity.ok().build();
+    }
+
+    //상세조회 (공통 및 서브 칼럼) QR조회 화면
+    @GetMapping("/asset1/{assetCode}")
+    public Map<String, Object> getAssetDetail2 (@PathVariable("assetCode") String assetCode){
+         return assetService.getAssetDetail2(assetCode);
 
     }
 
-//    //상세조회 (공통 및 서브 칼럼)
-//    @GetMapping("/asset/{assetCode}")
-//    public Map<String, Object> getAssetDetail2(@PathVariable("assetCode") String assetCode) {
-//        return assetService.getAssetDetail2(assetCode);
-//    }
+    // 자산 이력 - 폐기이력 테이블 - List 불러오기 (권)
+    @GetMapping("/deleteHistory")
+    public List<DeleteHistoryDto> getDeleteHistory () {
+        return assetFinalService.getDeleteHistory();
+    }
 
-        @PostMapping("/dispose/{assetCode}")
-        public ResponseEntity<CommonAsset> disposeAsset (@PathVariable("assetCode") String assetCode){
-            assetService.DisposeApprove(assetCode);
-            return ResponseEntity.ok().build();
-        }
+    // 자산 이력 - 수정이력 테이블 - List 불러오기 (권)
+    @GetMapping("/updateHistory")
+    public List<UpdateHistoryDto> getUpDateHistory() {
+        return assetFinalService.getUpDateHistory();
+    }
 
-
-        // 자산관리자가 폐기
-        @PostMapping("/disposeAsset/{assetCode}")
-        public ResponseEntity<AssetUpdateResponse> disposeitem (
-                @PathVariable("assetCode") String assetCode,
-                @RequestBody AssetDisposeDto assetDisposeDto) {
-            try {
-                AssetUpdateResponse response = assetFinalService.DisposeAsset(assetCode, assetDisposeDto);
-                // 성공적인 응답을 위해 200 OK 상태 반환
-                return ResponseEntity.ok(response);
-            } catch (RuntimeException e) {
-                // 오류 발생 시 400 Bad Request 상태 반환
-                return ResponseEntity.badRequest().body(new AssetUpdateResponse(e.getMessage(), null));
-            }
-        }
-
-        // 자산담당자가 폐기 요청
-        @PostMapping("/disposeDemand/{assetCode}")
-        public ResponseEntity<CommonAsset> disposedemand1 (@PathVariable("assetCode") String
-        assetCode, @RequestBody AssetDisposeDto assetDisposeDto ){
-            registerService.DisposeDemand(assetCode, assetDisposeDto);
-            return ResponseEntity.ok().build();
-        }
-
-        // 폐기이력 불러오기
-        @GetMapping("/deleteHistory")
-        public List<DeleteHistoryDto> getDeleteHistory () {
-            return assetFinalService.getDeleteHistory();
-        }
-
-        // 수정이력 불러오기
-        @GetMapping("/updateHistory")
-        public List<UpdateHistoryDto> getUpDateHistory() {
-            return assetFinalService.getUpDateHistory();
-        }
-
-        // 자산 상세화면 가져오기
-        @GetMapping("/list/{assetNo}")
-        public ResponseEntity<List<AssetDto>> getAssetList(@PathVariable Long assetNo) {
-            System.out.println("Requested assetNo: " + assetNo); // 로그 추가
-            List<AssetDto> assets = assetFinalService.getLatestAndPreviousAssets(assetNo);
-            return ResponseEntity.ok(assets);
-        }
+    // 수정 이력 - 테이블 선택 시 - 모달창에 관한 수정 전, 수정 후 (approve) 내용 가져오기 (권)
+    @GetMapping("/list/{assetNo}")
+    public ResponseEntity<List<AssetDto>> getAssetList(@PathVariable Long assetNo) {
+        System.out.println("Requested assetNo: " + assetNo); // 로그 추가
+        List<AssetDto> assets = assetFinalService.getLatestAndPreviousAssets(assetNo);
+        return ResponseEntity.ok(assets);
+    }
 
     // 자산 상세화면 가져오기(요청 버전)
     @GetMapping("/list1/{assetNo}")
@@ -189,10 +132,10 @@ public class QRController {
         return ResponseEntity.ok(assets);
     }
 
-        @PostMapping("/allUpdate")
-        public ResponseEntity<String> allUpdate(@RequestBody AllUpdateDto updateToSend){
-            try {
-                List<AssetUpdateDto> assetDtos = updateToSend.getAssetDtos();
+    @PostMapping("/allUpdate")
+    public ResponseEntity<String> allUpdate(@RequestBody AllUpdateDto updateToSend){
+        try {
+            List<AssetUpdateDto> assetDtos = updateToSend.getAssetDtos();
 //                for (AssetUpdateDto assetDto : assetDtos) {
 //                    Approval approval = assetService.demandCheck(assetDto.getAssetCode());
 //                    System.out.println("자산의 처리 상태 확인"+approval);
@@ -219,7 +162,16 @@ public class QRController {
                 // 클라이언트에게 오류 메시지 전송
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
             }
+
+            return ResponseEntity.ok("자산 수정 등록완료");
+        } catch (Exception e) {
+            // 예외 메시지 로깅
+            e.printStackTrace();
+            // 클라이언트에게 오류 메시지 전송
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
         }
+    }
+
     @PostMapping("/allUpdateDemand")
     public ResponseEntity<String> allUpdateDemand(@RequestBody AllUpdateDto updateToSend){
         try {
@@ -303,15 +255,7 @@ public class QRController {
         }
     }
 
-
-        // 자산 조회 - 상세정보 화면 까지 다 가져오는 테스트
-        @GetMapping("/assets/test")
-        public List<AssetDto> test() {
-            return assetService.getAssetDetail3();
-        }
-
-
-    // 파일 업데이트 API
+    // 자산 수정 시, 수정 안에 들어있는 파일 업로드 동작 (권)
     @PostMapping("/{assetCode}/files")
     public ResponseEntity<String> updateAssetFiles(
             @PathVariable String assetCode,
@@ -332,16 +276,17 @@ public class QRController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업데이트 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
-    //검색 api
+
+
+    // 자산조회 - 분류별, 검색, 페이지네이션 처리 - 상세내용들도 다 들고있음(권)
     @GetMapping("/getAssetSearch")
     public ResponseEntity<PaginatedResponse<AssetDto>> searchAssets(
             @RequestParam(required = false) String assetName,
-            @RequestParam(required = false) String assetLocationString,  // String으로 변경
             @RequestParam(required = false) AssetLocation assetLocationEnum,  // Enum 추가
-            @RequestParam(required = false) String assetUserId,
-            @RequestParam(required = false) String departmentString,  // String으로 변경
+            @RequestParam(required = false) String assetUser,
             @RequestParam(required = false) Department departmentEnum,  // Enum 추가
-            @RequestParam(required = false) LocalDate introducedDate,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) AssetClassification assetClassification,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -349,26 +294,15 @@ public class QRController {
 
         // 검색 결과를 가져옵니다.
         PaginatedResponse<AssetDto> response = assetFinalService.getAssetSearch(
-                assetName, assetLocationString, assetLocationEnum,
-                assetUserId,
-                departmentString, departmentEnum,
-                introducedDate, assetClassification,page, size
+                assetName,assetLocationEnum,
+                assetUser, departmentEnum,
+                startDate, endDate, assetClassification,page, size
         );
 
         return ResponseEntity.ok(response);
     }
-//    @GetMapping("/assets/export")
-//    public ResponseEntity<Void> exportAssetsToExcel(
-//            @RequestParam(required = false) String assetClassification,
-//            HttpServletResponse response) {
-//        try {
-//            assetFinalService.exportAssetsToExcel(assetClassification, response);
-//            return ResponseEntity.ok().build();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return ResponseEntity.internalServerError().build();
-//        }
-//    }
+
+    // 엑셀 출력 전 - List 생기는지 확인(권)
     @GetMapping("/assets/excel")
     public ResponseEntity<List<CommonAsset>> getAssetsByClassification(
             @RequestParam(required = false)  AssetClassification assetClassification) {
@@ -380,6 +314,8 @@ public class QRController {
             return ResponseEntity.badRequest().body(null); // 잘못된 요청 처리
         }
     }
+
+    // 엑셀 출력 (권)
     @GetMapping("/assets/export")
     public ResponseEntity<byte[]> exportAssetsToExcel(
             @RequestParam(required = false) String assetClassification) {

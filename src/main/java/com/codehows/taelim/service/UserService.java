@@ -6,7 +6,9 @@ import com.codehows.taelim.secondRepository.AspNetUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,9 +65,20 @@ public class UserService {
         }
     }
 
-    public String findFullnameById(String id) {
-        return aspNetUserRepository.findById(id)
-                .map(aspNetUser -> new String(Base64.getDecoder().decode(aspNetUser.getUsername())))
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    // 자산 조회에서 사용자를 위한 검색 조건에 필요한거
+    public List<String> getUserIdsByFullname(String fullname) {
+        // fullname을 Base64로 인코딩
+        String encodedFullname = Base64.getEncoder().encodeToString(fullname.getBytes(StandardCharsets.UTF_8));
+
+        List<AspNetUser> users = aspNetUserRepository.findByFullnameContaining(encodedFullname);
+
+        if (users.isEmpty()) {
+            System.out.println("No users found with the given fullname: " + fullname);
+            return Collections.emptyList(); // 빈 리스트 반환
+        }
+
+        return users.stream()
+                .map(AspNetUser::getId)
+                .collect(Collectors.toList());
     }
 }

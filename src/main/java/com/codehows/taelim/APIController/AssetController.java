@@ -29,14 +29,6 @@ public class AssetController {
     private final RegisterService registerService;
     private final FileService fileService;
 
-
-    @GetMapping("/get")
-    public ResponseEntity<List<AssetDto>> getAllAssets() {
-        List<AssetDto> assets = registerService.findAll();
-        return ResponseEntity.ok(assets);
-
-    }
-
     @PostMapping("/register")
     public ResponseEntity<Long> registerAsset(@RequestBody AssetDto assetDto) {
 
@@ -47,7 +39,7 @@ public class AssetController {
 
     }
 
-    // 자산 수정등록
+    // 자산 조회  - 자산 1개 수정 동작 - ADMIN권한 (권)
     @PostMapping("/update/{assetCode}")
     public ResponseEntity<String> updateAsset(
             @PathVariable String assetCode,
@@ -71,7 +63,7 @@ public class AssetController {
         }
     }
 
-    // 자산 수정요청등록
+    // 자산 조회  - 자산 1개 수정 요청 동작 - AssetManager권한 (권)
     @PostMapping("/updateDemand/{assetCode}")
     public ResponseEntity<String> updateDemand(
             @PathVariable String assetCode,
