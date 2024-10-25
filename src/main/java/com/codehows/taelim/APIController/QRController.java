@@ -63,7 +63,7 @@ public class QRController {
 
     @PostMapping("/dispose/{assetCode}")
     public ResponseEntity<CommonAsset> disposeAsset (@PathVariable("assetCode") String assetCode){
-
+        
         assetService.DisposeApprove(assetCode);
         return ResponseEntity.ok().build();
     }
