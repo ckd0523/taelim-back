@@ -263,12 +263,11 @@ public class QRController {
     @GetMapping("/getAssetSearch")
     public ResponseEntity<PaginatedResponse<AssetDto>> searchAssets(
             @RequestParam(required = false) String assetName,
-            @RequestParam(required = false) String assetLocationString,  // String으로 변경
             @RequestParam(required = false) AssetLocation assetLocationEnum,  // Enum 추가
-            @RequestParam(required = false) String assetUserId,
-            @RequestParam(required = false) String departmentString,  // String으로 변경
+            @RequestParam(required = false) String assetUser,
             @RequestParam(required = false) Department departmentEnum,  // Enum 추가
-            @RequestParam(required = false) LocalDate introducedDate,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) AssetClassification assetClassification,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -276,10 +275,9 @@ public class QRController {
 
         // 검색 결과를 가져옵니다.
         PaginatedResponse<AssetDto> response = assetFinalService.getAssetSearch(
-                assetName, assetLocationString, assetLocationEnum,
-                assetUserId,
-                departmentString, departmentEnum,
-                introducedDate, assetClassification,page, size
+                assetName,assetLocationEnum,
+                assetUser, departmentEnum,
+                startDate, endDate, assetClassification,page, size
         );
 
         return ResponseEntity.ok(response);

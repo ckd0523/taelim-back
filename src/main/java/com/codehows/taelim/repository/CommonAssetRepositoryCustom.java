@@ -46,12 +46,11 @@ public interface CommonAssetRepositoryCustom {
     // 새로운 자산조회 - 검색쿼리, page 넣고 자산 조회하기
     Page<CommonAsset> findApprovedAndNotDisposedAssetsWithSearch(
             String assetName,
-            String assetLocationString,
             AssetLocation assetLocationEnum,
-            String assetUserId,
-            String departmentString,
+            String assetUser,  // 외부 DB의 user ID
             Department departmentEnum,
-            LocalDate introducedDate,
+            LocalDate startDate, // 검색 범위 시작 날짜
+            LocalDate endDate,   // 검색 범위 종료 날짜
             AssetClassification assetClassification,
             Pageable pageable);
     // 요청 승인시 이전 요청들 처리하는 로직

@@ -62,12 +62,11 @@ public class AssetFinalService {
     // 자산 상세 조회 - 이걸로 리스트 검색쿼리 + pageNation 까지 해보기
     public PaginatedResponse<AssetDto> getAssetSearch(
             String assetName,
-            String assetLocationString,
             AssetLocation assetLocationEnum,
-            String assetUserId,
-            String departmentString,
+            String assetUser,
             Department departmentEnum,
-            LocalDate introducedDate,
+            LocalDate startDate, // 검색 범위 시작 날짜
+            LocalDate endDate,   // 검색 범위 종료 날짜
             AssetClassification assetClassification,  // 추가된 assetClassification 파라미터
             int page,
             int size) {
@@ -76,17 +75,17 @@ public class AssetFinalService {
         Pageable pageable = PageRequest.of(page, size);
 
         Page<CommonAsset> assetPage;
+
         // assetClassification이 null인지 체크
         if (assetClassification == null) {
             // 전체 자산 조회 로직
             assetPage = commonAssetRepository.findApprovedAndNotDisposedAssetsWithSearch(
                     assetName,
-                    assetLocationString,
-                    assetLocationEnum,
-                    assetUserId,
-                    departmentString,
+                    assetLocationEnum, // assetLocationString 제거
+                    assetUser,
                     departmentEnum,
-                    introducedDate,
+                    startDate, // 검색 범위 시작 날짜
+                    endDate,   // 검색 범위 종료 날짜
                     null, // assetClassification을 null로 설정
                     pageable
             );
@@ -94,12 +93,11 @@ public class AssetFinalService {
             // 분류별 자산 조회 로직
             assetPage = commonAssetRepository.findApprovedAndNotDisposedAssetsWithSearch(
                     assetName,
-                    assetLocationString,
-                    assetLocationEnum,
-                    assetUserId,
-                    departmentString,
+                    assetLocationEnum, // assetLocationString 제거
+                    assetUser,
                     departmentEnum,
-                    introducedDate,
+                    startDate, // 검색 범위 시작 날짜
+                    endDate,   // 검색 범위 종료 날짜
                     assetClassification, // 분류 정보 전달
                     pageable
             );
@@ -121,8 +119,8 @@ public class AssetFinalService {
             assetDto.setAssetLocation(commonAsset.getAssetLocation());
 
             // assetUser, assetOwner, assetSecurityManager가 null일 경우 처리
-            UserDto assetUser = userService.getUserById(commonAsset.getAssetUser());
-            assetDto.setAssetUser(assetUser != null ? assetUser.getFullname() : "Unknown User");
+            UserDto userAsset  = userService.getUserById(commonAsset.getAssetUser());
+            assetDto.setAssetUser(userAsset  != null ? userAsset.getFullname() : "Unknown User");
 
             UserDto assetOwner = userService.getUserById(commonAsset.getAssetOwner());
             assetDto.setAssetOwner(assetOwner != null ? assetOwner.getFullname() : "Unknown Owner");

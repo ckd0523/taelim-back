@@ -4,6 +4,7 @@ import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
 import com.codehows.taelim.constant.AssetLocation;
 import com.codehows.taelim.constant.Department;
+import com.codehows.taelim.dto.UserDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.QCommonAsset;
 import com.codehows.taelim.secondEntity.AspNetUser;
@@ -331,12 +332,11 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
     @Override
     public Page<CommonAsset> findApprovedAndNotDisposedAssetsWithSearch(
             String assetName,
-            String assetLocationString,
             AssetLocation assetLocationEnum,
-            String assetUserId,  // 외부 DB의 user ID
-            String departmentString,
+            String assetUser,  // 외부 DB의 user ID
             Department departmentEnum,
-            LocalDate introducedDate,
+            LocalDate startDate, // 검색 범위 시작 날짜
+            LocalDate endDate,   // 검색 범위 종료 날짜
             AssetClassification assetClassification,
             Pageable pageable) {
 
@@ -378,14 +378,24 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                     ca.assetLocation.eq(assetLocationEnum)
             );
         }
-//        if (assetUser != null && !assetUser.isEmpty()) {
-//            builder.and(ca.assetUser.uName.likeIgnoreCase("%" + assetUser + "%"));
-//        }
 
-        // 외부 DB에서 username 가져오기
-        if (assetUserId != null && !assetUserId.isEmpty()) {
-            String fullname = userService.findFullnameById(assetUserId);
-            builder.and(ca.assetUser.likeIgnoreCase("%" + fullname + "%")); // fullname으로 검색
+        // assetUserId를 사용하여 검색 조건 추가
+        if (assetUser != null && !assetUser.isEmpty()) {
+            // fullname으로 ID 검색
+            List<String> userIds = userService.getUserIdsByFullname(assetUser.trim());
+
+            // 사용자 ID 리스트 로그 출력
+            System.out.println("User IDs: " + userIds); // 사용자 ID를 출력합니다.
+
+            if (!userIds.isEmpty()) {
+                // assetUser가 ID 리스트와 일치하는 자산만 검색
+                builder.and(ca.assetUser.in(userIds));
+                System.out.println("Builder conditions after adding user IDs: " + builder.getValue());
+            } else {
+                // userIds가 비어 있을 경우, 결과를 반환하지 않도록 조건 추가
+                builder.and(ca.assetUser.isNull()); // 잘못된 입력 시 빈 결과 반환
+                System.out.println("No valid users found for input: " + assetUser);
+            }
         }
 
         if (departmentEnum != null) {
@@ -393,8 +403,14 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                     ca.department.eq(departmentEnum)
             );
         }
-        if (introducedDate != null) {
-            builder.and(ca.introducedDate.eq(introducedDate));
+
+        // 날짜 범위 조건 추가 (startDate 및 endDate가 있을 경우)
+        if (startDate != null && endDate != null) {
+            builder.and(ca.introducedDate.between(startDate, endDate));
+        } else if (startDate != null) {
+            builder.and(ca.introducedDate.goe(startDate)); // 시작 날짜만 있는 경우 이후 날짜 포함
+        } else if (endDate != null) {
+            builder.and(ca.introducedDate.loe(endDate)); // 종료 날짜만 있는 경우 이전 날짜 포함
         }
 
         // AssetClassification 필터 조건 추가
