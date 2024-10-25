@@ -73,39 +73,39 @@ public class DataInitializerService {
             LocalDate endDate = LocalDate.of(2024, 10, 31);
 
             // CommonAsset 첫번째 데이터 삽입
-            for (int i = 1; i <= 39; i++) {
+            for (int i = 1; i <= 195; i++) {
 
                 CommonAsset asset = new CommonAsset();
                 // 자산 분류는 총 13개, 이를 15개씩 순환하며 할당
-                AssetClassification classification = classifications[(i - 1) / 3];
+                AssetClassification classification = classifications[(i - 1) / 15];
                 String assetCode = registerService.generateAssetCode(classification);
                 asset.setAssetCode(assetCode);
 
-                if (i <= 3) {
+                if (i <= 15) {
                     asset.setAssetClassification(AssetClassification.INFORMATION_PROTECTION_SYSTEM);
-                }else if (i <= 6) {
+                }else if (i <= 30) {
                     asset.setAssetClassification(AssetClassification.APPLICATION_PROGRAM);
-                } else if (i <= 9) {
+                } else if (i <= 45) {
                     asset.setAssetClassification(AssetClassification.SOFTWARE);
-                } else if (i <= 12) {
+                } else if (i <= 60) {
                     asset.setAssetClassification(AssetClassification.ELECTRONIC_INFORMATION);
-                } else if (i <= 15) {
+                } else if (i <= 75) {
                     asset.setAssetClassification(AssetClassification.DOCUMENT);
-                } else if (i <= 18) {
+                } else if (i <= 90) {
                     asset.setAssetClassification(AssetClassification.PATENTS_AND_TRADEMARKS);
-                } else if (i <= 21) {
+                } else if (i <= 105) {
                     asset.setAssetClassification(AssetClassification.ITSYSTEM_EQUIPMENT);
-                } else if (i <= 24) {
+                } else if (i <= 120) {
                     asset.setAssetClassification(AssetClassification.ITNETWORK_EQUIPMENT);
-                } else if (i <= 27) {
+                } else if (i <= 135) {
                     asset.setAssetClassification(AssetClassification.TERMINAL);
-                } else if (i <= 30) {
+                } else if (i <= 150){
                     asset.setAssetClassification(AssetClassification.FURNITURE);
-                } else if (i <= 33) {
+                } else if (i <= 165) {
                     asset.setAssetClassification(AssetClassification.DEVICES);
-                } else if (i <= 36) {
+                } else if (i <= 180) {
                     asset.setAssetClassification(AssetClassification.CAR);
-                } else {
+                } else if (i <= 195) {
                     asset.setAssetClassification(AssetClassification.OTHERASSETS);
                 }
                 asset.setAssetBasis(AssetBasis.COMMON);

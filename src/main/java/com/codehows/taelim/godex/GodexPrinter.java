@@ -1,9 +1,5 @@
 package com.codehows.taelim.godex;
 
-import org.springframework.stereotype.Component;
-
-
-@Component
 public class GodexPrinter
 {
 	EZioLib.API API = EZioLib.API.INSTANCE;
@@ -13,7 +9,7 @@ public class GodexPrinter
 	//---------------------------------------------------------------------------
 	// Open By Communication Type
 	//---------------------------------------------------------------------------
-	public void Open(int nPortType)
+	void Open(int nPortType)
 	{
 		API.openport(Integer.toString(nPortType));
 	}
@@ -21,7 +17,7 @@ public class GodexPrinter
 	//---------------------------------------------------------------------------
 	// Open By String
 	//---------------------------------------------------------------------------
-	public void Open(String PortName)
+	void Open(String PortName)
 	{
 		if (PortName.contains("COM") == true)
 	    	API.OpenUSB(PortName);
@@ -32,7 +28,7 @@ public class GodexPrinter
 	//---------------------------------------------------------------------------
 	// Open By Network
 	//---------------------------------------------------------------------------
-	public void Open(String strIP, String strPort)
+	void Open(String strIP, String strPort)
 	{
 		API.OpenNet(strIP, strPort);
 	}
@@ -40,7 +36,7 @@ public class GodexPrinter
 	//---------------------------------------------------------------------------
 	// Set COM Port (RS232) Baudrate
 	//---------------------------------------------------------------------------
-	public void SetBaudrate(int nBaud)
+	void SetBaudrate(int nBaud)
 	{
 		API.setbaudrate(nBaud);
 	}
@@ -48,7 +44,7 @@ public class GodexPrinter
 	//---------------------------------------------------------------------------
 	// Close
 	//---------------------------------------------------------------------------
-	public void Close()
+	void Close()
 	{
 		API.closeport();
 	}
@@ -56,7 +52,7 @@ public class GodexPrinter
 	//---------------------------------------------------------------------------
 	// Get Dll Version
 	//---------------------------------------------------------------------------
-	public String GetVersion()
+	String GetVersion()
 	{	
 		byte[] ByteData = new byte[50];
 		API.GetDllVersion(ByteData);

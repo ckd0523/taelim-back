@@ -23,7 +23,6 @@ public class AssetSurveyDetailDto {
     private Long infoNo;
     private String assetSurveyContent;
 
-    //여기 수정함
     public AssetSurveyDetailDto(CommonAsset commonAsset, AssetSurveyDetail assetSurveyDetail) {
         this.assetCode = commonAsset.getAssetCode();
         this.assetName = commonAsset.getAssetName();
