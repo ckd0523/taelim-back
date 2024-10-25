@@ -65,7 +65,7 @@ public class AssetService {
         assetDto.setPurpose(commonAsset.getPurpose());
         assetDto.setDepartment(commonAsset.getDepartment());
         assetDto.setAssetLocation(commonAsset.getAssetLocation());
-        assetDto.setUseState(commonAsset.getUseState());
+        assetDto.setUseStated(commonAsset.getUseStated());
         assetDto.setOperationStatus(commonAsset.getOperationStatus());
         assetDto.setIntroducedDate(commonAsset.getIntroducedDate());
         assetDto.setQuantity(commonAsset.getQuantity());

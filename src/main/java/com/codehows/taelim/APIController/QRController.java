@@ -162,14 +162,6 @@ public class QRController {
                 // 클라이언트에게 오류 메시지 전송
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
             }
-
-            return ResponseEntity.ok("자산 수정 등록완료");
-        } catch (Exception e) {
-            // 예외 메시지 로깅
-            e.printStackTrace();
-            // 클라이언트에게 오류 메시지 전송
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
-        }
     }
 
     @PostMapping("/allUpdateDemand")
