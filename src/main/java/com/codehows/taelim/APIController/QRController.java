@@ -99,7 +99,7 @@ public class QRController {
         //    return assetService.getAssetDetail(assetCode);
         //}
 
-        //상세조회 (공통 및 서브 칼럼)
+        //상세조회 (공통 및 서브 칼럼) QR조회 화면
         @GetMapping("/asset1/{assetCode}")
         public Map<String, Object> getAssetDetail2 (@PathVariable("assetCode") String assetCode){
             return assetService.getAssetDetail2(assetCode);
