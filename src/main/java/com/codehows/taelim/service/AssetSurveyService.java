@@ -41,6 +41,7 @@ public class AssetSurveyService {
         System.out.println("여기 뭔데 : " + registerData.getLocation());
         AssetLocation location = AssetLocation.valueOf(registerData.getLocation());
         Long round = registerData.getRound();
+        String assetSurveyBy = registerData.getEmail();
         //long round = 1;
 
         //등록할 때 프론트에서 유저의 email을 가져와서 DB에 조회 후 Member를 가져와서 자산 조사자에 넣어준다.
@@ -49,7 +50,7 @@ public class AssetSurveyService {
         //Member foundMember = member.get();
         //이렇게 해줘야하는데 orElseThrow를 쓰면 값이 있으면 optional을 Member로 자동 변환해줌.
         //없으면 예외 처리
-        Member member = memberRepository.findByEmail(email);
+//        Member member = memberRepository.findByEmail(email);
         //.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         //이 부분은 자산 조사 등록 과정에서 이미 판별 완료
@@ -70,16 +71,16 @@ public class AssetSurveyService {
         }*/
 
         try {
-            createAssetSurveyHistory(member, round, location);
+            createAssetSurveyHistory(assetSurveyBy, round, location);
             return true;
         } catch(Exception e) {
             return false;
         }
     }
 
-    public void createAssetSurveyHistory(Member member, long round, AssetLocation location) {
+    public void createAssetSurveyHistory(String assetSurveyBy, long round, AssetLocation location) {
         AssetSurveyHistory assetSurveyHistory = AssetSurveyHistory.builder()
-                .member(member)
+                .assetSurveyBy(assetSurveyBy)
                 .round(round)
                 .assetSurveyLocation(location)
                 .assetSurveyStartDate(LocalDate.now())
