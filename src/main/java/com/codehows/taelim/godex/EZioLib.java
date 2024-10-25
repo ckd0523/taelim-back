@@ -3,37 +3,54 @@ package com.codehows.taelim.godex;//--------------------------------------------
 //---------------------------------------------------------------------------
 import com.sun.jna.Library;
 import com.sun.jna.Native;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Objects;
 
 public class EZioLib
 {
-	public interface API extends Library
-	{	
-		//String path = API.class.getResource("/").getPath().replaceAll("%20", " ").substring(1) + "EZio64.dll";
-		//String path = "C:/taelim-back/build/resources/main/EZio64.dll"; // 절대 경로
-		//String path = Objects.requireNonNull(API.class.getResource("classpath:EZio64.dll")).getPath();
-		//String path = API.class.getClassLoader().getResource("classpath:EZio64.dll").getPath().replaceAll("%20", " ");;
-		//API INSTANCE = (API) Native.loadLibrary(path, API.class);
+	private static API INSTANCE = null;
 
-		API INSTANCE = loadLibrary();
+	static {
+		try {
+			String libraryPath = "/gen/x64/libezio.so";
+			System.out.println("Attempting to load library from: " + libraryPath);
 
-		private static API loadLibrary() {
-			try {
-				ClassPathResource resource = new ClassPathResource("EZio64.dll");
-				File file = resource.getFile();
-				System.load(file.getAbsolutePath());
-				return (API) Native.loadLibrary("EZio64", API.class);
-			} catch (IOException | UnsatisfiedLinkError e) {
-				System.err.println("Failed to load library: " + e.getMessage());
-				e.printStackTrace();
-				throw new RuntimeException("Failed to load EZio64.dll", e);
-			}
+			// JNA 디버깅 활성화
+			System.setProperty("jna.debug_load", "true");
+			System.setProperty("jna.debug_load.jna", "true");
+
+			// 라이브러리 로드
+			System.load(libraryPath);
+			System.out.println("Successfully loaded native library");
+
+			// Native.load를 통해 API 초기화
+			INSTANCE = Native.load("ezio", API.class);
+			System.out.println("Successfully initialized JNA interface");
+		} catch (UnsatisfiedLinkError e) {
+			System.err.println("Failed to load native library: " + e.getMessage());
+			e.printStackTrace();  // 상세 오류 출력
+		} catch (Exception e) {
+			System.err.println("Unexpected error: " + e.getMessage());
+			e.printStackTrace();  // 상세 오류 출력
 		}
-		
+	}
+
+
+	public static API getInstance() {
+		if (INSTANCE == null) {
+			throw new RuntimeException("Failed to initialize EZioLib");
+		}
+		return INSTANCE;
+	}
+
+	public interface API extends Library
+	{
+		//String path = API.class.getResource("/").getPath().replaceAll("%20", " ").substring(1) + "Ezio64.dll";
+//		String path = API.class.getResource("/x64/libezio.so").getPath();
+//		API INSTANCE = (API) Native.loadLibrary(path, API.class);
+
+		API INSTANCE = EZioLib.getInstance();
+
 		public int openport(String strPort);
 		public int OpenUSB(String strUsbID);
 		public int OpenDriver(String strDriverName);
