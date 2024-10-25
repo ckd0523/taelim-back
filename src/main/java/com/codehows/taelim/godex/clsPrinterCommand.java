@@ -11,7 +11,7 @@ public class clsPrinterCommand
 	//---------------------------------------------------------------------------
 	// Start Job (^L)
 	//---------------------------------------------------------------------------
-	void Start()
+	public void Start()
 	{
 		API.sendcommand("^L");
 	}
@@ -19,7 +19,7 @@ public class clsPrinterCommand
 	//---------------------------------------------------------------------------
 	// End Job (E)
 	//---------------------------------------------------------------------------
-	void End()
+    public void End()
 	{
 		API.sendcommand("E");
 	}
@@ -27,7 +27,7 @@ public class clsPrinterCommand
 	//---------------------------------------------------------------------------
 	// Print Text (Simple)
 	//---------------------------------------------------------------------------
-	int PrintText(int PosX, int PosY, int FontHeight, String FontName, String Data)
+    public int PrintText(int PosX, int PosY, int FontHeight, String FontName, String Data)
 	{
 	    return API.ecTextOut(PosX, PosY, FontHeight, FontName, Data);
 	}
@@ -247,7 +247,7 @@ public class clsPrinterCommand
 	//---------------------------------------------------------------------------
 	// Print 1D BarCode (More Parameter)
 	//---------------------------------------------------------------------------
-	int PrintBarCode(BarCodeType mBarCodeType, int PosX, int PosY, int Narrow, int Wide, int Height, int Rotation, int Raedable, String Data)
+	public int PrintBarCode(BarCodeType mBarCodeType, int PosX, int PosY, int Narrow, int Wide, int Height, int Rotation, int Raedable, String Data)
 	{
 	    return API.Bar(mBarCodeType.Val(), PosX, PosY, Narrow, Wide, Height, Rotation, Raedable, Data);
 	}
@@ -263,7 +263,7 @@ public class clsPrinterCommand
 	//---------------------------------------------------------------------------
 	// Print QR Code (More Parameter)
 	//---------------------------------------------------------------------------
-	int PrintQRCode(int PosX, int PosY, int Mode, int Type, String ErrorLavel, int Mask, int Mul, int Rotation, String Data)
+	public int PrintQRCode(int PosX, int PosY, int Mode, int Type, String ErrorLavel, int Mask, int Mul, int Rotation, String Data)
 	{
 	    return API.Bar_QRcode(PosX, PosY, Mode, Type, ErrorLavel, Mask, Mul, Data.length(), Rotation, Data);
 	}

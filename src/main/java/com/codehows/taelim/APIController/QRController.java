@@ -7,6 +7,9 @@ import com.codehows.taelim.entity.Demand;
 import com.codehows.taelim.repository.CommonAssetRepository;
 import com.codehows.taelim.service.*;
 //import com.codehows.taelim.service.QRService;
+import com.codehows.taelim.service.QRService;
+import com.codehows.taelim.service.RegisterService;
+import com.codehows.taelim.service.UpdateService;
 import com.google.zxing.WriterException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +20,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.http.*;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,7 +47,8 @@ public class QRController {
     private final DemandService demandService;
     //private final EmailServcie emailServcie;
 
-    //QR 생성하는곳
+    
+//  QR 생성하는곳
 //    @PostMapping("/generateQRCode")
 //    public ResponseEntity<String> generateQRCode(@RequestBody List<Long> assetNo) {
 //        for(Long id : assetNo) {
@@ -63,7 +68,6 @@ public class QRController {
 
     @PostMapping("/dispose/{assetCode}")
     public ResponseEntity<CommonAsset> disposeAsset (@PathVariable("assetCode") String assetCode){
-        
         assetService.DisposeApprove(assetCode);
         return ResponseEntity.ok().build();
     }
