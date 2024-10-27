@@ -870,6 +870,19 @@ public class AssetFinalService {
         // 이미 존재하는 AssetUpdateDto를 그대로 사용하여 리스트로 반환
         List<AssetDto> assetDtos = new ArrayList<>();
         for (CommonAsset asset : assets) {
+
+            String assetOwnerFullname = userService.getUserById(asset.getAssetOwner()) != null
+                    ? userService.getUserById(asset.getAssetOwner()).getFullname()
+                    : "Unknown Owner";
+
+            String assetUserFullname = userService.getUserById(asset.getAssetUser()) != null
+                    ? userService.getUserById(asset.getAssetUser()).getFullname()
+                    : "Unknown User";
+
+            String assetSecurityManagerFullname = userService.getUserById(asset.getAssetSecurityManager()) != null
+                    ? userService.getUserById(asset.getAssetSecurityManager()).getFullname()
+                    : "Unknown Security Manager";
+
             AssetDto dto = AssetDto.builder()
                     .assetNo(asset.getAssetNo())
                     .assetClassification(asset.getAssetClassification())
@@ -880,9 +893,9 @@ public class AssetFinalService {
                     .quantity(asset.getQuantity())
                     .department(asset.getDepartment())
                     .assetLocation(asset.getAssetLocation())
-                    .assetUser(userService.getUserById(asset.getAssetUser()).getFullname())
-                    .assetOwner(userService.getUserById(asset.getAssetOwner()).getFullname())
-                    .assetSecurityManager(userService.getUserById(asset.getAssetSecurityManager()).getFullname())
+                    .assetUser(assetUserFullname)
+                    .assetOwner(assetOwnerFullname)
+                    .assetSecurityManager(assetSecurityManagerFullname)
                     .operationStatus(asset.getOperationStatus())
                     .introducedDate(asset.getIntroducedDate())
                     .confidentiality(asset.getConfidentiality())
