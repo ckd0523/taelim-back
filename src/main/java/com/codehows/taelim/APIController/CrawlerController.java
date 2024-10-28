@@ -5,6 +5,7 @@ import com.codehows.taelim.service.CrawlingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,8 +19,8 @@ public class CrawlerController {
 
 
     @GetMapping("/products")
-    public List<ProductDto> getProducts() {
-        List<ProductDto> productDTOList =crawlingService.scraperProductData();
+    public List<ProductDto> getProducts(@RequestParam String keyword) {
+        List<ProductDto> productDTOList =crawlingService.scraperProductData(keyword);
         System.out.println(productDTOList);
         return productDTOList;
     }
