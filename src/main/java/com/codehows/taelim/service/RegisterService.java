@@ -74,14 +74,7 @@ public class RegisterService {
     //자산 등록
     public Long assetRegister(AssetDto assetDto){
 
-//        Member assetUser =memberRepository.findByEmail(assetDto.getAssetUser());
-
-//        Member assetOwner = memberRepository.findByEmail(assetDto.getAssetOwner());
-//        Member assetSecurityManager = memberRepository.findByEmail(assetDto.getAssetSecurityManager());
         CommonAsset commonAsset = assetDto.toEntity();
-//        commonAsset.setAssetUser(assetUser);
-//        commonAsset.setAssetOwner(assetUser);
-//       commonAsset.setAssetSecurityManager(assetUser);
         commonAsset.setApproval(Approval.APPROVE);
         commonAsset.setDisposalStatus(Boolean.FALSE);
         commonAsset.setDemandStatus(Boolean.FALSE);

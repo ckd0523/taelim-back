@@ -7,6 +7,7 @@ import com.codehows.taelim.entity.RepairHistory;
 import com.codehows.taelim.repository.RepairFileRepository;
 import com.codehows.taelim.repository.RepairHistoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class RepairService {
 
     private final RepairHistoryRepository repairHistoryRepository;
     private final RepairFileRepository repairFileRepository;
-
+    private final UserService userService;
     //유지보수 등록
     public Long repairRegister(RepairDto repairDto) {
 
@@ -46,6 +47,7 @@ public class RepairService {
             List<RepairFile> repairFiles = repairFileRepository.findByRepairNo(repairHistory1);
             List<RepairFileDto> repairFileDto = repairFiles.stream().map(RepairFile :: toRepairFile).collect(Collectors.toList());
             repairHistory.setRepairFiles(repairFileDto);
+            repairHistory.setRepairBy(userService.getUserById(repairHistory1.getRepairBy()).getFullname());
         }
         return repairHistories;
     }

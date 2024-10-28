@@ -22,7 +22,7 @@ public class RepairFileService {
     @Value("${file.path}")
     private String filePath;
 
-    @Value("http://localhost:8080/maintain/")
+    @Value("http://localhost:8080/maintain/img/")
     private String fileUrl;
 
     public RepairFileService(RepairFileRepository repairFileRepository) {

@@ -354,7 +354,7 @@ public class AssetFinalService {
                         surveyHistoryDto.setAssetSurveyLocation(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyLocation());
                         surveyHistoryDto.setAssetSurveyStartDate(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyStartDate());
                         surveyHistoryDto.setAssetSurveyEndDate(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyEndDate());
-                        surveyHistoryDto.setAssetSurveyBy(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyBy().getUName());
+                        surveyHistoryDto.setAssetSurveyBy(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyBy());
                         //surveyHistoryDto.setAssetSurveyBy(userService.getUserById(assetSurveyDetail.getAssetSurveyNo().getAssetSurveyBy()).getFullname());
                         surveyHistoryDto.setExactLocation(assetSurveyDetail.getExactLocation());
                         surveyHistoryDto.setAssetStatus(assetSurveyDetail.getAssetStatus());
@@ -492,9 +492,9 @@ public class AssetFinalService {
         row.createCell(5).setCellValue(asset.getPurpose());
         row.createCell(6).setCellValue(asset.getAssetLocation().getDescription());
         row.createCell(7).setCellValue(asset.getDepartment().getDescription());
-//        row.createCell(8).setCellValue(asset.getAssetUser().getUName());
-//        row.createCell(9).setCellValue(asset.getAssetOwner().getUName());
-//        row.createCell(10).setCellValue(asset.getAssetSecurityManager().getUName());
+        row.createCell(8).setCellValue(userService.getUserById(asset.getAssetUser()).getFullname());
+        row.createCell(9).setCellValue(userService.getUserById(asset.getAssetOwner()).getFullname());
+        row.createCell(10).setCellValue(userService.getUserById(asset.getAssetSecurityManager()).getFullname());
         row.createCell(11).setCellValue(asset.getUseStated().getDescription());
         row.createCell(12).setCellValue(asset.getOperationStatus().getDescription());
         row.createCell(13).setCellValue(asset.getIntroducedDate().format(formatter));
@@ -515,16 +515,16 @@ public class AssetFinalService {
         row.createCell(18).setCellValue(grade);
 
         row.createCell(19).setCellValue(asset.getNote());
-        row.createCell(21).setCellValue(asset.getPurchaseCost());
-        row.createCell(22).setCellValue(asset.getPurchaseDate().format(formatter));
-        row.createCell(23).setCellValue(asset.getMaintenancePeriod().format(formatter));
-        row.createCell(24).setCellValue(asset.getUsefulLife());
-        row.createCell(25).setCellValue(asset.getDepreciationMethod().getDescription());
-        row.createCell(26).setCellValue(asset.getPurchaseSource());
-        row.createCell(27).setCellValue(asset.getContactInformation());
-        row.createCell(28).setCellValue(asset.getAcquisitionRoute());
+        row.createCell(20).setCellValue(asset.getPurchaseCost());
+        row.createCell(21).setCellValue(asset.getPurchaseDate().format(formatter));
+        row.createCell(22).setCellValue(asset.getMaintenancePeriod().format(formatter));
+        row.createCell(23).setCellValue(asset.getUsefulLife());
+        row.createCell(24).setCellValue(asset.getDepreciationMethod().getDescription());
+        row.createCell(25).setCellValue(asset.getPurchaseSource());
+        row.createCell(26).setCellValue(asset.getContactInformation());
+        row.createCell(27).setCellValue(asset.getAcquisitionRoute());
+        row.createCell(28).setCellValue(asset.getNote());
         row.createCell(29).setCellValue(asset.getNote());
-        row.createCell(30).setCellValue(asset.getNote());
     }
 
     private String calculateAssetGrade(int totalScore) {

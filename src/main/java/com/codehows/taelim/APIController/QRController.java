@@ -5,11 +5,8 @@ import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Demand;
 import com.codehows.taelim.repository.CommonAssetRepository;
-import com.codehows.taelim.service.AssetFinalService;
-import com.codehows.taelim.service.AssetService;
+import com.codehows.taelim.service.*;
 //import com.codehows.taelim.service.QRService;
-import com.codehows.taelim.service.RegisterService;
-import com.codehows.taelim.service.UpdateService;
 import com.google.zxing.WriterException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,6 +40,8 @@ public class QRController {
     private final RegisterService registerService;
     private final AssetFinalService assetFinalService;
     private final CommonAssetRepository commonAssetRepository;
+    private final DemandService demandService;
+    //private final EmailServcie emailServcie;
 
     //QR 생성하는곳
 //    @PostMapping("/generateQRCode")
@@ -88,6 +87,13 @@ public class QRController {
             @PathVariable("assetCode") String assetCode, @RequestBody AssetDisposeDto assetDisposeDto ){
         registerService.DisposeDemand(assetCode, assetDisposeDto);
         return ResponseEntity.ok().build();
+    }
+
+    //상세조회 (공통 및 서브 칼럼) QR조회 화면
+    @GetMapping("/asset1/{assetCode}")
+    public Map<String, Object> getAssetDetail2 (@PathVariable("assetCode") String assetCode){
+         return assetService.getAssetDetail2(assetCode);
+
     }
 
     // 자산 이력 - 폐기이력 테이블 - List 불러오기 (권)
@@ -138,21 +144,24 @@ public class QRController {
 //                                .body("자산 코드 " + assetDto.getAssetCode() + "의 상태가 작업 진행중입니다. 해당 작업은 모두 취소됩니다.");
 //                    }
 //                }
-            Demand demand = registerService.UpdateDemand(updateToSend);
-            // 수정 이력 저장
-            for (AssetUpdateDto assetDto : assetDtos) {
-                updateToSend.setAssetDto(assetDto);
-                updateToSend.setAssetNo(assetDto.getAssetNo());
-                Long newAssetNo = registerService.allUpdate(updateToSend, demand);
-            }
+                Demand demand = registerService.UpdateDemand(updateToSend);
+                // 수정 이력 저장
+                for (AssetUpdateDto assetDto : assetDtos) {
+                    updateToSend.setAssetDto(assetDto);
+                    updateToSend.setAssetNo(assetDto.getAssetNo());
+                    Long newAssetNo = registerService.allUpdate(updateToSend, demand);
+                    System.out.println("디버그 : " + assetDto.getAssetCode() +"디버그 2 : "+ assetDto.getAssetNo());
+                    demandService.beforeDemand(assetDto.getAssetCode(), newAssetNo);
 
-            return ResponseEntity.ok("자산 수정 등록완료");
-        } catch (Exception e) {
-            // 예외 메시지 로깅
-            e.printStackTrace();
-            // 클라이언트에게 오류 메시지 전송
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
-        }
+                }
+                //emailServcie.sendEmail("","", "" );
+                return ResponseEntity.ok("자산 수정 등록완료");
+            } catch (Exception e) {
+                // 예외 메시지 로깅
+                e.printStackTrace();
+                // 클라이언트에게 오류 메시지 전송
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
+            }
     }
 
     @PostMapping("/allUpdateDemand")
@@ -199,6 +208,8 @@ public class QRController {
                 disposeToSend.setAssetDto(assetDto);
                 disposeToSend.setAssetNo(assetDto.getAssetNo());
                 Long newAssetNo = registerService.allDelete(disposeToSend, demand);
+
+                demandService.beforeDemand(assetDto.getAssetCode(), newAssetNo);
             }
             return ResponseEntity.ok("자산 폐기 등록완료");
         } catch (Exception e) {

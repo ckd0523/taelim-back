@@ -29,14 +29,14 @@ public class AssetSurveyHistoryRepositoryCustomImpl implements AssetSurveyHistor
         JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
 
         QAssetSurveyHistory assetSurveyHistory = QAssetSurveyHistory.assetSurveyHistory;
-        QMember member = QMember.member;
 
         //projections.constructor로 매핑 시 null이 있으면 안됨
         return queryFactory
                 .select(Projections.constructor(
                         AssetSurveyHistoryDto.class,
                         assetSurveyHistory.assetSurveyNo, // asset_survey_no
-                        member.uName, // member.u_name
+//                        member.uName, // member.u_name
+                        assetSurveyHistory.assetSurveyBy,
                         assetSurveyHistory.assetSurveyLocation, // asset_survey_location
                         assetSurveyHistory.round, // ROUND
                         assetSurveyHistory.surveyStatus, // survey_status
@@ -44,7 +44,7 @@ public class AssetSurveyHistoryRepositoryCustomImpl implements AssetSurveyHistor
                         assetSurveyHistory.assetSurveyEndDate // asset_survey_end_date
                 ))
                 .from(assetSurveyHistory)
-                .join(assetSurveyHistory.assetSurveyBy, member) // member.email = asset_survey_history.asset_survey_by
+//                .join(assetSurveyHistory.assetSurveyBy) // member.email = asset_survey_history.asset_survey_by
                 .fetch();
     }
 
