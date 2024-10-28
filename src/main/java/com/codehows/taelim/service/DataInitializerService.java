@@ -17,7 +17,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Random;
 
 @RequiredArgsConstructor
 @Service
@@ -51,15 +53,6 @@ public class DataInitializerService {
             //자산 기준 금액 설정 초기값 설정
             amountSetRepository.insertAmountSet(0L, 0L);
             // UserDto를 DB에서 가져오는 서비스 메서드
-//            // Member 데이터 삽입
-//            for (int i = 1; i <= 195; i++) {
-//                Member member = new Member();
-//                member.setEmail("user" + i + "@example.com");
-//                member.setPassword("password" + i);
-//                member.setUName("User Name " + i);
-//                member.setRole(i % 10 == 0 ? Role.ROLE_ADMIN : (i % 2 == 0 ? Role.ROLE_ASSET_MANAGER : Role.ROLE_USER));
-//                memberRepository.save(member);
-//            }
             // 자산 분류 항목
             AssetClassification[] classifications = AssetClassification.values();
             int classificationIndex = 0;  // 분류 인덱스
@@ -70,7 +63,8 @@ public class DataInitializerService {
 
             // 2024년 10월 1일부터 31일까지의 날짜 범위
             LocalDate startDate = LocalDate.of(2024, 10, 1);
-            LocalDate endDate = LocalDate.of(2024, 10, 31);
+            LocalDate endDate = LocalDate.of(2025, 12, 31);
+            Random random = new Random();
 
             // CommonAsset 첫번째 데이터 삽입
             for (int i = 1; i <= 195; i++) {
@@ -141,9 +135,17 @@ public class DataInitializerService {
                 //Owenerhip
                 Ownership ownership = Ownership.values()[i % Ownership.values().length];
                 asset.setOwnership(ownership);
-                asset.setPurchaseCost(5000L);
-                asset.setPurchaseDate(LocalDate.now());
-                asset.setUsefulLife(5L);
+                // 랜덤으로 구매비용 및 잔존가치, 현재가치 설정
+                long purchaseCost = 5000 + random.nextInt(10001); // 5000-15000 사이의 랜덤 값
+                asset.setPurchaseCost(purchaseCost);
+
+                // 랜덤한 구매 날짜 설정
+                LocalDate purchaseDate = startDate.plusDays(random.nextInt((int) ChronoUnit.DAYS.between(startDate, endDate) + 1));
+                asset.setPurchaseDate(purchaseDate);
+
+                // 랜덤한 내용연수 설정 (1-10년 사이)
+                long usefulLife = random.nextInt(10) + 1;
+                asset.setUsefulLife(usefulLife);
                 // 정액법 정률법
                 DepreciationMethod depreciationMethod = DepreciationMethod.values()[i % DepreciationMethod.values().length];
                 asset.setDepreciationMethod(depreciationMethod);

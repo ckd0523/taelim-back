@@ -484,20 +484,25 @@ public class AssetFinalService {
     }
 
     private void addBasicAssetData(Row row, CommonAsset asset, DateTimeFormatter formatter) {
-        row.createCell(0).setCellValue(asset.getAssetNo());
-        row.createCell(1).setCellValue(asset.getAssetBasis().toString());
-        row.createCell(2).setCellValue(asset.getAssetCode());
-        row.createCell(3).setCellValue(asset.getAssetName());
-        row.createCell(4).setCellValue(asset.getAssetClassification().getDescription());
-        row.createCell(5).setCellValue(asset.getPurpose());
-        row.createCell(6).setCellValue(asset.getAssetLocation().getDescription());
-        row.createCell(7).setCellValue(asset.getDepartment().getDescription());
-        row.createCell(8).setCellValue(userService.getUserById(asset.getAssetUser()).getFullname());
-        row.createCell(9).setCellValue(userService.getUserById(asset.getAssetOwner()).getFullname());
-        row.createCell(10).setCellValue(userService.getUserById(asset.getAssetSecurityManager()).getFullname());
-        row.createCell(11).setCellValue(asset.getUseStated().getDescription());
-        row.createCell(12).setCellValue(asset.getOperationStatus().getDescription());
-        row.createCell(13).setCellValue(asset.getIntroducedDate().format(formatter));
+        row.createCell(0).setCellValue(asset.getAssetNo() != null ? asset.getAssetNo() : 0);
+        row.createCell(1).setCellValue(asset.getAssetBasis() != null ? asset.getAssetBasis().toString() : "");
+        row.createCell(2).setCellValue(asset.getAssetCode() != null ? asset.getAssetCode() : "");
+        row.createCell(3).setCellValue(asset.getAssetName() != null ? asset.getAssetName() : "");
+        row.createCell(4).setCellValue(asset.getAssetClassification() != null ? asset.getAssetClassification().getDescription() : "");
+        row.createCell(5).setCellValue(asset.getPurpose() != null ? asset.getPurpose() : "");
+        row.createCell(6).setCellValue(asset.getAssetLocation() != null ? asset.getAssetLocation().getDescription() : "");
+        row.createCell(7).setCellValue(asset.getDepartment() != null ? asset.getDepartment().getDescription() : "");
+        UserDto user = userService.getUserById(asset.getAssetUser());
+        row.createCell(8).setCellValue(user != null ? user.getFullname() : ""); // String 타입
+
+        UserDto owner = userService.getUserById(asset.getAssetOwner());
+        row.createCell(9).setCellValue(owner != null ? owner.getFullname() : ""); // String 타입
+
+        UserDto securityManager = userService.getUserById(asset.getAssetSecurityManager());
+        row.createCell(10).setCellValue(securityManager != null ? securityManager.getFullname() : ""); // String 타입
+        row.createCell(11).setCellValue(asset.getUseStated() != null ? asset.getUseStated().getDescription() : "");
+        row.createCell(12).setCellValue(asset.getOperationStatus() != null ? asset.getOperationStatus().getDescription() : "");
+        row.createCell(13).setCellValue(asset.getIntroducedDate() != null ? asset.getIntroducedDate().format(formatter) : "");
 
         // 기밀성, 무결성, 가용성 처리
         int confidentiality = asset.getConfidentiality();
@@ -512,19 +517,19 @@ public class AssetFinalService {
 
         // 중요성 등급 계산
         String grade = calculateAssetGrade(totalScore);
-        row.createCell(18).setCellValue(grade);
+        row.createCell(18).setCellValue(grade != null ? grade : ""); // grade가 null인 경우 빈 문자열로 처리
 
-        row.createCell(19).setCellValue(asset.getNote());
-        row.createCell(20).setCellValue(asset.getPurchaseCost());
-        row.createCell(21).setCellValue(asset.getPurchaseDate().format(formatter));
-        row.createCell(22).setCellValue(asset.getMaintenancePeriod().format(formatter));
-        row.createCell(23).setCellValue(asset.getUsefulLife());
-        row.createCell(24).setCellValue(asset.getDepreciationMethod().getDescription());
-        row.createCell(25).setCellValue(asset.getPurchaseSource());
-        row.createCell(26).setCellValue(asset.getContactInformation());
-        row.createCell(27).setCellValue(asset.getAcquisitionRoute());
-        row.createCell(28).setCellValue(asset.getNote());
-        row.createCell(29).setCellValue(asset.getNote());
+        row.createCell(19).setCellValue(asset.getNote() != null ? asset.getNote() : "");
+        row.createCell(20).setCellValue(asset.getPurchaseCost() != null ? asset.getPurchaseCost() : 0);
+        row.createCell(21).setCellValue(asset.getPurchaseDate() != null ? asset.getPurchaseDate().format(formatter) : "");
+        row.createCell(22).setCellValue(asset.getMaintenancePeriod() != null ? asset.getMaintenancePeriod().format(formatter) : "");
+        row.createCell(23).setCellValue(asset.getUsefulLife() != null ? asset.getUsefulLife() : 0);
+        row.createCell(24).setCellValue(asset.getDepreciationMethod() != null ? asset.getDepreciationMethod().getDescription() : "");
+        row.createCell(25).setCellValue(asset.getPurchaseSource() != null ? asset.getPurchaseSource() : "");
+        row.createCell(26).setCellValue(asset.getContactInformation() != null ? asset.getContactInformation() : "");
+        row.createCell(27).setCellValue(asset.getAcquisitionRoute() != null ? asset.getAcquisitionRoute() : "");
+        row.createCell(28).setCellValue(asset.getNote() != null ? asset.getNote() : "");
+        row.createCell(29).setCellValue(asset.getNote() != null ? asset.getNote() : "");
     }
 
     private String calculateAssetGrade(int totalScore) {
@@ -1049,38 +1054,6 @@ public class AssetFinalService {
             assetDtos.add(dto);
         }
         return assetDtos;
-    }
-
-
-    // 자산 폐기 동작 (자산 하나 폐기) - ADMIN 권한임
-    public AssetUpdateResponse  DisposeAsset(String assetCode, AssetDisposeDto assetDisposeDto) {
-
-        // 기존 입력되어 있는 assetCode 조회
-        CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode)
-                .orElseThrow(() -> new RuntimeException("자산코드를 찾을 수 없음: " + assetCode));
-
-        commonAsset.setApproval(Approval.APPROVE);
-        commonAsset.setDisposalStatus(Boolean.TRUE);
-        commonAssetRepository.save(commonAsset);
-
-        // 폐기 이력 저장
-        Demand demand = new Demand();
-        demand.setDemandBy(assetDisposeDto.getDisposeUser());
-        demand.setDemandDate(LocalDate.now()); // 폐기 일자 - 추후 자동생성 변경
-        demand.setDemandReason(assetDisposeDto.getDisposeReason()); // 폐기 사유
-        demand.setDemandDetail(assetDisposeDto.getDisposeDetail()); // 폐기내용
-        demand.setDisposeMethod(assetDisposeDto.getDisposeMethod()); // 폐기 방법
-        demand.setDisposeLocation(assetDisposeDto.getDisposeLocation());  // 폐기 위치
-        demandRepository.save(demand);
-
-        // DemandDtl 테이블에 저장
-        DemandDtl demandDtl = new DemandDtl();
-        demandDtl.setAssetNo(commonAsset);  // CommonAsset과 연관 설정
-        demandDtl.setDemandNo(demand);  // Demand와 연관 설정
-        demandDtlRepository.save(demandDtl); // DemandDtl 테이블에 저장
-        //return commonAsset;
-        // 자산 폐기 성공 메시지 반환
-        return new AssetUpdateResponse("자산 폐기 등록 완료: " + commonAsset.getAssetNo(), commonAsset.getAssetNo());
     }
 
 }
