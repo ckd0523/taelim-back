@@ -36,4 +36,8 @@ public interface AssetSurveyHistoryRepository extends JpaRepository<AssetSurveyH
     @Transactional
     @Query("UPDATE AssetSurveyHistory a SET a.surveyStatus = true, a.assetSurveyEndDate = :endDate WHERE a.assetSurveyNo = :assetSurveyNo")
     void completeSurvey(@Param("assetSurveyNo") Long assetSurveyNo, @Param("endDate") LocalDate endDate);
+
+    //자산 조사 중인 레코드 가져오기
+    @Query("select count(c) from AssetSurveyHistory c where c.surveyStatus = false")
+    Long findSurveyAmount();
 }

@@ -58,4 +58,10 @@ public interface CommonAssetRepositoryCustom {
 
     // 엑셀 출력을 위한 List 전체를 가져오는 조회(조건으로)
     List<CommonAsset> findAssetByExcel(AssetClassification assetClassification);
+
+    //소유 자산 총액 가져오기
+    Long findTotalOwnedPurchaseCost();
+
+    //임대 자산 총액 가져오기
+    Long findTotalLeasedPurchaseCost();
 }
