@@ -46,4 +46,11 @@ public class ChartService {
 
         return surveyAmount;
     }
+
+    //총 자산 개수 가져오기
+    public Long getTotalAssetAmount() {
+        Long totalAssetAmount = commonAssetRepository.findTotalAssetAmount();
+
+        return totalAssetAmount;
+    }
 }
