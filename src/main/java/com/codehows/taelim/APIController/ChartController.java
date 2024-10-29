@@ -26,11 +26,13 @@ public class ChartController {
         Long totalLeasedPurchaseCost = chartService.getTotalLeasedPurchaseCost(); //임대 자산 총액 가져오기
         Long repairingAmount = chartService.getRepairingAmount(); //유지 보수 중인 레코드 가져오기
         Long surveyAmount = chartService.getSurveyAmount(); //자산 조사 중인 레코드 가져오기
+        Long totalAssetAmount = chartService.getTotalAssetAmount(); //자산 총 개수 가져오기
 
         assetTotalAmountDto.setOwnCost(totalOwnedPurchaseCost);
         assetTotalAmountDto.setLeasedCost(totalLeasedPurchaseCost);
         assetTotalAmountDto.setRepairAmount(repairingAmount);
         assetTotalAmountDto.setAssetSurveyAmount(surveyAmount);
+        assetTotalAmountDto.setTotalAssetAmount(totalAssetAmount);
 
         return assetTotalAmountDto;
     }
