@@ -23,7 +23,7 @@ public class RepairFileService {
     @Value("${file.path}")
     private String filePath;
 
-    @Value("https://localhost:8080/maintain/img/")
+    @Value("https://www.taelimasset.com/api/maintain/img/")
     private String fileUrl;
 
     public RepairFileService(RepairFileRepository repairFileRepository) {
