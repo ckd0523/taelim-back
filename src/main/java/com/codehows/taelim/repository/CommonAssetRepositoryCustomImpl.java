@@ -1,9 +1,6 @@
 package com.codehows.taelim.repository;
 
-import com.codehows.taelim.constant.Approval;
-import com.codehows.taelim.constant.AssetClassification;
-import com.codehows.taelim.constant.AssetLocation;
-import com.codehows.taelim.constant.Department;
+import com.codehows.taelim.constant.*;
 import com.codehows.taelim.dto.UserDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.QCommonAsset;
@@ -60,9 +57,82 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         return Optional.ofNullable(result);
     }
 
+    //소유 자산 총액 가져오기
+    @Override
+    public Long findTotalOwnedPurchaseCost() {
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
+
+        excludedAssetCodes.select(subCa.assetCode)
+                .from(subCa)
+                .where(
+                        subCa.approval.eq(Approval.APPROVE)
+                                .and(subCa.disposalStatus.isTrue())
+                )
+                .groupBy(subCa.assetCode);
+
+        // 2. 최신 assetNo를 선택하는 서브 쿼리
+        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+        subQuery.select(ca.assetNo.max())
+                .from(ca)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
+                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
+                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
+                )
+                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
+
+        // 3. 최종 쿼리: 최신 assetNo에 해당하는 자산의 purchaseCost 합계 조회
+        JPAQuery<Long> query = new JPAQuery<>(entityManager);
+        return query.select(ca.purchaseCost.sum()) // purchaseCost의 합계
+                .from(ca)
+                .where(ca.assetNo.in(subQuery)
+                        .and(ca.ownership.eq(Ownership.OWNED))) // 서브 쿼리에서 선택된 최신 assetNo
+                .fetchOne();
+    }
+
+    //임대 자산 총액 가져오기
+    @Override
+    public Long findTotalLeasedPurchaseCost() {
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
+
+        excludedAssetCodes.select(subCa.assetCode)
+                .from(subCa)
+                .where(
+                        subCa.approval.eq(Approval.APPROVE)
+                                .and(subCa.disposalStatus.isTrue())
+                )
+                .groupBy(subCa.assetCode);
+
+        // 2. 최신 assetNo를 선택하는 서브 쿼리
+        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+        subQuery.select(ca.assetNo.max())
+                .from(ca)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
+                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
+                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
+                )
+                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
+
+        // 3. 최종 쿼리: 최신 assetNo에 해당하는 자산의 purchaseCost 합계 조회
+        JPAQuery<Long> query = new JPAQuery<>(entityManager);
+        return query.select(ca.purchaseCost.sum()) // purchaseCost의 합계
+                .from(ca)
+                .where(ca.assetNo.in(subQuery)
+                        .and(ca.ownership.eq(Ownership.LEASED))) // 서브 쿼리에서 선택된 최신 assetNo
+                .fetchOne();
+    }
+
     // 자산목록 (자산 공통정보) - 조건 : 폐기여부 F and 폐기여부 T + 요청 미확인 and 폐기여부 T + 요청 거절   리스트 조회
     @Override
-
     public List<CommonAsset> findApprovedAndNotDisposedAssets() {
         QCommonAsset ca = QCommonAsset.commonAsset;
 
