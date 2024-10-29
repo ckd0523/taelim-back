@@ -7,6 +7,7 @@ import com.codehows.taelim.dto.ExcelDto;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.Local;
@@ -1232,7 +1233,6 @@ public class RegisterService {
     }
 
     // 기존 파일 업데이트 메서드
-    // 기존 파일 업데이트 메서드
     private void updateExistingFile(File existingFile, MultipartFile newFile) {
         // 기존 파일 정보를 업데이트
         String originalFileName = newFile.getOriginalFilename();
@@ -1286,6 +1286,70 @@ public class RegisterService {
         return memberRepository.findById(email)
                 .orElseThrow(() -> new RuntimeException("해당 이메일에 대한 멤버를 찾을 수 없습니다: " + email));
     }
+
+//    public File updateFile(String existingFileName, MultipartFile newFile, CommonAsset commonAsset, FileType fileType) {
+//        // 기존 파일 조회
+//        Optional<File> existingFileOptional = fileRepository.findByFileName(existingFileName);
+//
+//        if (existingFileOptional.isPresent()) {
+//            File existingFile = existingFileOptional.get();
+//
+//            // 서버에서 기존 파일 삭제
+//            java.io.File existingPhysicalFile = new java.io.File(filePath + existingFile.getFileName());
+//            if (existingPhysicalFile.exists()) {
+//                existingPhysicalFile.delete();  // 기존 파일 삭제
+//            }
+//
+//            // 새 파일 저장 경로 생성
+//            String originalFileName = newFile.getOriginalFilename();
+//            String extension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
+//            String uuid = UUID.randomUUID().toString();
+//            String saveFileName = uuid + extension;
+//            String savePath = filePath + saveFileName;
+//
+//            try {
+//                // 파일 저장 디렉터리 생성
+//                java.io.File dir = new java.io.File(filePath);
+//                if (!dir.exists()) {
+//                    dir.mkdirs();
+//                }
+//
+//                // 새 파일 저장 (썸네일 생성 또는 일반 파일)
+//                if (fileType == FileType.PHOTO) {
+//                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//                    Thumbnails.of(newFile.getInputStream())
+//                            .size(800, 800)
+//                            .outputQuality(0.8)
+//                            .toOutputStream(outputStream);
+//                    try (FileOutputStream fos = new FileOutputStream(savePath)) {
+//                        outputStream.writeTo(fos);
+//                    }
+//                } else {
+//                    newFile.transferTo(new java.io.File(savePath));
+//                }
+//            } catch (Exception exception) {
+//                exception.printStackTrace();
+//                return null;
+//            }
+//
+//            // URL 생성
+//            String url = fileUrl + saveFileName;
+//
+//            // 기존 파일 메타데이터 업데이트
+//            existingFile.setOriFileName(originalFileName);
+//            existingFile.setFileName(saveFileName);
+//            existingFile.setFileSize(newFile.getSize());
+//            existingFile.setFileExt(extension);
+//            existingFile.setFileURL(url);
+//            existingFile.setFileType(fileType);
+//
+//            // DB에 업데이트 후 반환
+//            return fileRepository.save(existingFile);
+//        } else {
+//            throw new RuntimeException("File not found with fileName:" + existingFileName);
+//        }
+//    }
+
 }
 
 
