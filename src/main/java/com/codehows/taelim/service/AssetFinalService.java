@@ -279,6 +279,7 @@ public class AssetFinalService {
             List<File> files = fileRepository.findByAssetNo(commonAsset);
 
             List<FileDto> fileDtos = files.stream()
+                    .filter(file -> file.getFileName() != null && !file.getFileName().isEmpty()) // file_name이 null이 아니고 빈 문자열이 아닐 경우에만 복사
                     .map(file -> {
                         FileDto fileDto = new FileDto();
                         fileDto.setAssetNo(file.getAssetNo().getAssetNo());
