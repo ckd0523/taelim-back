@@ -50,6 +50,10 @@ String url = findClosestUrl(keyword);
                 if(productPrice.equals("No price")) {
                     productPriceElement = productElement.selectFirst("div.prod_main_info div.prod_pricelist div.box__mall-type a.link__mall-type div.box__price div.sell-price span.text__number");
                     productPrice = productPriceElement != null ? productPriceElement.text() : "No price";
+                    if(productPrice.equals("No price")) {
+                        productPriceElement = productElement.selectFirst("div.prod_main_info div.prod_pricelist p.price_sect strong");
+                        productPrice = productPriceElement != null ? productPriceElement.text() : "No price";
+                    }
                 }
                 Element productMemoryElement = productElement.selectFirst("div.prod_main_info p.memory_sect");
                 String productMemory = productMemoryElement != null ? productMemoryElement.text() : "No memory info";
