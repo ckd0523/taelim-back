@@ -40,6 +40,7 @@ public class DemandDtlRepositoryCustomImpl implements DemandDtlRepositoryCustom 
                        commonAsset.disposalStatus.isTrue()
                                .and(commonAsset.approval.eq(Approval.APPROVE))
                )
+               .orderBy(demand.demandNo.desc()) // demandNo를 기준으로 내림차순 정렬
                .fetch();
     }
 
@@ -61,6 +62,7 @@ public class DemandDtlRepositoryCustomImpl implements DemandDtlRepositoryCustom 
                                 .and(commonAsset.approval.eq(Approval.APPROVE))
 
                 )
+                .orderBy(demand.demandNo.desc()) // demandNo를 기준으로 내림차순 정렬
                 .fetch();
     }
 

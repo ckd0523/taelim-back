@@ -39,6 +39,7 @@ public class WebSecurityConfig {
                 //.cors(AbstractHttpConfigurer::disable)  // CORS 비활성화
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> {
+                    //LoginController
                     requests.requestMatchers("/login", "/refresh", "/logout").permitAll() // 로그인 경로는 인증 필요 없음
                             //각 요청에 대한 인가 설정
                             //Constant와 UserDetail에 role이 ROLE_로 시작해야 시큐리티가 인식함
@@ -84,7 +85,8 @@ public class WebSecurityConfig {
                             .requestMatchers("/updateAssetSurveyDetail2").hasAnyRole("ADMIN", "ASSET_MANAGER")
                             //BackUpHistoryController
                             .requestMatchers("/backUpHistory").hasAnyRole("ADMIN", "ASSET_MANAGER")
-                            //LoginController
+                            //ChartController
+                            .requestMatchers("/chart/**").permitAll()
 
                     .anyRequest().authenticated();
                 })

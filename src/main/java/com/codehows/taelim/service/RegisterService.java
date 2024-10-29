@@ -65,6 +65,8 @@ public class RegisterService {
     private final DemandDtlRepository demandDtlRepository;
     private final FileRepository fileRepository;
     private final UserService userService;
+    private final DemandService demandService;
+
     @Value("${file.path}")
     private String filePath;
 
@@ -408,6 +410,10 @@ public class RegisterService {
         demand.setDemandReason(assetDto.getUpdateReason());
         demand.setDemandDetail(assetDto.getUpdateDetail());
         demandRepository.save(demand);
+
+        demandService.beforeDemand(assetCode, updateAsset.getAssetNo());
+
+
         // DemandDtl 테이블 저장
         DemandDtl demandDtl = new DemandDtl();
         demandDtl.setAssetNo(updateAsset);
@@ -658,6 +664,82 @@ public class RegisterService {
         demandDtl.setAssetNo(demandAsset);  // CommonAsset과 연관 설정
         demandDtl.setDemandNo(demand);  // Demand와 연관 설정
         demandDtlRepository.save(demandDtl); // DemandDtl 테이블에 저장
+
+
+        return newAssetNo;
+    }
+
+    // 자산조회 : 휴지통 - 자산 폐기  동작 (자산 하나 폐기) - ADMIN 자산관리자 폐기(권)
+    public Long DisposeAsset(String assetCode, AssetDisposeDto assetDisposeDto) {
+
+        // 1. 기존 입력되어있는 assetCode 조회
+        CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
+                .orElseThrow(() -> new RuntimeException("자산코드를 찾을수 없음 " + assetCode));
+
+        // 2. 새로운 자산 생성
+        CommonAsset demandAsset = new CommonAsset();
+        demandAsset.setAssetCode(existAsset.getAssetCode()); // 코드 동일하게 유지하고
+        demandAsset.setAssetName(existAsset.getAssetName());
+        demandAsset.setAssetBasis(existAsset.getAssetBasis());
+        demandAsset.setManufacturingCompany(existAsset.getManufacturingCompany());
+        demandAsset.setPurpose(existAsset.getPurpose());
+        demandAsset.setAssetUser(existAsset.getAssetUser());
+        demandAsset.setAssetOwner(existAsset.getAssetOwner());
+        demandAsset.setAssetSecurityManager(existAsset.getAssetSecurityManager());
+        // AssetDto에서 업데이트할 필드 설정 (null 체크 후 기존 값 유지)
+        demandAsset.setDepartment(existAsset.getDepartment());
+        demandAsset.setAssetLocation(existAsset.getAssetLocation());
+        demandAsset.setUseStated(existAsset.getUseStated());
+        demandAsset.setOperationStatus(existAsset.getOperationStatus());
+        demandAsset.setIntroducedDate(existAsset.getIntroducedDate());
+        // int 필드에 대해 기본값 처리
+        demandAsset.setConfidentiality(existAsset.getConfidentiality());
+        demandAsset.setIntegrity(existAsset.getIntegrity());
+        demandAsset.setAvailability(existAsset.getAvailability());
+        // 다시
+        demandAsset.setNote(existAsset.getNote());
+        demandAsset.setPurchaseCost(existAsset.getPurchaseCost());
+        demandAsset.setPurchaseDate(existAsset.getPurchaseDate());
+        demandAsset.setUsefulLife(existAsset.getUsefulLife());
+        demandAsset.setDepreciationMethod(existAsset.getDepreciationMethod());
+        demandAsset.setPurchaseSource(existAsset.getPurchaseSource());
+        demandAsset.setContactInformation(existAsset.getContactInformation());
+        demandAsset.setAcquisitionRoute(existAsset.getAcquisitionRoute());
+        demandAsset.setMaintenancePeriod(existAsset.getMaintenancePeriod());
+        demandAsset.setAssetClassification(existAsset.getAssetClassification() // 기본값 설정
+        );
+
+        demandAsset.setApproval(Approval.APPROVE);
+        demandAsset.setDisposalStatus(Boolean.TRUE);
+        demandAsset.setDemandStatus(Boolean.FALSE);
+        demandAsset.setDemandCheck(Boolean.FALSE);
+        demandAsset.setCreateDate(LocalDate.now());
+
+        commonAssetRepository.save(demandAsset);
+
+        // 폐기 요청도 결국 새로운 자산 번호 생성해야함
+        Long newAssetNo = demandAsset.getAssetNo();
+
+        CommonAsset latestAsset = commonAssetRepository.findTopByOrderByAssetNoDesc();
+        //자산 분류에 따라 관련된 데이터 베이스 저장
+        saveRelatedEntity1(assetDisposeDto, latestAsset);
+
+        // 폐기 이력 저장
+        Demand demand = new Demand();
+        demand.setDemandBy(assetDisposeDto.getDisposeUser());
+        demand.setDemandDate(LocalDate.now()); // 폐기 일자 - 추후 자동생성 변경
+        demand.setDemandReason(assetDisposeDto.getDisposeReason()); // 폐기 사유
+        demand.setDemandDetail(assetDisposeDto.getDisposeDetail()); // 폐기내용
+        demand.setDisposeMethod(assetDisposeDto.getDisposeMethod()); // 폐기 방법
+        demand.setDisposeLocation(assetDisposeDto.getDisposeLocation());  // 폐기 위치
+        demandRepository.save(demand);
+
+        // DemandDtl 테이블에 저장
+        DemandDtl demandDtl = new DemandDtl();
+        demandDtl.setAssetNo(demandAsset);  // CommonAsset과 연관 설정
+        demandDtl.setDemandNo(demand);  // Demand와 연관 설정
+        demandDtlRepository.save(demandDtl); // DemandDtl 테이블에 저장
+        demandService.beforeDemand(assetCode,demandAsset.getAssetNo());
 
 
         return newAssetNo;
@@ -918,6 +1000,7 @@ public class RegisterService {
 
     }
 
+
     public Demand DeleteDemand(AllDeleteDto allDeleteDto){
         // 폐기 이력 저장
         Demand demand = new Demand();
@@ -976,6 +1059,7 @@ public class RegisterService {
 
         return updateAsset.getAssetNo();
     }
+
 
     private void updateAssetBasedOnClassification(CommonAsset updateAsset, CommonAsset existAsset) {
         switch (updateAsset.getAssetClassification()) {

@@ -76,14 +76,8 @@ public class QRController {
     @PostMapping("/disposeAsset/{assetCode}")
     public ResponseEntity<AssetUpdateResponse> disposeitem (
             @PathVariable("assetCode") String assetCode, @RequestBody AssetDisposeDto assetDisposeDto) {
-        try {
-            AssetUpdateResponse response = assetFinalService.DisposeAsset(assetCode, assetDisposeDto);
-            // 성공적인 응답을 위해 200 OK 상태 반환
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            // 오류 발생 시 400 Bad Request 상태 반환
-            return ResponseEntity.badRequest().body(new AssetUpdateResponse(e.getMessage(), null));
-        }
+        registerService.DisposeAsset(assetCode, assetDisposeDto);
+        return ResponseEntity.ok().build();
     }
 
     // 자산조회 : 휴지통 - 자산 폐기 요청 동작 (자산 하나 폐기) - AssetManager 자산담당자가 폐기 요청 (권)

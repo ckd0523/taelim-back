@@ -4,6 +4,7 @@ package com.codehows.taelim.service;
 import com.codehows.taelim.constant.FileType;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.repository.FileRepository;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.codehows.taelim.entity.File;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -52,7 +55,19 @@ public class FileServiceImpl implements FileService {
             if(!dir.exists()){
                 dir.mkdirs();
             }
-            file.transferTo(new java.io.File(savePath));
+
+            if(fileType == FileType.PHOTO) {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                Thumbnails.of(file.getInputStream())
+                        .size(800, 800)
+                        .outputQuality(0.8)
+                        .toOutputStream(outputStream);
+                try(FileOutputStream fos = new FileOutputStream(savePath)){
+                    outputStream.writeTo(fos);
+                }
+            }else {
+                file.transferTo(new java.io.File(savePath));
+            }
         }catch (Exception exception){
             exception.printStackTrace();
             return null;

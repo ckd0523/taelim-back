@@ -9,16 +9,29 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CrawlingService {
-    public List<ProductDto> scraperProductData() {
+    private static final Map<String, String> CATEGORY_URL_MAP = new HashMap<>();
 
+    static {
+        CATEGORY_URL_MAP.put("노트북" , "https://prod.danawa.com/list/?cate=112758");
+        CATEGORY_URL_MAP.put("책상", "https://prod.danawa.com/list/?cate=15240504");
+    }
+    public List<ProductDto> scraperProductData(String keyword) {
         List<ProductDto> productDTOList = new ArrayList<>();
+//        String url = CATEGORY_URL_MAP.get(keyword);
+String url = findClosestUrl(keyword);
+        if(url == null) {
+            System.out.println("No URL mapped for keyword: " + keyword);
+            return productDTOList;
+        }
         try {
 //            String url = "https://prod.danawa.com/list/?cate=112758";
-            String url = "https://prod.danawa.com/list/?cate=15237574";
+//            String url = "https://prod.danawa.com/list/?cate=15237574";
             Document doc = Jsoup.connect(url).get();
             System.out.println("Page title : " + doc.title());
 
@@ -37,17 +50,15 @@ public class CrawlingService {
                 if(productPrice.equals("No price")) {
                     productPriceElement = productElement.selectFirst("div.prod_main_info div.prod_pricelist div.box__mall-type a.link__mall-type div.box__price div.sell-price span.text__number");
                     productPrice = productPriceElement != null ? productPriceElement.text() : "No price";
+                    if(productPrice.equals("No price")) {
+                        productPriceElement = productElement.selectFirst("div.prod_main_info div.prod_pricelist p.price_sect strong");
+                        productPrice = productPriceElement != null ? productPriceElement.text() : "No price";
+                    }
                 }
                 Element productMemoryElement = productElement.selectFirst("div.prod_main_info p.memory_sect");
                 String productMemory = productMemoryElement != null ? productMemoryElement.text() : "No memory info";
 
-//                Element productImageElement = productElement.selectFirst("div.prod_main_info .thumb_image img");
-//                String image = productImageElement != null ? productImageElement.attr("src") : "No image";
-//
-//                if(image.equals("No image")) {
-//                    productImageElement = productElement.selectFirst("li.prod_item prod_layer div.prod_main_info div.thumb_image a.thumb_link img");
-//                    image = productImageElement != null ? productImageElement.attr("src") : "No image";
-//                }
+
                 Element productImageElement = productElement.selectFirst("div.prod_main_info .thumb_image img");
                 String image = productImageElement != null ? productImageElement.attr("src") : "No image";
 
@@ -70,5 +81,17 @@ public class CrawlingService {
             e.printStackTrace();
         }
         return productDTOList;
+    }
+
+    private String findClosestUrl(String keyword) {
+        if(CATEGORY_URL_MAP.containsKey(keyword)){
+            return CATEGORY_URL_MAP.get(keyword);
+        }
+        for(Map.Entry<String,String > entry : CATEGORY_URL_MAP.entrySet()) {
+            if(keyword.contains(entry.getKey())){
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 }

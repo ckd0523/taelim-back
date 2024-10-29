@@ -71,14 +71,6 @@ public class CommonAsset {
     private String attachment;
     private String purchaseSource;
     private String contactInformation;
-    private Boolean disposalStatus;
-    private Boolean demandStatus; // requestStatus 아님
-
-    @Enumerated(EnumType.STRING)
-    private Approval approval;
-
-    private Boolean demandCheck;
-    private LocalDate createDate;
 
     @Enumerated(EnumType.STRING)
     private UseStated useStated;
@@ -88,6 +80,16 @@ public class CommonAsset {
 
     //제품 시리얼 No. 공통으로
     private String productSerialNumber;
+
+    private Boolean disposalStatus;
+
+    private Boolean demandStatus; // requestStatus 아님
+
+    @Enumerated(EnumType.STRING)
+    private Approval approval;
+
+    private Boolean demandCheck;
+    private LocalDate createDate;
 
 
 }

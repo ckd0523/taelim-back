@@ -5,13 +5,14 @@ import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.RepairFile;
 import com.codehows.taelim.entity.RepairHistory;
 import com.codehows.taelim.repository.RepairFileRepository;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import java.io.*;
 import java.util.UUID;
 
 @Service
@@ -52,7 +53,16 @@ public class RepairFileService {
                     System.out.println("디렉터리 생성 성공");
                 }
             }
-            file.transferTo(new File(savePath));
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            Thumbnails.of(file.getInputStream())
+                            .size(800,800)
+                                    .outputQuality(0.8)
+                                            .toOutputStream(outputStream);
+
+           try(FileOutputStream fos = new FileOutputStream(savePath)){
+               outputStream.writeTo(fos);
+           }
+//            multipartFile.transferTo(new File(savePath));
         }catch(Exception exception){
             exception.printStackTrace();
             return null;
