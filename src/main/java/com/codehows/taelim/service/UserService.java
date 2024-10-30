@@ -18,7 +18,7 @@ public class UserService {
 
     private final AspNetUserRepository aspNetUserRepository;
 
-    //인코딩d
+    //인코딩
     public String encodeBase64(String plainText) {
         return Base64.getEncoder().encodeToString(plainText.getBytes());
     }
