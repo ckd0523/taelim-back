@@ -5,6 +5,7 @@ import com.codehows.taelim.dto.*;
 import com.codehows.taelim.security.PasswordHasher;
 import com.codehows.taelim.security.PasswordHasher2;
 import com.codehows.taelim.service.AssetSurveyService;
+import com.codehows.taelim.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class AssetSurveyController {
     private final AssetSurveyService assetSurveyService;
     private final PasswordHasher passwordHasher;
     private final PasswordHasher2 passwordHasher2;
+    private final UserService userService;
 
     //자산 조사 이력 보여주기
     @GetMapping("/assetSurveyHistory")
@@ -99,7 +101,14 @@ public class AssetSurveyController {
     public List<AssetSurveyDetailDto> getAssetSurveyDetail(@PathVariable("assetSurveyNo") Integer assetSurveyNo) {
         //System.out.println("여기라고!!!");
         //System.out.println("얘 아무것도 없어? : " + assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo));
-        return assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo);
+        List<AssetSurveyDetailDto> a = assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo);
+        for(AssetSurveyDetailDto dto : a) {
+            //System.out.println("여기입니다" + dto.getAssetName());
+            dto.setAssetOwner(userService.getUserById(dto.getAssetOwner()).getFullname());
+            dto.setAssetSecurityManager((userService.getUserById(dto.getAssetSecurityManager()).getFullname()));
+        }
+        System.out.println(a);
+        return a;
     }
 
     @GetMapping("/checkLocation/{selectedLocation}")
