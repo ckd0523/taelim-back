@@ -356,6 +356,7 @@ public class RegisterService {
         updateAsset.setIntroducedDate(assetDto.getIntroducedDate() != null ? assetDto.getIntroducedDate() : existAsset.getIntroducedDate());
         updateAsset.setOwnership(assetDto.getOwnership() != null ? assetDto.getOwnership() : existAsset.getOwnership()); // 소유 enum 추가
         updateAsset.setQuantity(assetDto.getQuantity() != null ? assetDto.getQuantity() : existAsset.getQuantity());  // 수량 추가
+        updateAsset.setProductSerialNumber(assetDto.getProductSerialNumber() != null ? assetDto.getProductSerialNumber() : existAsset.getProductSerialNumber());
         // int 필드에 대해 기본값 처리
         updateAsset.setConfidentiality(assetDto.getConfidentiality() != 0 ? assetDto.getConfidentiality() : existAsset.getConfidentiality());
         updateAsset.setIntegrity(assetDto.getIntegrity() != 0 ? assetDto.getIntegrity() : existAsset.getIntegrity());
@@ -450,6 +451,7 @@ public class RegisterService {
         updateAsset.setIntroducedDate(assetDto.getIntroducedDate() != null ? assetDto.getIntroducedDate() : existAsset.getIntroducedDate());
         updateAsset.setOwnership(assetDto.getOwnership() != null ? assetDto.getOwnership() : existAsset.getOwnership()); // 소유 enum 추가
         updateAsset.setQuantity(assetDto.getQuantity() != null ? assetDto.getQuantity() : existAsset.getQuantity());  // 수량 추가
+        updateAsset.setProductSerialNumber(assetDto.getProductSerialNumber() != null ? assetDto.getProductSerialNumber() : existAsset.getProductSerialNumber());
         // int 필드에 대해 기본값 처리
         updateAsset.setConfidentiality(assetDto.getConfidentiality() != 0 ? assetDto.getConfidentiality() : existAsset.getConfidentiality());
         updateAsset.setIntegrity(assetDto.getIntegrity() != 0 ? assetDto.getIntegrity() : existAsset.getIntegrity());
