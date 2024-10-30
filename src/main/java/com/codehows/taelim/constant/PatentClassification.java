@@ -31,7 +31,7 @@ public enum PatentClassification {
         }
         try{
             return PatentClassification.valueOf(value);
-        }catch(IllegalArgumentException e) {
+        }catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("잘못된 값: " + value);
         }
     }

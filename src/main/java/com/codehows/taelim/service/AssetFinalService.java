@@ -279,6 +279,7 @@ public class AssetFinalService {
             List<File> files = fileRepository.findByAssetNo(commonAsset);
 
             List<FileDto> fileDtos = files.stream()
+                    .filter(file -> file.getFileName() != null && !file.getFileName().isEmpty()) // file_name이 null이 아니고 빈 문자열이 아닐 경우에만 복사
                     .map(file -> {
                         FileDto fileDto = new FileDto();
                         fileDto.setAssetNo(file.getAssetNo().getAssetNo());
@@ -325,7 +326,7 @@ public class AssetFinalService {
                         repairHistoryDto.setAssetCode(repairHistory.getAssetNo().getAssetCode());
                         repairHistoryDto.setAssetName(repairHistory.getAssetNo().getAssetName());
                         repairHistoryDto.setRepairBy(repairHistory.getRepairBy());
-                        //repairHistoryDto.setRepairBy(userService.getUserById(repairHistory.getRepairBy()).getFullname());
+                        repairHistoryDto.setRepairBy(userService.getUserById(repairHistory.getRepairBy()).getFullname());
                         repairHistoryDto.setRepairStartDate(repairHistory.getRepairStartDate());
                         repairHistoryDto.setRepairEnDate(repairHistory.getRepairEndDate());
                         repairHistoryDto.setRepairResult(repairHistory.getRepairResult());
@@ -395,8 +396,14 @@ public class AssetFinalService {
              Workbook workbook = new XSSFWorkbook()) {
 
         // 분류별로 시트 생성
-        for (AssetClassification classification : AssetClassification.values()) {
-            Sheet sheet = workbook.createSheet(classification.getDescription());
+            AssetClassification[] classifications = AssetClassification.values();
+            for (int i = 0; i < classifications.length; i++) {
+                AssetClassification classification = classifications[i];
+
+                // 인덱스를 기반으로 시트 제목을 설정
+                String sheetTitle = "2." + (i + 1) + " "+ classification.getDescription(); // 예: "1. 자산 설명"
+
+                Sheet sheet = workbook.createSheet(sheetTitle);
 
             setTitleRow(sheet); // 새로운 메서드 호출
 
@@ -430,8 +437,8 @@ public class AssetFinalService {
         String[] headers = {
                 "No", "자산 기준", "자산 코드", "자산명", "자산분류",
                 "목적/기능", "자산 위치", "부서", "사용자", "소유자",
-                "보안담당자", "수량", "제품시리얼번호", "소윤권", "사용상태", "가동여부", "도입일자", "기밀성",
-                "무결성","비고","가용성", "중요성점수", "중요성등급",
+                "보안담당자", "수량", "제품시리얼번호", "소윤권", "사용상태", "가동여부", "도입일자", "비고",
+                "기밀성","무결성","가용성", "중요성점수", "중요성등급",
                 "구매비용", "구매날짜", "유지기간", "내용연수", "감각상각방법",
                 "구입처", "구입처 연락처", "취득경로", "잔존가치", "현재가치"
         };
@@ -1067,6 +1074,7 @@ public class AssetFinalService {
                     .note(asset.getNote())
                     .manufacturingCompany(asset.getManufacturingCompany())
                     .ownership(asset.getOwnership())
+                    .productSerialNumber(asset.getProductSerialNumber())
                     .purchaseCost(asset.getPurchaseCost())
                     .purchaseDate(asset.getPurchaseDate())
                     .usefulLife(asset.getUsefulLife())

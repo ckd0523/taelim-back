@@ -416,6 +416,7 @@ public class AssetService {
                     .note(asset.getNote())
                     .manufacturingCompany(asset.getManufacturingCompany())
                     .ownership(asset.getOwnership())
+                    .productSerialNumber(asset.getProductSerialNumber())
                     .purchaseCost(asset.getPurchaseCost())
                     .purchaseDate(asset.getPurchaseDate())
                     .usefulLife(asset.getUsefulLife())
