@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -62,8 +63,27 @@ public class DataInitializerService {
             List<AspNetUser> userList = aspNetUserRepository.findAll();  // AspNetUser 엔티티를 모두 조회
 
             // 2024년 10월 1일부터 31일까지의 날짜 범위
-            LocalDate startDate = LocalDate.of(2024, 10, 1);
+            LocalDate startDate = LocalDate.of(2015, 10, 1);
             LocalDate endDate = LocalDate.of(2025, 12, 31);
+
+            List<CommonAsset> assets = new ArrayList<>();
+            String[] assetNames = {
+                    "방화벽",
+                    "침입 탐지 시스템",
+                    "침입 방지 시스템",
+                    "안티바이러스 소프트웨어",
+                    "데이터 암호화 솔루션",
+                    "VPN"
+            };
+
+            // 차량 모델 이름 배열
+            String[] carModels = {
+                    "현대 아반떼",
+                    "기아 K5",
+                    "삼성 SM6",
+                    "현대 스타렉스",
+                    "기아 봉고",
+            };
             Random random = new Random();
 
             // CommonAsset 첫번째 데이터 삽입
@@ -77,34 +97,47 @@ public class DataInitializerService {
 
                 if (i <= 15) {
                     asset.setAssetClassification(AssetClassification.INFORMATION_PROTECTION_SYSTEM);
-                }else if (i <= 30) {
+                    asset.setAssetName(assetNames[random.nextInt(assetNames.length)]);
+                } else if (i <= 30) {
                     asset.setAssetClassification(AssetClassification.APPLICATION_PROGRAM);
+                    asset.setAssetName("응용 프로그램 자산 " + (i + 1)); // 응용 프로그램 자산명
                 } else if (i <= 45) {
                     asset.setAssetClassification(AssetClassification.SOFTWARE);
+                    asset.setAssetName("소프트웨어 자산 " + (i + 1)); // 소프트웨어 자산명
                 } else if (i <= 60) {
                     asset.setAssetClassification(AssetClassification.ELECTRONIC_INFORMATION);
+                    asset.setAssetName("전자정보 자산 " + (i + 1)); // 전자정보 자산명
                 } else if (i <= 75) {
                     asset.setAssetClassification(AssetClassification.DOCUMENT);
+                    asset.setAssetName("문서 자산 " + (i + 1)); // 문서 자산명
                 } else if (i <= 90) {
                     asset.setAssetClassification(AssetClassification.PATENTS_AND_TRADEMARKS);
+                    asset.setAssetName("특허 및 상표 자산 " + (i + 1)); // 특허 및 상표 자산명
                 } else if (i <= 105) {
                     asset.setAssetClassification(AssetClassification.ITSYSTEM_EQUIPMENT);
+                    asset.setAssetName("IT 시스템 장비 자산 " + (i + 1)); // IT 시스템 장비 자산명
                 } else if (i <= 120) {
                     asset.setAssetClassification(AssetClassification.ITNETWORK_EQUIPMENT);
+                    asset.setAssetName("IT 네트워크 장비 자산 " + (i + 1)); // IT 네트워크 장비 자산명
                 } else if (i <= 135) {
                     asset.setAssetClassification(AssetClassification.TERMINAL);
-                } else if (i <= 150){
+                    asset.setAssetName("단말기 자산 " + (i + 1)); // 단말기 자산명
+                } else if (i <= 150) {
                     asset.setAssetClassification(AssetClassification.FURNITURE);
+                    asset.setAssetName("가구 자산 " + (i + 1)); // 가구 자산명
                 } else if (i <= 165) {
                     asset.setAssetClassification(AssetClassification.DEVICES);
+                    asset.setAssetName("기기 자산 " + (i + 1)); // 기기 자산명
                 } else if (i <= 180) {
                     asset.setAssetClassification(AssetClassification.CAR);
+                    asset.setAssetName(carModels[random.nextInt(carModels.length)]); // 차량 이름 랜덤 선택
                 } else if (i <= 195) {
                     asset.setAssetClassification(AssetClassification.OTHERASSETS);
+                    asset.setAssetName("기타 자산 " + (i + 1)); // 기타 자산명
                 }
                 asset.setAssetBasis(AssetBasis.COMMON);
 
-                asset.setAssetName("Asset " + i);
+               //asset.setAssetName("Asset " + i);
                 asset.setPurpose("Test Purpose");
                 asset.setQuantity(1L);
                 asset.setDepartment(Department.IT_DEPARTMENT);
@@ -127,16 +160,17 @@ public class DataInitializerService {
                 // 2024년 10월 1일부터 31일까지의 날짜 순환 설정
                 LocalDate introducedDate = startDate.plusDays((i - 1) % 31); // 0부터 30까지 순환
                 asset.setIntroducedDate(introducedDate);
-                asset.setConfidentiality(1);
-                asset.setIntegrity(1);
-                asset.setAvailability(1);
+                // 보안성 설정 (1~3 범위)
+                asset.setConfidentiality(random.nextInt(3) + 1); // 1~3 랜덤 값
+                asset.setIntegrity(random.nextInt(3) + 1);        // 1~3 랜덤 값
+                asset.setAvailability(random.nextInt(3) + 1);     // 1~3 랜덤 값
                 asset.setNote("Test Note");
                 asset.setManufacturingCompany("Test Manufacturing Company");
                 //Owenerhip
                 Ownership ownership = Ownership.values()[i % Ownership.values().length];
                 asset.setOwnership(ownership);
                 // 랜덤으로 구매비용 및 잔존가치, 현재가치 설정
-                long purchaseCost = 5000 + random.nextInt(10001); // 5000-15000 사이의 랜덤 값
+                long purchaseCost = 5000 + (random.nextInt(196001) / 1000) * 1000; // 5000에서 200000 사이의 랜덤 값 (천 단위)
                 asset.setPurchaseCost(purchaseCost);
 
                 // 랜덤한 구매 날짜 설정
