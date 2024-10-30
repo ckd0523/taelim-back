@@ -35,7 +35,6 @@ public class AssetSurveyHistoryRepositoryCustomImpl implements AssetSurveyHistor
                 .select(Projections.constructor(
                         AssetSurveyHistoryDto.class,
                         assetSurveyHistory.assetSurveyNo, // asset_survey_no
-//                        member.uName, // member.u_name
                         assetSurveyHistory.assetSurveyBy,
                         assetSurveyHistory.assetSurveyLocation, // asset_survey_location
                         assetSurveyHistory.round, // ROUND
@@ -44,7 +43,6 @@ public class AssetSurveyHistoryRepositoryCustomImpl implements AssetSurveyHistor
                         assetSurveyHistory.assetSurveyEndDate // asset_survey_end_date
                 ))
                 .from(assetSurveyHistory)
-//                .join(assetSurveyHistory.assetSurveyBy) // member.email = asset_survey_history.asset_survey_by
                 .fetch();
     }
 

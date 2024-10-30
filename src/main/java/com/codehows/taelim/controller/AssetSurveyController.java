@@ -57,10 +57,8 @@ public class AssetSurveyController {
     //자산 조사 등록
     @PostMapping("/register")
     public ResponseEntity<Void> createAssetSurvey(@RequestBody AssetSurveyHistoryRegisterDto assetSurveyHistory) {
-        //postService.createPost(post);
-        //assetSurveyService.assetSurveyRegister(AssetLocation.MAIN_1F, 1L, "user10@example.com");
         System.out.println("프론트에서 넘어온 위치 : " + assetSurveyHistory.getLocation());
-        System.out.println("프론트에서 온 자산 조사자 : "+assetSurveyHistory.getEmail());
+        System.out.println("프론트에서 온 자산 조사자 : "+assetSurveyHistory.getUserId());
         Boolean result = assetSurveyService.assetSurveyRegister(assetSurveyHistory);
         System.out.println(result);
         if(result) {
