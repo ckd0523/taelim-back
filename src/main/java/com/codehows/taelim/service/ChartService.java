@@ -26,7 +26,7 @@ public class ChartService {
         return totalOwnedPurchaseCost;
     }
 
-    //임대 자산 총액 가져오기
+    //    //임대 자산 총액 가져오기
     public Long getTotalLeasedPurchaseCost() {
         Long totalLeasedPurchaseCost = commonAssetRepository.findTotalLeasedPurchaseCost();
 
