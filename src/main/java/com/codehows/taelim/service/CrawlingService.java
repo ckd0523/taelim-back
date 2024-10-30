@@ -21,13 +21,17 @@ public class CrawlingService {
         CATEGORY_URL_MAP.put("노트북" , "https://prod.danawa.com/list/?cate=112758");
         CATEGORY_URL_MAP.put("책상", "https://prod.danawa.com/list/?cate=15240504");
     }
-    public List<ProductDto> scraperProductData(String keyword) {
+    public Map<String, Object> scraperProductData(String keyword) {
         List<ProductDto> productDTOList = new ArrayList<>();
 //        String url = CATEGORY_URL_MAP.get(keyword);
-String url = findClosestUrl(keyword);
+        String url = findClosestUrl(keyword);
+        Map<String, Object> result = new HashMap<>();
+        result.put("sourceUrl" , url !=null ? url : "No URL mapped for keyword");
+
         if(url == null) {
             System.out.println("No URL mapped for keyword: " + keyword);
-            return productDTOList;
+            result.put("products" , productDTOList);
+            return result;
         }
         try {
 //            String url = "https://prod.danawa.com/list/?cate=112758";
@@ -73,14 +77,15 @@ String url = findClosestUrl(keyword);
 
                 System.out.println("Product Title : " + productTitle);
                 System.out.println("Product Price : " + productPrice);
-                System.out.println("Product Memory Info : " + productMemory);
                 System.out.println("Product Image: " + image);
-                productDTOList.add(new ProductDto(productTitle, productPrice, productMemory,image));
+                productDTOList.add(new ProductDto(productTitle, productPrice,image));
             });
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return productDTOList;
+
+        result.put("products", productDTOList);
+        return result;
     }
 
     private String findClosestUrl(String keyword) {

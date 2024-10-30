@@ -11,5 +11,5 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AssetSurveyHistoryRegisterDto {
     private Long round;
     private String location;
-    private String email;
+    private String userId;
 }

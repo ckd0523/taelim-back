@@ -11,7 +11,7 @@ import lombok.*;
 public class ProductDto {
     private String productTitle;
     private String productPrice;
-    private String productMemory;
+//    private String productMemory;
     private String image;
 
 }

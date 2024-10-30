@@ -131,7 +131,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .fetchOne();
     }
 
-    //임대 자산 총액 가져오기
+    //총 자산 개수 가져오기
     @Override
     public Long findTotalAssetAmount() {
         QCommonAsset ca = QCommonAsset.commonAsset;
