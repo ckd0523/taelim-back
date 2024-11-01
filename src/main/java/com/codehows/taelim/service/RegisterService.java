@@ -74,7 +74,7 @@ public class RegisterService {
     @Value("${file.url}")
     private String fileUrl;
 
-    //자산 등록
+    //자산 등록 assetCheck 폴더 - AssetRegister.jsx 등록 api
     public Long assetRegister(AssetDto assetDto){
 
         CommonAsset commonAsset = assetDto.toEntity();
@@ -178,7 +178,7 @@ public class RegisterService {
 
     }
 
-    //엑셀로 등록
+    //엑셀로 등록 - RegisterService - excelRegisterAll 에 이용됨
     public void excelRegister (AssetDto assetDto) {
 
 //        Member assetOwner = memberRepository.findByUName(excelDto.getAssetOwner())
@@ -272,6 +272,8 @@ public class RegisterService {
         }
 
     }
+
+    // 엑셀 등록 ExcelAssetRegister 폴더 - ExcelRegister.jsx 엑셀 등록 api
     public void excelRegisterAll(List<AssetDto> excelDtos) {
 
         for (AssetDto excelDto : excelDtos) {
@@ -279,11 +281,13 @@ public class RegisterService {
             System.out.println(excelDto);
         }
     }
+
+    // AssetController - asset/file/upload 에 이용
     public Optional<CommonAsset> findById(Long id) {
         return commonAssetRepository.findById(id);
     }
 
-    // 자산 코드 생성
+    // 자산 코드 생성 - 더미생성, 자산등록, 엑셀등록에 이용
     public String generateAssetCode(AssetClassification classification) {
         String prefix = "";
         String classificationCode = "";
@@ -328,7 +332,7 @@ public class RegisterService {
         return String.format("%s%s-%05d", prefix, classificationCode, newAssetNumber);
     }
 
-    // 자산 조회  - 자산 1개 수정 동작 - ADMIN권한 (권)
+    // Expand 폴더 - RowDetails.jsx 자산 조회  - 자산 1개 수정 동작 - ADMIN권한 (권)
     public AssetUpdateResponse updateAssetCode(String assetCode, AssetUpdateDto assetDto) {
 
         // 기존 입력되어있는 assetCode 조회
@@ -425,7 +429,7 @@ public class RegisterService {
         return new AssetUpdateResponse("자산 수정 완료 : " + newAssetNo, newAssetNo);
     }
 
-    // 자산 조회  - 자산 1개 수정 요청 동작 - AssetManager권한 (권)
+    // Expand 폴더 - RowDetails.jsx 자산 조회  - 자산 1개 수정 요청 동작 - AssetManager권한 (권)
     public AssetUpdateResponse updatedemandAssetCode(String assetCode, AssetUpdateDto assetDto) {
 
         // 기존 입력되어있는 assetCode 조회
@@ -521,7 +525,7 @@ public class RegisterService {
 
     }
 
-    // 자산 복사 시 , 세부칼럼들 나눠서 가져오기
+    // 자산 수정,수정요청에서 사용함 - 자산 복사 시 , 세부칼럼들 나눠서 가져오기
     private void saveRelatedEntity(AssetUpdateDto assetDto, CommonAsset latestAsset) {
         if (latestAsset.getAssetClassification() == null) {
             throw new IllegalArgumentException("Asset classification cannot be null.");
