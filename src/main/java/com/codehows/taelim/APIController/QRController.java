@@ -70,16 +70,17 @@ public class QRController {
     // 자산조회 : 휴지통 - 자산 폐기 동작 (자산 하나 폐기) - ADMIN 권한임 (권)
     @PostMapping("/disposeAsset/{assetCode}")
     public ResponseEntity<AssetUpdateResponse> disposeitem (
-            @PathVariable("assetCode") String assetCode, @RequestBody AssetDisposeDto assetDisposeDto) {
-        registerService.DisposeAsset(assetCode, assetDisposeDto);
+            @PathVariable("assetCode") String assetCode, @RequestBody AssetUpdateDto assetUpdateDto) {
+        registerService.DisposeAsset(assetCode, assetUpdateDto);
         return ResponseEntity.ok().build();
     }
 
     // 자산조회 : 휴지통 - 자산 폐기 요청 동작 (자산 하나 폐기) - AssetManager 자산담당자가 폐기 요청 (권)
+    // Expand 폴더 - AssetPageExpand.jsx 자산 조회 에서 자산폐기요청 동작
     @PostMapping("/disposeDemand/{assetCode}")
     public ResponseEntity<CommonAsset> disposedemand1 (
-            @PathVariable("assetCode") String assetCode, @RequestBody AssetDisposeDto assetDisposeDto ){
-        registerService.DisposeDemand(assetCode, assetDisposeDto);
+            @PathVariable("assetCode") String assetCode, @RequestBody AssetUpdateDto assetUpdateDto ){
+        registerService.DisposeDemand(assetCode, assetUpdateDto);
         return ResponseEntity.ok().build();
     }
 
