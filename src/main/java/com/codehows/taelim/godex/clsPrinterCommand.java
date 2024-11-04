@@ -27,13 +27,13 @@ public class clsPrinterCommand
 	//---------------------------------------------------------------------------
 	// Print Text (Simple)
 	//---------------------------------------------------------------------------
-	int PrintText(int PosX, int PosY, int FontHeight, String FontName, String Data)
+	public int PrintText(int PosX, int PosY, int FontHeight, String FontName, String Data)
 	{
 	    return API.ecTextOut(PosX, PosY, FontHeight, FontName, Data);
 	}
 	// Print Text (Simple) - Unicode
 	//---------------------------------------------------------------------------
-	int PrintText_Unicode(int PosX, int PosY, int FontHeight, String FontName, String Data)
+	public int PrintText_Unicode(int PosX, int PosY, int FontHeight, String FontName, String Data)
 	{
 		byte[] byteData = null;
 		try {

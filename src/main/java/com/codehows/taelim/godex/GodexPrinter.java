@@ -28,7 +28,7 @@ public class GodexPrinter
 	//---------------------------------------------------------------------------
 	// Open By Network
 	//---------------------------------------------------------------------------
-	void Open(String strIP, String strPort)
+	public void Open(String strIP, String strPort)
 	{
 		API.OpenNet(strIP, strPort);
 	}
@@ -44,7 +44,7 @@ public class GodexPrinter
 	//---------------------------------------------------------------------------
 	// Close
 	//---------------------------------------------------------------------------
-	void Close()
+	public void Close()
 	{
 		API.closeport();
 	}
