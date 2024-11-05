@@ -161,16 +161,8 @@ public class ChartService {
             }
 
             gradeCount.put(grade, gradeCount.getOrDefault(grade, 0L) + 1);
-
         }
 
         return gradeCount;
-
-
     }
-
-
-
-
-
 }
