@@ -8,6 +8,7 @@ import com.codehows.taelim.secondEntity.AspNetUser;
 import com.codehows.taelim.secondRepository.AspNetUserRepository;
 import com.codehows.taelim.service.UserService;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -165,6 +166,48 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .from(ca)
                 .where(ca.assetNo.in(subQuery)) // 서브 쿼리에서 선택된 최신 assetNo
                 .fetchOne();
+    }
+
+    //자산총액추이
+    @Override
+    public Map<Integer, Long> findAssetPurchaseSum() {
+        QCommonAsset ca = QCommonAsset.commonAsset;
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset;
+
+        excludedAssetCodes.select(subCa.assetCode)
+                .from(subCa)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes)
+                                .and(ca.approval.eq(Approval.APPROVE))
+                                .and(ca.disposalStatus.isFalse())
+                )
+                .groupBy(subCa.assetCode);
+
+        // 2. 최신 assetNo를 선택하는 서브 쿼리
+        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+        subQuery.select(ca.assetNo.max())
+                .from(ca)
+                .where( ca.approval.eq(Approval.APPROVE) // APPROVE 상태인 자산만
+
+                )
+                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
+
+        // 3. 최종 쿼리: 최신 assetNo에 해당하는 자산의 purchaseCost 합계 조회
+       JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
+       List<Tuple> results = query.select(ca.introducedDate.year(), ca.purchaseCost.sum())
+               .from(ca)
+               .where(ca.assetNo.in(subQuery))
+               .groupBy(ca.introducedDate.year())
+               .fetch();
+
+       return results.stream()
+               .filter(tuple -> tuple.get(ca.introducedDate.year()) != null)
+               .collect(Collectors.toMap(
+                       tuple -> tuple.get(ca.introducedDate.year()),
+                       tuple -> tuple.get(ca.purchaseCost.sum()),
+                       Long::sum
+               ));
     }
 
     // 자산목록 (자산 공통정보) - 조건 : 폐기여부 F and 폐기여부 T + 요청 미확인 and 폐기여부 T + 요청 거절   리스트 조회
