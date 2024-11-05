@@ -107,7 +107,7 @@ public class DataInitializerService {
                 asset.setAssetName("Asset " + i);
                 asset.setPurpose("Test Purpose");
                 asset.setQuantity(1L);
-                asset.setDepartment(Department.IT_DEPARTMENT);
+                asset.setDepartment(Department.MANAGEMENT_PLANNING_OFFICE);
                 // AssetLocation을 순환하여 설정
                 AssetLocation assetLocation = AssetLocation.values()[i% AssetLocation.values().length];
                 asset.setAssetLocation(assetLocation);

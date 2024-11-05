@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -67,4 +68,6 @@ public interface CommonAssetRepositoryCustom {
 
     //총 자산 개수 가져오기
     Long findTotalAssetAmount();
+
+    Map<Integer, Long> findAssetPurchaseSum();
 }

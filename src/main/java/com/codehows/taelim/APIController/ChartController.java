@@ -1,6 +1,12 @@
 package com.codehows.taelim.APIController;
 
+import com.codehows.taelim.constant.AssetClassification;
+import com.codehows.taelim.constant.Department;
+import com.codehows.taelim.constant.OperationStatus;
+import com.codehows.taelim.constant.Ownership;
+import com.codehows.taelim.dto.AssetClassificationAmountDto;
 import com.codehows.taelim.dto.AssetTotalAmountDto;
+import com.codehows.taelim.dto.ByDepartmentAmountDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.service.ChartService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,4 +43,42 @@ public class ChartController {
 
         return assetTotalAmountDto;
     }
+
+    @GetMapping("/2")
+    public AssetClassificationAmountDto getAssetClassificationAmount() {
+        return chartService.getAssetClassificationAmount();
+
+    }
+
+    @GetMapping("/3")
+    public ByDepartmentAmountDto getByDepartmentAmount() {
+        return chartService.getByDepartmentAmount();
+    }
+
+    @GetMapping("/4")
+    public Map<Department, Map<AssetClassification, Long>> getDepartmentClassificationAmount() {
+        return chartService.getDepartmentAssetClassificationAmount();
+    }
+
+    @GetMapping ("/5")
+    public Map<OperationStatus, Long> getOperationAmount() {
+        return chartService.getOperationAmount();
+    }
+
+    @GetMapping("/6")
+    public Map<Ownership, Long> getOwnershipAmount() {
+        return chartService.getOwnershipAmount();
+    }
+
+    @GetMapping("7")
+    public Map<Integer, Long> getPurchaseCost() {
+        return chartService.getPurchaseCost();
+    }
+
+    @GetMapping("8")
+    public Map<String, Long> getAssetGrades() {
+        return chartService.getAssetGrades();
+    }
+
+
 }
