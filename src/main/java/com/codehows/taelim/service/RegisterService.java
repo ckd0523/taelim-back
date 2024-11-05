@@ -377,9 +377,15 @@ public class RegisterService {
         // 자산 분류에 따라 관련된 데이터베이스 저장
         saveRelatedEntity(assetDto, latestAsset);
 
-        //파일 복사
+        // 파일 복사
         List<FileDto> files = assetDto.getFiles();
         for (FileDto fileDto : files) {
+            if (fileDto.getFileName() == null || fileDto.getFileName().isEmpty()) {
+                // fileName이 없으면 복사하지 않음
+                System.out.println("fileName이 없으므로 복사하지 않습니다: " + fileDto);
+                continue;
+            }
+
             File file = new File();
             file.setAssetNo(updateAsset);
             file.setFileURL(fileDto.getFileURL());
@@ -388,6 +394,7 @@ public class RegisterService {
             file.setFileExt(fileDto.getFileExt());
             file.setFileSize(fileDto.getFileSize()); // 기존 파일 크기 사용
             file.setFileType(fileDto.getFileType()); // 기존 파일 타입 사용
+
             // 파일 엔티티 저장
             fileRepository.save(file);
         }
@@ -398,9 +405,6 @@ public class RegisterService {
         demand.setDemandReason(assetDto.getDemandReason());
         demand.setDemandDetail(assetDto.getDemandDetail());
         demandRepository.save(demand);
-
-
-
 
         // DemandDtl 테이블 저장
         DemandDtl demandDtl = new DemandDtl();
@@ -475,9 +479,15 @@ public class RegisterService {
         // 자산 분류에 따라 관련된 데이터베이스 저장
         saveRelatedEntity(assetDto, latestAsset);
 
-        //파일 복사
+        // 파일 복사
         List<FileDto> files = assetDto.getFiles();
         for (FileDto fileDto : files) {
+            if (fileDto.getFileName() == null || fileDto.getFileName().isEmpty()) {
+                // fileName이 없으면 복사하지 않음
+                System.out.println("fileName이 없으므로 복사하지 않습니다: " + fileDto);
+                continue;
+            }
+
             File file = new File();
             file.setAssetNo(updateAsset);
             file.setFileURL(fileDto.getFileURL());
@@ -486,6 +496,7 @@ public class RegisterService {
             file.setFileExt(fileDto.getFileExt());
             file.setFileSize(fileDto.getFileSize()); // 기존 파일 크기 사용
             file.setFileType(fileDto.getFileType()); // 기존 파일 타입 사용
+
             // 파일 엔티티 저장
             fileRepository.save(file);
         }
@@ -1144,35 +1155,6 @@ public class RegisterService {
             newFile.transferTo(saveFile); // 파일 저장
             fileRepository.save(convertToFile(newFileDto)); // 파일 정보를 DB에 저장
             System.out.println("파일 저장됨: " + originalFileName + " (저장 경로: " + savePath + ")");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // 기존 파일 업데이트 메서드
-    private void updateExistingFile(File existingFile, MultipartFile newFile) {
-        // 기존 파일 정보를 업데이트
-        String originalFileName = newFile.getOriginalFilename();
-        String extension = originalFileName != null && originalFileName.contains(".") ?
-                originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
-
-        existingFile.setOriFileName(originalFileName);
-        existingFile.setFileSize(newFile.getSize());
-        existingFile.setFileExt(extension);
-
-
-        // 파일을 새로 저장할 경로 설정
-        String uuid = UUID.randomUUID().toString();
-        String saveFileName = uuid + extension;
-        String savePath = filePath + saveFileName;
-
-        // 파일 업데이트
-        java.io.File saveFile = new java.io.File(savePath);
-        try {
-            newFile.transferTo(saveFile); // 파일을 새로 저장
-            existingFile.setFileName(saveFileName); // 파일 이름 업데이트
-            existingFile.setFileURL(fileUrl + saveFileName); // 파일 URL 업데이트
-            fileRepository.save(existingFile); // DB에 저장
         } catch (IOException e) {
             e.printStackTrace();
         }
