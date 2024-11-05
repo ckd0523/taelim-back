@@ -210,6 +210,45 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                ));
     }
 
+    //폐기가 다가오는 자산의 물품
+//    public Map<AssetClassification, Long> findAssetsNearEndOfLife(LocalDate referenceDate) {
+//        QCommonAsset asset = QCommonAsset.commonAsset;
+//
+//        LocalDate endOfPeriod = referenceDate.plusMonths(3);
+//
+//        JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
+//        List<Tuple> results = query.select(asset.assetClassification, asset.assetNo.count())
+//                .from(asset)
+//                .where(asset.purchaseDate.(asset.usefulLife.intValue())
+//                        .between(referenceDate, endOfPeriod))
+//                .groupBy(asset.assetClassification)
+//                .fetch();
+//        return results.stream().collect(Collectors.toMap(
+//                tuple -> tuple.get(asset.assetClassification),
+//                tuple -> tuple.get(asset.assetNo.count())
+//        ));
+//    }
+    public Map<AssetClassification, Long> findAssetsNearEndOfLife(LocalDate referenceDate) {
+        QCommonAsset asset = QCommonAsset.commonAsset;
+
+        // Calculate the end of the 3-month period
+        LocalDate endOfPeriod = referenceDate.plusMonths(3);
+
+        JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
+        List<Tuple> results = query.select(asset.assetClassification, asset.assetNo.count())
+                .from(asset)
+                .where(
+                        asset.purchaseDate.year().add(asset.usefulLife.intValue()).between(referenceDate.getYear(), endOfPeriod.getYear())
+                )
+                .groupBy(asset.assetClassification)
+                .fetch();
+
+        return results.stream().collect(Collectors.toMap(
+                tuple -> tuple.get(asset.assetClassification),
+                tuple -> tuple.get(asset.assetNo.count())
+        ));
+    }
+
     // 자산목록 (자산 공통정보) - 조건 : 폐기여부 F and 폐기여부 T + 요청 미확인 and 폐기여부 T + 요청 거절   리스트 조회
     @Override
     public List<CommonAsset> findApprovedAndNotDisposedAssets() {

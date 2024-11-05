@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -167,6 +168,10 @@ public class ChartService {
         return gradeCount;
 
 
+    }
+    //폐기가 다가오는 자산의 개수
+    public Map<AssetClassification, Long> getAssetNearEndOfLifeCount(LocalDate referenceDate) {
+        return commonAssetRepositoryCustom.findAssetsNearEndOfLife(referenceDate);
     }
 
 

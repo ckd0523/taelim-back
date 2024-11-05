@@ -10,10 +10,14 @@ import com.codehows.taelim.dto.ByDepartmentAmountDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.service.ChartService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -70,14 +74,25 @@ public class ChartController {
         return chartService.getOwnershipAmount();
     }
 
-    @GetMapping("7")
+    @GetMapping("/7")
     public Map<Integer, Long> getPurchaseCost() {
         return chartService.getPurchaseCost();
     }
 
-    @GetMapping("8")
+    @GetMapping("/8")
     public Map<String, Long> getAssetGrades() {
         return chartService.getAssetGrades();
+    }
+
+    @GetMapping("/9/{referenceDate}")
+    public ResponseEntity<Map<AssetClassification, Long>> getAssetEndOfLife(
+            @RequestParam(value = "referenceDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate referenceDate
+            ) {
+        if (referenceDate == null) {
+            referenceDate = LocalDate.of(2024, 12, 1); // Default date for testing
+        }
+        Map<AssetClassification, Long> assetsNearEndOfLife = chartService.getAssetNearEndOfLifeCount(referenceDate);
+        return ResponseEntity.ok(assetsNearEndOfLife);
     }
 
 
