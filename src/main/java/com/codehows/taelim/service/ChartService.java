@@ -162,20 +162,14 @@ public class ChartService {
             }
 
             gradeCount.put(grade, gradeCount.getOrDefault(grade, 0L) + 1);
-
         }
 
         return gradeCount;
-
-
     }
+
     //폐기가 다가오는 자산의 개수
     public Map<AssetClassification, Long> getAssetNearEndOfLifeCount(LocalDate referenceDate) {
         return commonAssetRepositoryCustom.findAssetsNearEndOfLife(referenceDate);
     }
-
-
-
-
 
 }
