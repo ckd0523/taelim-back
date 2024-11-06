@@ -88,6 +88,8 @@ public class WebSecurityConfig {
                             .requestMatchers("/backUpHistory").hasAnyRole("ADMIN", "ASSET_MANAGER")
                             //ChartController
                             .requestMatchers("/chart/**").permitAll()
+                            //QR
+                            .requestMatchers("/generateQRCode").permitAll()
 
                     .anyRequest().authenticated();
                 })

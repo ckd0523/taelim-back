@@ -1,14 +1,25 @@
 package com.codehows.taelim.APIController;
 
+import com.codehows.taelim.constant.AssetClassification;
+import com.codehows.taelim.constant.Department;
+import com.codehows.taelim.constant.OperationStatus;
+import com.codehows.taelim.constant.Ownership;
+import com.codehows.taelim.dto.AssetClassificationAmountDto;
 import com.codehows.taelim.dto.AssetTotalAmountDto;
+import com.codehows.taelim.dto.ByDepartmentAmountDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.service.ChartService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,4 +47,60 @@ public class ChartController {
 
         return assetTotalAmountDto;
     }
+
+    //분류별 자산 비율
+    @GetMapping("/2")
+    public AssetClassificationAmountDto getAssetClassificationAmount() {
+        return chartService.getAssetClassificationAmount();
+
+    }
+
+    //부서별 자산 현황
+    @GetMapping("/3")
+    public ByDepartmentAmountDto getByDepartmentAmount() {
+        return chartService.getByDepartmentAmount();
+    }
+
+    //부서별 자산 현황2(각 부서의 자산 종류까지)
+    @GetMapping("/4")
+    public Map<Department, Map<AssetClassification, Long>> getDepartmentClassificationAmount() {
+        return chartService.getDepartmentAssetClassificationAmount();
+    }
+
+    //운용 현황
+    @GetMapping ("/5")
+    public Map<OperationStatus, Long> getOperationAmount() {
+        return chartService.getOperationAmount();
+    }
+
+    //소유권별 현황
+    @GetMapping("/6")
+    public Map<Ownership, Long> getOwnershipAmount() {
+        return chartService.getOwnershipAmount();
+    }
+
+    //자산 총액 추이
+    @GetMapping("7")
+    public Map<Integer, Long> getPurchaseCost() {
+        return chartService.getPurchaseCost();
+    }
+
+    //중요성별 현황
+    @GetMapping("8")
+    public Map<String, Long> getAssetGrades() {
+        return chartService.getAssetGrades();
+    }
+
+    @GetMapping("/9/{referenceDate}")
+    public ResponseEntity<Map<AssetClassification, Long>> getAssetEndOfLife(
+            @RequestParam(value = "referenceDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate referenceDate
+            ) {
+        if (referenceDate == null) {
+            referenceDate = LocalDate.of(2024, 12, 1); // Default date for testing
+        }
+        Map<AssetClassification, Long> assetsNearEndOfLife = chartService.getAssetNearEndOfLifeCount(referenceDate);
+        return ResponseEntity.ok(assetsNearEndOfLife);
+    }
+
+
 }
