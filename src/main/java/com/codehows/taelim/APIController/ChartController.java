@@ -48,38 +48,45 @@ public class ChartController {
         return assetTotalAmountDto;
     }
 
+    //분류별 자산 비율
     @GetMapping("/2")
     public AssetClassificationAmountDto getAssetClassificationAmount() {
         return chartService.getAssetClassificationAmount();
 
     }
 
+    //부서별 자산 현황
     @GetMapping("/3")
     public ByDepartmentAmountDto getByDepartmentAmount() {
         return chartService.getByDepartmentAmount();
     }
 
+    //부서별 자산 현황2(각 부서의 자산 종류까지)
     @GetMapping("/4")
     public Map<Department, Map<AssetClassification, Long>> getDepartmentClassificationAmount() {
         return chartService.getDepartmentAssetClassificationAmount();
     }
 
+    //운용 현황
     @GetMapping ("/5")
     public Map<OperationStatus, Long> getOperationAmount() {
         return chartService.getOperationAmount();
     }
 
+    //소유권별 현황
     @GetMapping("/6")
     public Map<Ownership, Long> getOwnershipAmount() {
         return chartService.getOwnershipAmount();
     }
 
-    @GetMapping("/7")
+    //자산 총액 추이
+    @GetMapping("7")
     public Map<Integer, Long> getPurchaseCost() {
         return chartService.getPurchaseCost();
     }
 
-    @GetMapping("/8")
+    //중요성별 현황
+    @GetMapping("8")
     public Map<String, Long> getAssetGrades() {
         return chartService.getAssetGrades();
     }
