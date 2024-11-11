@@ -145,26 +145,30 @@ public class ChartService {
         return commonAssetRepositoryCustom.findAssetPurchaseSum();
     }
 
+    //등급별 자산 개수
     public Map<String, Long> getAssetGrades() {
-        List<CommonAsset> assets = commonAssetRepository.findAll();
-        Map<String, Long> gradeCount = new HashMap<>();
+//        List<CommonAsset> assets = commonAssetRepository.findAll();
+//        Map<String, Long> gradeCount = new HashMap<>();
+//
+//        for (CommonAsset asset: assets) {
+//            int totalCount = asset.getConfidentiality() + asset.getIntegrity() + asset.getAvailability();
+//            String grade = "";
+//
+//            if(totalCount >= 7 && totalCount <=9) {
+//                grade = "A";
+//            }else if(totalCount >=5 && totalCount <=6) {
+//                grade = "B";
+//            }else if(totalCount >=3 && totalCount <=4) {
+//                grade = "C";
+//            }
+//
+//            gradeCount.put(grade, gradeCount.getOrDefault(grade, 0L) + 1);
+//
+//        }
 
-        for (CommonAsset asset: assets) {
-            int totalCount = asset.getConfidentiality() + asset.getIntegrity() + asset.getAvailability();
-            String grade = "";
+        return commonAssetRepositoryCustom.getAssetGrades();
 
-            if(totalCount >= 7 && totalCount <=9) {
-                grade = "A";
-            }else if(totalCount >=5 && totalCount <=6) {
-                grade = "B";
-            }else if(totalCount >=3 && totalCount <=4) {
-                grade = "C";
-            }
 
-            gradeCount.put(grade, gradeCount.getOrDefault(grade, 0L) + 1);
-        }
-
-        return gradeCount;
     }
 
     //폐기가 다가오는 자산의 개수

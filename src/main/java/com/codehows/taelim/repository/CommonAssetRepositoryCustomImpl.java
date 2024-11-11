@@ -95,7 +95,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .fetchOne();
     }
 
-    //임대 자산 총액 가져오기
+    //국책과제 자산 총액 가져오기
     @Override
     public Long findTotalLeasedPurchaseCost() {
         QCommonAsset ca = QCommonAsset.commonAsset;
@@ -128,7 +128,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         return query.select(ca.purchaseCost.sum()) // purchaseCost의 합계
                 .from(ca)
                 .where(ca.assetNo.in(subQuery)
-                        .and(ca.ownership.eq(Ownership.LEASED))) // 서브 쿼리에서 선택된 최신 assetNo
+                        .and(ca.ownership.eq(Ownership.NATIONAL_PROJECT))) // 서브 쿼리에서 선택된 최신 assetNo
                 .fetchOne();
     }
 
@@ -173,31 +173,28 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
     public Map<Integer, Long> findAssetPurchaseSum() {
         QCommonAsset ca = QCommonAsset.commonAsset;
         JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
-        QCommonAsset subCa = QCommonAsset.commonAsset;
-
-        excludedAssetCodes.select(subCa.assetCode)
-                .from(subCa)
-                .where(
-                        ca.assetCode.notIn(excludedAssetCodes)
-                                .and(ca.approval.eq(Approval.APPROVE))
-                                .and(ca.disposalStatus.isFalse())
-                )
-                .groupBy(subCa.assetCode);
+        List<String> codesToExclude = excludedAssetCodes.select(ca.assetCode)
+                .from(ca)
+                .where(ca.approval.eq(Approval.APPROVE)
+                        .and(ca.disposalStatus.isTrue()))
+                .fetch();
 
         // 2. 최신 assetNo를 선택하는 서브 쿼리
         JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
-        subQuery.select(ca.assetNo.max())
+        List<Long> latestAssetNo = subQuery.select(ca.assetNo.max())
                 .from(ca)
-                .where( ca.approval.eq(Approval.APPROVE) // APPROVE 상태인 자산만
+                .where(ca.assetCode.notIn(codesToExclude)
+                        .and(ca.approval.eq(Approval.APPROVE))
+                        .and(ca.disposalStatus.isFalse()))
+                .groupBy(ca.assetCode)
+                .fetch();
 
-                )
-                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
 
         // 3. 최종 쿼리: 최신 assetNo에 해당하는 자산의 purchaseCost 합계 조회
        JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
        List<Tuple> results = query.select(ca.introducedDate.year(), ca.purchaseCost.sum())
                .from(ca)
-               .where(ca.assetNo.in(subQuery))
+               .where(ca.assetNo.in(latestAssetNo))
                .groupBy(ca.introducedDate.year())
                .fetch();
 
@@ -210,24 +207,32 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                ));
     }
 
+    //등급별 자산 개수
+    public Map<String, Long> getAssetGrades() {
+        QCommonAsset commonAsset = QCommonAsset.commonAsset;
+
+        JPAQuery<CommonAsset> query = new JPAQuery<>(entityManager);
+        List<CommonAsset> filteredAssets = query.select(commonAsset)
+                .from(commonAsset)
+                .where(commonAsset.approval.eq(Approval.APPROVE)
+                        .and(commonAsset.disposalStatus.isFalse()))
+                .fetch();
+
+        return filteredAssets.stream()
+                .collect(Collectors.groupingBy(
+                        asset -> {
+                            int total = asset.getConfidentiality() + asset.getIntegrity() + asset.getAvailability();
+                            if(total >= 7) return "A";
+                            else if (total >=5 ) return "B";
+                            else return "C";
+
+                        },
+                        Collectors.counting()
+                ));
+
+    }
+
     //폐기가 다가오는 자산의 물품
-//    public Map<AssetClassification, Long> findAssetsNearEndOfLife(LocalDate referenceDate) {
-//        QCommonAsset asset = QCommonAsset.commonAsset;
-//
-//        LocalDate endOfPeriod = referenceDate.plusMonths(3);
-//
-//        JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
-//        List<Tuple> results = query.select(asset.assetClassification, asset.assetNo.count())
-//                .from(asset)
-//                .where(asset.purchaseDate.(asset.usefulLife.intValue())
-//                        .between(referenceDate, endOfPeriod))
-//                .groupBy(asset.assetClassification)
-//                .fetch();
-//        return results.stream().collect(Collectors.toMap(
-//                tuple -> tuple.get(asset.assetClassification),
-//                tuple -> tuple.get(asset.assetNo.count())
-//        ));
-//    }
     public Map<AssetClassification, Long> findAssetsNearEndOfLife(LocalDate referenceDate) {
         QCommonAsset asset = QCommonAsset.commonAsset;
 
