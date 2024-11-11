@@ -29,6 +29,7 @@ public class AssetController {
     private final RegisterService registerService;
     private final FileService fileService;
 
+    // assetCheck 폴더 - AssetRegister.jsx 등록 api
     @PostMapping("/register")
     public ResponseEntity<Long> registerAsset(@RequestBody AssetDto assetDto) {
 
@@ -39,7 +40,7 @@ public class AssetController {
 
     }
 
-    // 자산 조회  - 자산 1개 수정 동작 - ADMIN권한 (권)
+    // Expand 폴더 - RowDetails.jsx 자산 조회  - 자산 1개 수정 동작 - ADMIN권한 (권)
     @PostMapping("/update/{assetCode}")
     public ResponseEntity<String> updateAsset(
             @PathVariable String assetCode,
@@ -63,7 +64,7 @@ public class AssetController {
         }
     }
 
-    // 자산 조회  - 자산 1개 수정 요청 동작 - AssetManager권한 (권)
+    // Expand 폴더 - RowDetails.jsx 자산 조회  - 자산 1개 수정 요청 동작 - AssetManager권한 (권)
     @PostMapping("/updateDemand/{assetCode}")
     public ResponseEntity<String> updateDemand(
             @PathVariable String assetCode,
@@ -106,6 +107,7 @@ public class AssetController {
         }
     }
 
+    // ExcelAssetRegister 폴더 - ExcelRegister.jsx 엑셀 등록 api
     @PostMapping("/excelRegister")
     public ResponseEntity<?> uploadExcelData(@RequestBody List<AssetDto> excelDtos) {
         try{

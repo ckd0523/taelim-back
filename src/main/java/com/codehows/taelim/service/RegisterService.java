@@ -1,46 +1,25 @@
 package com.codehows.taelim.service;
 
 import com.codehows.taelim.constant.*;
-import com.codehows.taelim.dto.AssetDisposeDto;
 import com.codehows.taelim.dto.AssetUpdateDto;
-import com.codehows.taelim.dto.ExcelDto;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
-import net.coobird.thumbnailator.Thumbnails;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import com.codehows.taelim.constant.Approval;
 import com.codehows.taelim.constant.AssetClassification;
 import com.codehows.taelim.dto.*;
-import com.codehows.taelim.entity.*;
-import com.codehows.taelim.repository.*;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -74,7 +53,8 @@ public class RegisterService {
     @Value("${file.url}")
     private String fileUrl;
 
-    //자산 등록
+    //자산 등록 assetCheck 폴더 - AssetRegister.jsx 등록 api
+    // AssetController - @PostMapping("/asset/register")
     public Long assetRegister(AssetDto assetDto){
 
         CommonAsset commonAsset = assetDto.toEntity();
@@ -178,7 +158,7 @@ public class RegisterService {
 
     }
 
-    //엑셀로 등록
+    //엑셀로 등록 - RegisterService - excelRegisterAll 에 이용됨
     public void excelRegister (AssetDto assetDto) {
 
 //        Member assetOwner = memberRepository.findByUName(excelDto.getAssetOwner())
@@ -272,6 +252,9 @@ public class RegisterService {
         }
 
     }
+
+    // 엑셀 등록 ExcelAssetRegister 폴더 - ExcelRegister.jsx 엑셀 등록 api
+    // AssetController - @PostMapping("/excelRegister")
     public void excelRegisterAll(List<AssetDto> excelDtos) {
 
         for (AssetDto excelDto : excelDtos) {
@@ -279,11 +262,13 @@ public class RegisterService {
             System.out.println(excelDto);
         }
     }
+
+    // AssetController - asset/file/upload 에 이용
     public Optional<CommonAsset> findById(Long id) {
         return commonAssetRepository.findById(id);
     }
 
-    // 자산 코드 생성
+    // 자산 코드 생성 - 더미생성, 자산등록, 엑셀등록에 이용
     public String generateAssetCode(AssetClassification classification) {
         String prefix = "";
         String classificationCode = "";
@@ -328,7 +313,8 @@ public class RegisterService {
         return String.format("%s%s-%05d", prefix, classificationCode, newAssetNumber);
     }
 
-    // 자산 조회  - 자산 1개 수정 동작 - ADMIN권한 (권)
+    // Expand 폴더 - RowDetails.jsx 자산 조회  - 자산 1개 수정 동작 - ADMIN권한 (권)
+    // AssetController -  @PostMapping("/update/{assetCode}")
     public AssetUpdateResponse updateAssetCode(String assetCode, AssetUpdateDto assetDto) {
 
         // 기존 입력되어있는 assetCode 조회
@@ -391,9 +377,15 @@ public class RegisterService {
         // 자산 분류에 따라 관련된 데이터베이스 저장
         saveRelatedEntity(assetDto, latestAsset);
 
-        //파일 복사
+        // 파일 복사
         List<FileDto> files = assetDto.getFiles();
         for (FileDto fileDto : files) {
+            if (fileDto.getFileName() == null || fileDto.getFileName().isEmpty()) {
+                // fileName이 없으면 복사하지 않음
+                System.out.println("fileName이 없으므로 복사하지 않습니다: " + fileDto);
+                continue;
+            }
+
             File file = new File();
             file.setAssetNo(updateAsset);
             file.setFileURL(fileDto.getFileURL());
@@ -402,30 +394,30 @@ public class RegisterService {
             file.setFileExt(fileDto.getFileExt());
             file.setFileSize(fileDto.getFileSize()); // 기존 파일 크기 사용
             file.setFileType(fileDto.getFileType()); // 기존 파일 타입 사용
+
             // 파일 엔티티 저장
             fileRepository.save(file);
         }
         // 수정 이력 저장
         Demand demand = new Demand();
-        demand.setDemandBy(assetDto.getUpdateBy());
-        demand.setDemandDate(assetDto.getCreateDate());
-        demand.setDemandReason(assetDto.getUpdateReason());
-        demand.setDemandDetail(assetDto.getUpdateDetail());
+        demand.setDemandBy(assetDto.getDemandBy());
+        demand.setDemandDate(LocalDate.now());
+        demand.setDemandReason(assetDto.getDemandReason());
+        demand.setDemandDetail(assetDto.getDemandDetail());
         demandRepository.save(demand);
-
-        demandService.beforeDemand(assetCode, updateAsset.getAssetNo());
-
 
         // DemandDtl 테이블 저장
         DemandDtl demandDtl = new DemandDtl();
         demandDtl.setAssetNo(updateAsset);
         demandDtl.setDemandNo(demand);
         demandDtlRepository.save(demandDtl);
+        demandService.beforeDemand(assetCode,updateAsset.getAssetNo());
         //자산 수정 성공 메시지 반환
         return new AssetUpdateResponse("자산 수정 완료 : " + newAssetNo, newAssetNo);
     }
 
-    // 자산 조회  - 자산 1개 수정 요청 동작 - AssetManager권한 (권)
+    // Expand 폴더 - RowDetails.jsx 자산 조회  - 자산 1개 수정 요청 동작 - AssetManager권한 (권)
+    // AssetController - @PostMapping("/updateDemand/{assetCode}")
     public AssetUpdateResponse updatedemandAssetCode(String assetCode, AssetUpdateDto assetDto) {
 
         // 기존 입력되어있는 assetCode 조회
@@ -487,9 +479,15 @@ public class RegisterService {
         // 자산 분류에 따라 관련된 데이터베이스 저장
         saveRelatedEntity(assetDto, latestAsset);
 
-        //파일 복사
+        // 파일 복사
         List<FileDto> files = assetDto.getFiles();
         for (FileDto fileDto : files) {
+            if (fileDto.getFileName() == null || fileDto.getFileName().isEmpty()) {
+                // fileName이 없으면 복사하지 않음
+                System.out.println("fileName이 없으므로 복사하지 않습니다: " + fileDto);
+                continue;
+            }
+
             File file = new File();
             file.setAssetNo(updateAsset);
             file.setFileURL(fileDto.getFileURL());
@@ -498,16 +496,17 @@ public class RegisterService {
             file.setFileExt(fileDto.getFileExt());
             file.setFileSize(fileDto.getFileSize()); // 기존 파일 크기 사용
             file.setFileType(fileDto.getFileType()); // 기존 파일 타입 사용
+
             // 파일 엔티티 저장
             fileRepository.save(file);
         }
 
         // 수정 이력 저장
         Demand demand = new Demand();
-        demand.setDemandBy(assetDto.getUpdateBy());
-        demand.setDemandDate(assetDto.getCreateDate());
-        demand.setDemandReason(assetDto.getUpdateReason());
-        demand.setDemandDetail(assetDto.getUpdateDetail());
+        demand.setDemandBy(assetDto.getDemandBy());
+        demand.setDemandDate(LocalDate.now());
+        demand.setDemandReason(assetDto.getDemandReason());
+        demand.setDemandDetail(assetDto.getDemandDetail());
         demandRepository.save(demand);
         // DemandDtl 테이블 저장
         DemandDtl demandDtl = new DemandDtl();
@@ -521,7 +520,7 @@ public class RegisterService {
 
     }
 
-    // 자산 복사 시 , 세부칼럼들 나눠서 가져오기
+    // 자산 수정,수정요청에서 사용함 - 자산 복사 시 , 세부칼럼들 나눠서 가져오기
     private void saveRelatedEntity(AssetUpdateDto assetDto, CommonAsset latestAsset) {
         if (latestAsset.getAssetClassification() == null) {
             throw new IllegalArgumentException("Asset classification cannot be null.");
@@ -597,8 +596,9 @@ public class RegisterService {
         }
     }
 
-    // 자산조회 : 휴지통 - 자산 폐기 요청 동작 (자산 하나 폐기) - AssetManager 자산담당자가 폐기 요청 (권)
-    public Long DisposeDemand(String assetCode, AssetDisposeDto assetDisposeDto) {
+    // Expand 폴더 - AssetPageExpand.jsx 자산 조회 에서 자산폐기요청 동작 (자산 하나 폐기) - AssetManager 자산담당자가 폐기 요청 (권)
+    // QRController - @PostMapping("/disposeDemand/{assetCode}")
+    public Long DisposeDemand(String assetCode, AssetUpdateDto assetDto) {
 
         // 1. 기존 입력되어있는 assetCode 조회
         CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
@@ -620,6 +620,9 @@ public class RegisterService {
         demandAsset.setUseStated(existAsset.getUseStated());
         demandAsset.setOperationStatus(existAsset.getOperationStatus());
         demandAsset.setIntroducedDate(existAsset.getIntroducedDate());
+        demandAsset.setOwnership(existAsset.getOwnership());
+        demandAsset.setQuantity(existAsset.getQuantity());
+        demandAsset.setProductSerialNumber(existAsset.getProductSerialNumber());
         // int 필드에 대해 기본값 처리
         demandAsset.setConfidentiality(existAsset.getConfidentiality());
         demandAsset.setIntegrity(existAsset.getIntegrity());
@@ -634,6 +637,8 @@ public class RegisterService {
         demandAsset.setContactInformation(existAsset.getContactInformation());
         demandAsset.setAcquisitionRoute(existAsset.getAcquisitionRoute());
         demandAsset.setMaintenancePeriod(existAsset.getMaintenancePeriod());
+        demandAsset.setAttachment(existAsset.getAttachment());
+        demandAsset.setWarrantyDetails(existAsset.getWarrantyDetails());
         demandAsset.setAssetClassification(existAsset.getAssetClassification() // 기본값 설정
         );
 
@@ -647,19 +652,17 @@ public class RegisterService {
 
         // 폐기 요청도 결국 새로운 자산 번호 생성해야함
         Long newAssetNo = demandAsset.getAssetNo();
-
-        CommonAsset latestAsset = commonAssetRepository.findTopByOrderByAssetNoDesc();
         //자산 분류에 따라 관련된 데이터 베이스 저장
-        saveRelatedEntity1(assetDisposeDto, latestAsset);
+        updateAssetBasedOnClassification(demandAsset, existAsset);
 
         // 폐기 이력 저장
         Demand demand = new Demand();
-        demand.setDemandBy(assetDisposeDto.getDisposeUser());
+        demand.setDemandBy(assetDto.getDemandBy());
         demand.setDemandDate(LocalDate.now()); // 폐기 일자 - 추후 자동생성 변경
-        demand.setDemandReason(assetDisposeDto.getDisposeReason()); // 폐기 사유
-        demand.setDemandDetail(assetDisposeDto.getDisposeDetail()); // 폐기내용
-        demand.setDisposeMethod(assetDisposeDto.getDisposeMethod()); // 폐기 방법
-        demand.setDisposeLocation(assetDisposeDto.getDisposeLocation());  // 폐기 위치
+        demand.setDemandReason(assetDto.getDemandReason()); // 폐기 사유
+        demand.setDemandDetail(assetDto.getDemandDetail()); // 폐기내용
+        demand.setDisposeMethod(assetDto.getDisposeMethod()); // 폐기 방법
+        demand.setDisposeLocation(assetDto.getDisposeLocation());  // 폐기 위치
         demandRepository.save(demand);
 
         // DemandDtl 테이블에 저장
@@ -673,7 +676,7 @@ public class RegisterService {
     }
 
     // 자산조회 : 휴지통 - 자산 폐기  동작 (자산 하나 폐기) - ADMIN 자산관리자 폐기(권)
-    public Long DisposeAsset(String assetCode, AssetDisposeDto assetDisposeDto) {
+    public Long DisposeAsset(String assetCode, AssetUpdateDto assetDto) {
 
         // 1. 기존 입력되어있는 assetCode 조회
         CommonAsset existAsset = commonAssetRepository.findLatestAssetCode(assetCode)
@@ -695,6 +698,9 @@ public class RegisterService {
         demandAsset.setUseStated(existAsset.getUseStated());
         demandAsset.setOperationStatus(existAsset.getOperationStatus());
         demandAsset.setIntroducedDate(existAsset.getIntroducedDate());
+        demandAsset.setOwnership(existAsset.getOwnership());
+        demandAsset.setQuantity(existAsset.getQuantity());
+        demandAsset.setProductSerialNumber(existAsset.getProductSerialNumber());
         // int 필드에 대해 기본값 처리
         demandAsset.setConfidentiality(existAsset.getConfidentiality());
         demandAsset.setIntegrity(existAsset.getIntegrity());
@@ -709,6 +715,8 @@ public class RegisterService {
         demandAsset.setContactInformation(existAsset.getContactInformation());
         demandAsset.setAcquisitionRoute(existAsset.getAcquisitionRoute());
         demandAsset.setMaintenancePeriod(existAsset.getMaintenancePeriod());
+        demandAsset.setAttachment(existAsset.getAttachment());
+        demandAsset.setWarrantyDetails(existAsset.getWarrantyDetails());
         demandAsset.setAssetClassification(existAsset.getAssetClassification() // 기본값 설정
         );
 
@@ -722,19 +730,17 @@ public class RegisterService {
 
         // 폐기 요청도 결국 새로운 자산 번호 생성해야함
         Long newAssetNo = demandAsset.getAssetNo();
-
-        CommonAsset latestAsset = commonAssetRepository.findTopByOrderByAssetNoDesc();
         //자산 분류에 따라 관련된 데이터 베이스 저장
-        saveRelatedEntity1(assetDisposeDto, latestAsset);
+        updateAssetBasedOnClassification(demandAsset, existAsset);
 
         // 폐기 이력 저장
         Demand demand = new Demand();
-        demand.setDemandBy(assetDisposeDto.getDisposeUser());
+        demand.setDemandBy(assetDto.getDemandBy());
         demand.setDemandDate(LocalDate.now()); // 폐기 일자 - 추후 자동생성 변경
-        demand.setDemandReason(assetDisposeDto.getDisposeReason()); // 폐기 사유
-        demand.setDemandDetail(assetDisposeDto.getDisposeDetail()); // 폐기내용
-        demand.setDisposeMethod(assetDisposeDto.getDisposeMethod()); // 폐기 방법
-        demand.setDisposeLocation(assetDisposeDto.getDisposeLocation());  // 폐기 위치
+        demand.setDemandReason(assetDto.getDemandReason()); // 폐기 사유
+        demand.setDemandDetail(assetDto.getDemandDetail()); // 폐기내용
+        demand.setDisposeMethod(assetDto.getDisposeMethod()); // 폐기 방법
+        demand.setDisposeLocation(assetDto.getDisposeLocation());  // 폐기 위치
         demandRepository.save(demand);
 
         // DemandDtl 테이블에 저장
@@ -746,81 +752,6 @@ public class RegisterService {
 
 
         return newAssetNo;
-    }
-
-    private void saveRelatedEntity1(AssetDisposeDto assetDto, CommonAsset latestAsset) {
-        if (latestAsset.getAssetClassification() == null) {
-            throw new IllegalArgumentException("Asset classification cannot be null.");
-        }
-
-        switch (latestAsset.getAssetClassification()) {
-            case INFORMATION_PROTECTION_SYSTEM -> {
-                InformationProtectionSystem infoSystem = assetDto.toInformationProtectionSystem();
-                infoSystem.setAssetNo(latestAsset);
-                informationProtectionSystemRepository.save(infoSystem);
-            }
-            case APPLICATION_PROGRAM -> {
-                ApplicationProgram appProgram = assetDto.toApplication();
-                appProgram.setAssetNo(latestAsset);
-                applicationProgramRepository.save(appProgram);
-            }
-            case SOFTWARE -> {
-                Software software = assetDto.toSoftware();
-                software.setAssetNo(latestAsset);
-                softwareRepository.save(software);
-            }
-            case ELECTRONIC_INFORMATION -> {
-                ElectronicInformation elecInfo = assetDto.toElectronicInformation();
-                elecInfo.setAssetNo(latestAsset);
-                electronicInformationRepository.save(elecInfo);
-            }
-            case DOCUMENT -> {
-                Document document = assetDto.toDocumnet();
-                document.setAssetNo(latestAsset);
-                documentRepository.save(document);
-            }
-            case PATENTS_AND_TRADEMARKS -> {
-                PatentsAndTrademarks patents = assetDto.toPatentsAndTrademarks();
-                patents.setAssetNo(latestAsset);
-                patentsAndTrademarksRepository.save(patents);
-            }
-            case ITSYSTEM_EQUIPMENT -> {
-                ItSystemEquipment itEquipment = assetDto.toItSystemEquipment();
-                itEquipment.setAssetNo(latestAsset);
-                itSystemEquipmentRepository.save(itEquipment);
-            }
-            case ITNETWORK_EQUIPMENT -> {
-                ItNetworkEquipment networkEquipment = assetDto.toItNetworkEquipment();
-                networkEquipment.setAssetNo(latestAsset);
-                itNetworkEquipmentRepository.save(networkEquipment);
-            }
-            case TERMINAL -> {
-                Terminal terminal = assetDto.toTerminal();
-                terminal.setAssetNo(latestAsset);
-                terminalRepository.save(terminal);
-            }
-            case FURNITURE -> {
-                Furniture furniture = assetDto.toFurniture();
-                furniture.setAssetNo(latestAsset);
-                furnitureRepository.save(furniture);
-            }
-            case DEVICES -> {
-                Devices devices = assetDto.toDevices();
-                devices.setAssetNo(latestAsset);
-                devicesRepository.save(devices);
-            }
-            case CAR -> {
-                Car car = assetDto.toCar();
-                car.setAssetNo(latestAsset);
-                carRepository.save(car);
-            }
-            case OTHERASSETS -> {
-                OtherAssets otherAssets = assetDto.toOtherAssets();
-                otherAssets.setAssetNo(latestAsset);
-                otherAssetsRepository.save(otherAssets);
-            }
-            default -> throw new IllegalArgumentException("Unknown asset classification: " + latestAsset.getAssetClassification());
-        }
     }
 
     // 일괄 수정
@@ -866,16 +797,12 @@ public class RegisterService {
         for (FileDto fileDto : files) {
             File file = new File();
             file.setAssetNo(updateAsset);
-
-
-
             file.setFileURL(fileDto.getFileURL());
             file.setOriFileName(fileDto.getOriFileName());
             file.setFileName(fileDto.getFileName());
             file.setFileExt(fileDto.getFileExt());
             file.setFileSize(fileDto.getFileSize()); // 기존 파일 크기 사용
             file.setFileType(fileDto.getFileType()); // 기존 파일 타입 사용
-
 
             // 파일 엔티티 저장
             fileRepository.save(file);
@@ -1063,7 +990,7 @@ public class RegisterService {
         return updateAsset.getAssetNo();
     }
 
-
+    // 일괄수정 allUpdate 일괄폐기 allDelete 일괄 요청 폐기 allDeleteDemamd 일괄 요청 폐기 allDeleteDemamd 에 이용
     private void updateAssetBasedOnClassification(CommonAsset updateAsset, CommonAsset existAsset) {
         switch (updateAsset.getAssetClassification()) {
             case INFORMATION_PROTECTION_SYSTEM -> updateInformationProtectionSystem(existAsset, updateAsset);
@@ -1202,7 +1129,6 @@ public class RegisterService {
     }
 
     // 새 파일 저장 메서드
-    // 새 파일 저장 메서드
     private void saveNewFile(CommonAsset asset, MultipartFile newFile, FileType fileType) {
         String originalFileName = newFile.getOriginalFilename();
         String extension = originalFileName != null && originalFileName.contains(".") ?
@@ -1234,35 +1160,6 @@ public class RegisterService {
         }
     }
 
-    // 기존 파일 업데이트 메서드
-    private void updateExistingFile(File existingFile, MultipartFile newFile) {
-        // 기존 파일 정보를 업데이트
-        String originalFileName = newFile.getOriginalFilename();
-        String extension = originalFileName != null && originalFileName.contains(".") ?
-                originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
-
-        existingFile.setOriFileName(originalFileName);
-        existingFile.setFileSize(newFile.getSize());
-        existingFile.setFileExt(extension);
-
-
-        // 파일을 새로 저장할 경로 설정
-        String uuid = UUID.randomUUID().toString();
-        String saveFileName = uuid + extension;
-        String savePath = filePath + saveFileName;
-
-        // 파일 업데이트
-        java.io.File saveFile = new java.io.File(savePath);
-        try {
-            newFile.transferTo(saveFile); // 파일을 새로 저장
-            existingFile.setFileName(saveFileName); // 파일 이름 업데이트
-            existingFile.setFileURL(fileUrl + saveFileName); // 파일 URL 업데이트
-            fileRepository.save(existingFile); // DB에 저장
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     // FileDto를 File로 변환하는 메서드
     private File convertToFile(FileDto fileDto) {
         File file = new File();
@@ -1282,76 +1179,6 @@ public class RegisterService {
 
         return file;
     }
-
-
-        private Member getMemberByEmail(String email) {
-        return memberRepository.findById(email)
-                .orElseThrow(() -> new RuntimeException("해당 이메일에 대한 멤버를 찾을 수 없습니다: " + email));
-    }
-
-//    public File updateFile(String existingFileName, MultipartFile newFile, CommonAsset commonAsset, FileType fileType) {
-//        // 기존 파일 조회
-//        Optional<File> existingFileOptional = fileRepository.findByFileName(existingFileName);
-//
-//        if (existingFileOptional.isPresent()) {
-//            File existingFile = existingFileOptional.get();
-//
-//            // 서버에서 기존 파일 삭제
-//            java.io.File existingPhysicalFile = new java.io.File(filePath + existingFile.getFileName());
-//            if (existingPhysicalFile.exists()) {
-//                existingPhysicalFile.delete();  // 기존 파일 삭제
-//            }
-//
-//            // 새 파일 저장 경로 생성
-//            String originalFileName = newFile.getOriginalFilename();
-//            String extension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : "";
-//            String uuid = UUID.randomUUID().toString();
-//            String saveFileName = uuid + extension;
-//            String savePath = filePath + saveFileName;
-//
-//            try {
-//                // 파일 저장 디렉터리 생성
-//                java.io.File dir = new java.io.File(filePath);
-//                if (!dir.exists()) {
-//                    dir.mkdirs();
-//                }
-//
-//                // 새 파일 저장 (썸네일 생성 또는 일반 파일)
-//                if (fileType == FileType.PHOTO) {
-//                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//                    Thumbnails.of(newFile.getInputStream())
-//                            .size(800, 800)
-//                            .outputQuality(0.8)
-//                            .toOutputStream(outputStream);
-//                    try (FileOutputStream fos = new FileOutputStream(savePath)) {
-//                        outputStream.writeTo(fos);
-//                    }
-//                } else {
-//                    newFile.transferTo(new java.io.File(savePath));
-//                }
-//            } catch (Exception exception) {
-//                exception.printStackTrace();
-//                return null;
-//            }
-//
-//            // URL 생성
-//            String url = fileUrl + saveFileName;
-//
-//            // 기존 파일 메타데이터 업데이트
-//            existingFile.setOriFileName(originalFileName);
-//            existingFile.setFileName(saveFileName);
-//            existingFile.setFileSize(newFile.getSize());
-//            existingFile.setFileExt(extension);
-//            existingFile.setFileURL(url);
-//            existingFile.setFileType(fileType);
-//
-//            // DB에 업데이트 후 반환
-//            return fileRepository.save(existingFile);
-//        } else {
-//            throw new RuntimeException("File not found with fileName:" + existingFileName);
-//        }
-//    }
-
 }
 
 
