@@ -50,9 +50,9 @@ public class QRController {
     //QR 생성하는곳
     @PostMapping("/generateQRCode")
     public ResponseEntity<String> generateQRCode(@RequestBody List<Long> assetNo) {
-        for(Long id : assetNo) {
-            qrCodeService.PrintAssetLabel(id);
-        }
+//        for(Long id : assetNo) {
+//            qrCodeService.PrintAssetLabel(id);
+//        }
         return ResponseEntity.ok("");
     }
 
