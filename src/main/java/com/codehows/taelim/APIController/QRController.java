@@ -39,7 +39,7 @@ import java.util.zip.ZipOutputStream;
 @RestController
 public class QRController {
 
-//  private final QRService qrCodeService;
+    private final QRService qrCodeService;
     private final UpdateService updateService;
     private final RegisterService registerService;
     private final AssetFinalService assetFinalService;
@@ -47,15 +47,14 @@ public class QRController {
     private final DemandService demandService;
     //private final EmailServcie emailServcie;
 
-    
-//  QR 생성하는곳
-//    @PostMapping("/generateQRCode")
-//    public ResponseEntity<String> generateQRCode(@RequestBody List<Long> assetNo) {
-//        for(Long id : assetNo) {
-//            qrCodeService.PrintAssetLabel(id);
-//        }
-//        return ResponseEntity.ok("");
-//    }
+    //QR 생성하는곳
+    @PostMapping("/generateQRCode")
+    public ResponseEntity<String> generateQRCode(@RequestBody List<Long> assetNo) {
+        for(Long id : assetNo) {
+            qrCodeService.PrintAssetLabel(id);
+        }
+        return ResponseEntity.ok("");
+    }
 
 
 //    //QR 조회

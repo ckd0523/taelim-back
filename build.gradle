@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.codehows'
-version = ''
+version = 'be_tealim'
 
 java {
     toolchain {

@@ -8,6 +8,7 @@ import com.codehows.taelim.secondEntity.AspNetUser;
 import com.codehows.taelim.secondRepository.AspNetUserRepository;
 import com.codehows.taelim.service.UserService;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -94,7 +95,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .fetchOne();
     }
 
-    //임대 자산 총액 가져오기
+    //국책과제 자산 총액 가져오기
     @Override
     public Long findTotalLeasedPurchaseCost() {
         QCommonAsset ca = QCommonAsset.commonAsset;
@@ -127,7 +128,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         return query.select(ca.purchaseCost.sum()) // purchaseCost의 합계
                 .from(ca)
                 .where(ca.assetNo.in(subQuery)
-                        .and(ca.ownership.eq(Ownership.LEASED))) // 서브 쿼리에서 선택된 최신 assetNo
+                        .and(ca.ownership.eq(Ownership.NATIONAL_PROJECT))) // 서브 쿼리에서 선택된 최신 assetNo
                 .fetchOne();
     }
 
@@ -165,6 +166,92 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .from(ca)
                 .where(ca.assetNo.in(subQuery)) // 서브 쿼리에서 선택된 최신 assetNo
                 .fetchOne();
+    }
+
+    //자산총액추이
+    @Override
+    public Map<Integer, Long> findAssetPurchaseSum() {
+        QCommonAsset ca = QCommonAsset.commonAsset;
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        List<String> codesToExclude = excludedAssetCodes.select(ca.assetCode)
+                .from(ca)
+                .where(ca.approval.eq(Approval.APPROVE)
+                        .and(ca.disposalStatus.isTrue()))
+                .fetch();
+
+        // 2. 최신 assetNo를 선택하는 서브 쿼리
+        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+        List<Long> latestAssetNo = subQuery.select(ca.assetNo.max())
+                .from(ca)
+                .where(ca.assetCode.notIn(codesToExclude)
+                        .and(ca.approval.eq(Approval.APPROVE))
+                        .and(ca.disposalStatus.isFalse()))
+                .groupBy(ca.assetCode)
+                .fetch();
+
+
+        // 3. 최종 쿼리: 최신 assetNo에 해당하는 자산의 purchaseCost 합계 조회
+       JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
+       List<Tuple> results = query.select(ca.introducedDate.year(), ca.purchaseCost.sum())
+               .from(ca)
+               .where(ca.assetNo.in(latestAssetNo))
+               .groupBy(ca.introducedDate.year())
+               .fetch();
+
+       return results.stream()
+               .filter(tuple -> tuple.get(ca.introducedDate.year()) != null)
+               .collect(Collectors.toMap(
+                       tuple -> tuple.get(ca.introducedDate.year()),
+                       tuple -> tuple.get(ca.purchaseCost.sum()),
+                       Long::sum
+               ));
+    }
+
+    //등급별 자산 개수
+    public Map<String, Long> getAssetGrades() {
+        QCommonAsset commonAsset = QCommonAsset.commonAsset;
+
+        JPAQuery<CommonAsset> query = new JPAQuery<>(entityManager);
+        List<CommonAsset> filteredAssets = query.select(commonAsset)
+                .from(commonAsset)
+                .where(commonAsset.approval.eq(Approval.APPROVE)
+                        .and(commonAsset.disposalStatus.isFalse()))
+                .fetch();
+
+        return filteredAssets.stream()
+                .collect(Collectors.groupingBy(
+                        asset -> {
+                            int total = asset.getConfidentiality() + asset.getIntegrity() + asset.getAvailability();
+                            if(total >= 7) return "A";
+                            else if (total >=5 ) return "B";
+                            else return "C";
+
+                        },
+                        Collectors.counting()
+                ));
+
+    }
+
+    //폐기가 다가오는 자산의 물품
+    public Map<AssetClassification, Long> findAssetsNearEndOfLife(LocalDate referenceDate) {
+        QCommonAsset asset = QCommonAsset.commonAsset;
+
+        // Calculate the end of the 3-month period
+        LocalDate endOfPeriod = referenceDate.plusMonths(3);
+
+        JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
+        List<Tuple> results = query.select(asset.assetClassification, asset.assetNo.count())
+                .from(asset)
+                .where(
+                        asset.purchaseDate.year().add(asset.usefulLife.intValue()).between(referenceDate.getYear(), endOfPeriod.getYear())
+                )
+                .groupBy(asset.assetClassification)
+                .fetch();
+
+        return results.stream().collect(Collectors.toMap(
+                tuple -> tuple.get(asset.assetClassification),
+                tuple -> tuple.get(asset.assetNo.count())
+        ));
     }
 
     // 자산목록 (자산 공통정보) - 조건 : 폐기여부 F and 폐기여부 T + 요청 미확인 and 폐기여부 T + 요청 거절   리스트 조회

@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 public enum Ownership {
 
     OWNED("소유"),
-    LEASED("임대");
+    NATIONAL_PROJECT("국책과제"),
+    ETC("기타");
+
     private String description;
 
     Ownership(String description) {
