@@ -133,51 +133,14 @@ public class AssetUpdateDto {
     private String usageFrequency;
 
     // updateHistroyDto 관련부분
-    private String updateReason;
-    private String updateDetail;
-    private String updateBy;
-    private LocalDate updateDate;
+    private String demandBy;
+    private String demandReason;
+    private String demandDetail;
+    private String disposeLocation;
+    private String disposeMethod;
+    private LocalDate demandDate;
 
     private List<FileDto> files;
-
-//    public CommonAsset toEntity() {
-//
-//        return CommonAsset.builder()
-//                .assetNo(assetNo)
-//                .assetClassification(assetClassification)
-//                .assetBasis(assetBasis)
-//                .assetCode(assetCode)
-//                .assetName(assetName)
-//                .purpose(purpose)
-//                .quantity(quantity)
-//                .department(department)
-//                .assetLocation(assetLocation)
-//                .operationStatus(operationStatus)
-//                .introducedDate(introducedDate)
-//                .confidentiality(confidentiality)
-//                .integrity(integrity)
-//                .availability(availability)
-//                .note(note)
-//                .manufacturingCompany(manufacturingCompany)
-//                .ownership(ownership)
-//                .purchaseCost(purchaseCost)
-//                .purchaseDate(purchaseDate)
-//                .usefulLife(usefulLife)
-//                .depreciationMethod(depreciationMethod)
-//                .warrantyDetails(warrantyDetails)
-//                .attachment(attachment)
-//                .purchaseSource(purchaseSource)
-//                .contactInformation(contactInformation)
-//                .disposalStatus(disposalStatus)
-//                .demandStatus(demandStatus)
-//                .approval(approval)
-//                .demandCheck(demandCheck)
-//                .createDate(createDate)
-//                .useState(useState)
-//                .acquisitionRoute(acquisitionRoute)
-//                .maintenancePeriod(maintenancePeriod)
-//                .build();
-//    }
 
     public InformationProtectionSystem toInformationProtectionSystem() {
         return InformationProtectionSystem.builder()

@@ -345,33 +345,33 @@ public class AssetService {
         return commonAsset;
     }
 
-    // 폐기 담당자 처리 (추후에 담당자랑 합칠거임)
-    public CommonAsset DisposeDemand(String assetCode, AssetDisposeDto assetDisposeDto) {
-        CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode).get();
-        commonAsset.setApproval(Approval.UNCONFIRMED);
-        commonAsset.setDisposalStatus(Boolean.TRUE);
-        commonAsset.setDemandStatus(Boolean.TRUE);
-        commonAsset.setDemandCheck(Boolean.TRUE);
-        commonAssetRepository.save(commonAsset);
-
-        // 폐기 이력 저장
-        Demand demand = new Demand();
-        //demand.setDemandBy;
-        demand.setDemandDate(LocalDate.now()); // 폐기 일자 - 추후 자동생성 변경
-        demand.setDemandReason(assetDisposeDto.getDisposeReason()); // 폐기 사유
-        demand.setDemandDetail(assetDisposeDto.getDisposeDetail()); // 폐기내용
-        demand.setDisposeMethod(assetDisposeDto.getDisposeMethod()); // 폐기 방법
-        demand.setDisposeLocation(assetDisposeDto.getDisposeLocation());  // 폐기 위치
-        demandRepository.save(demand);
-
-        // DemandDtl 테이블에 저장
-        DemandDtl demandDtl = new DemandDtl();
-        demandDtl.setAssetNo(commonAsset);  // CommonAsset과 연관 설정
-        demandDtl.setDemandNo(demand);  // Demand와 연관 설정
-        demandDtlRepository.save(demandDtl); // DemandDtl 테이블에 저장
-
-        return commonAsset;
-    }
+//    // 폐기 담당자 처리 (추후에 담당자랑 합칠거임)
+//    public CommonAsset DisposeDemand(String assetCode, AssetDisposeDto assetDisposeDto) {
+//        CommonAsset commonAsset = commonAssetRepository.findLatestApprovedAsset(assetCode).get();
+//        commonAsset.setApproval(Approval.UNCONFIRMED);
+//        commonAsset.setDisposalStatus(Boolean.TRUE);
+//        commonAsset.setDemandStatus(Boolean.TRUE);
+//        commonAsset.setDemandCheck(Boolean.TRUE);
+//        commonAssetRepository.save(commonAsset);
+//
+//        // 폐기 이력 저장
+//        Demand demand = new Demand();
+//        //demand.setDemandBy;
+//        demand.setDemandDate(LocalDate.now()); // 폐기 일자 - 추후 자동생성 변경
+//        demand.setDemandReason(assetDisposeDto.getDisposeReason()); // 폐기 사유
+//        demand.setDemandDetail(assetDisposeDto.getDisposeDetail()); // 폐기내용
+//        demand.setDisposeMethod(assetDisposeDto.getDisposeMethod()); // 폐기 방법
+//        demand.setDisposeLocation(assetDisposeDto.getDisposeLocation());  // 폐기 위치
+//        demandRepository.save(demand);
+//
+//        // DemandDtl 테이블에 저장
+//        DemandDtl demandDtl = new DemandDtl();
+//        demandDtl.setAssetNo(commonAsset);  // CommonAsset과 연관 설정
+//        demandDtl.setDemandNo(demand);  // Demand와 연관 설정
+//        demandDtlRepository.save(demandDtl); // DemandDtl 테이블에 저장
+//
+//        return commonAsset;
+//    }
 
     // 수정 이력 상세화면 자산 2개 비교하기 (요청버전)
     public List<AssetDto> getLatestAndPreviousAssets1(Long assetNo) {
