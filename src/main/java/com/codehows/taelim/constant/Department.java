@@ -20,7 +20,7 @@ public enum Department {
     QUALITY_TEAM("품질팀"),
     PRODUCTION_TEAM("생산팀"),
 
-    TECHNOLOGY_RESEARCH_TEAM ("기술연구소팀"),
+    TECHNOLOGY_RESEARCH_TEAM ("기술연구소"),
     NULL("N/A");
     private String description;
 
