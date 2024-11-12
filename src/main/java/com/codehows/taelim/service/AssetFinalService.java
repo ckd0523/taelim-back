@@ -327,6 +327,7 @@ public class AssetFinalService {
                         repairHistoryDto.setAssetName(repairHistory.getAssetNo().getAssetName());
                         repairHistoryDto.setRepairBy(repairHistory.getRepairBy());
                         repairHistoryDto.setRepairBy(userService.getUserById(repairHistory.getRepairBy()).getFullname());
+                        repairHistoryDto.setRepairStatus(repairHistory.getRepairStatus());
                         repairHistoryDto.setRepairStartDate(repairHistory.getRepairStartDate());
                         repairHistoryDto.setRepairEnDate(repairHistory.getRepairEndDate());
                         repairHistoryDto.setRepairResult(repairHistory.getRepairResult());
