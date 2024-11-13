@@ -104,8 +104,8 @@ public class AssetSurveyController {
         List<AssetSurveyDetailDto> a = assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo);
         for(AssetSurveyDetailDto dto : a) {
             //System.out.println("여기입니다" + dto.getAssetName());
-            dto.setAssetOwner(userService.getUserById(dto.getAssetOwner()).getFullname());
-            dto.setAssetSecurityManager((userService.getUserById(dto.getAssetSecurityManager()).getFullname()));
+            dto.setAssetOwner(userService.getUserById(dto.getAssetOwner()).getFullname() != null ? userService.getUserById(dto.getAssetOwner()).getFullname() : "Unknown User");
+            dto.setAssetSecurityManager(userService.getUserById(dto.getAssetSecurityManager()).getFullname() != null ? userService.getUserById(dto.getAssetSecurityManager()).getFullname() : "Unknown User");
         }
         System.out.println(a);
         return a;
