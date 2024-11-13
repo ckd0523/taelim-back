@@ -631,171 +631,285 @@ public class AssetFinalService {
         switch (classification) {
             case INFORMATION_PROTECTION_SYSTEM -> {
                 InformationProtectionSystem informationProtectionSystem = informationProtectionSystemRepository.findByAssetNo(asset);
-                row.createCell(35).setCellValue(informationProtectionSystem.getServiceScope());
+                row.createCell(35).setCellValue(
+                        informationProtectionSystem.getServiceScope() != null ? informationProtectionSystem.getServiceScope() : ""
+                );
                 row.getCell(35).setCellStyle(cellStyle); // 스타일 적용
             }
             case APPLICATION_PROGRAM -> {
                 ApplicationProgram applicationProgram = applicationProgramRepository.findByAssetNo(asset);
-                row.createCell(35).setCellValue(applicationProgram.getServiceScope());
+                row.createCell(35).setCellValue( applicationProgram.getServiceScope() != null ? applicationProgram.getServiceScope() : ""
+                );
                 row.getCell(35).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(36).setCellValue(applicationProgram.getOs());
+                row.createCell(36).setCellValue(applicationProgram.getOs() != null ? applicationProgram.getOs() : ""
+                );
                 row.getCell(36).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(37).setCellValue(applicationProgram.getRelatedDB());
+                row.createCell(37).setCellValue(applicationProgram.getRelatedDB() != null ? applicationProgram.getRelatedDB() : ""
+                );
                 row.getCell(37).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(38).setCellValue(applicationProgram.getIp());
+                row.createCell(38).setCellValue(applicationProgram.getIp() != null ? applicationProgram.getIp() : ""
+                );
                 row.getCell(38).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(39).setCellValue(applicationProgram.getScreenNumber());
+                row.createCell(39).setCellValue(applicationProgram.getScreenNumber() != null ? applicationProgram.getScreenNumber() : 0 );
                 row.getCell(39).setCellStyle(cellStyle); // 스타일 적용
             }
             case SOFTWARE -> {
                 Software software = softwareRepository.findByAssetNo(asset);
-                row.createCell(35).setCellValue(software.getIp());
+                row.createCell(35).setCellValue(
+                        software.getIp() != null ? software.getIp() : ""
+                );
                 row.getCell(35).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(36).setCellValue(software.getServerId());
+
+                row.createCell(36).setCellValue(
+                        software.getServerId() != null ? software.getServerId() : ""
+                );
                 row.getCell(36).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(37).setCellValue(software.getServerPassword());
+
+                row.createCell(37).setCellValue(
+                        software.getServerPassword() != null ? software.getServerPassword() : ""
+                );
                 row.getCell(37).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(38).setCellValue(software.getCompanyManager());
+
+                row.createCell(38).setCellValue(
+                        software.getCompanyManager() != null ? software.getCompanyManager() : ""
+                );
                 row.getCell(38).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(39).setCellValue(software.getOs());
+
+                row.createCell(39).setCellValue(
+                        software.getOs() != null ? software.getOs() : ""
+                );
                 row.getCell(39).setCellStyle(cellStyle); // 스타일 적용
             }
             case ELECTRONIC_INFORMATION -> {
                 ElectronicInformation electronicInformation = electronicInformationRepository.findByAssetNo(asset);
-                row.createCell(35).setCellValue(electronicInformation.getOs());
+                row.createCell(35).setCellValue(
+                        electronicInformation.getOs() != null ? electronicInformation.getOs() : ""
+                );
                 row.getCell(35).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(36).setCellValue(electronicInformation.getSystem());
+
+                row.createCell(36).setCellValue(
+                        electronicInformation.getSystem() != null ? electronicInformation.getSystem() : ""
+                );
                 row.getCell(36).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(37).setCellValue(electronicInformation.getDbtype());
+
+                row.createCell(37).setCellValue(
+                        electronicInformation.getDbtype() != null ? electronicInformation.getDbtype() : ""
+                );
                 row.getCell(37).setCellStyle(cellStyle); // 스타일 적용
             }
             case DOCUMENT -> {
                 Document document = documentRepository.findByAssetNo(asset);
-                row.createCell(35).setCellValue(document.getDocumentGrade().getDescription());
+                row.createCell(35).setCellValue(
+                        document.getDocumentGrade() != null ? document.getDocumentGrade().getDescription() : ""
+                );
                 row.getCell(35).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(36).setCellValue(document.getDocumentType().getDescription());
+
+                row.createCell(36).setCellValue(
+                        document.getDocumentType() != null ? document.getDocumentType().getDescription() : ""
+                );
                 row.getCell(36).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(37).setCellValue(document.getDocumentLink());
+
+                row.createCell(37).setCellValue(
+                        document.getDocumentLink() != null ? document.getDocumentLink() : ""
+                );
                 row.getCell(37).setCellStyle(cellStyle); // 스타일 적용
             }
             case PATENTS_AND_TRADEMARKS -> {
                 PatentsAndTrademarks patentsAndTrademarks = patentsAndTrademarksRepository.findByAssetNo(asset);
-                row.createCell(35).setCellValue(patentsAndTrademarks.getApplicationDate().format(formatter));
+                row.createCell(35).setCellValue(
+                        patentsAndTrademarks.getApplicationDate() != null ? patentsAndTrademarks.getApplicationDate().format(formatter) : ""
+                );
                 row.getCell(35).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(36).setCellValue(patentsAndTrademarks.getRegistrationDate().format(formatter));
-                row.getCell(36).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(37).setCellValue(patentsAndTrademarks.getExpirationDate().format(formatter));
-                row.getCell(37).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(38).setCellValue(patentsAndTrademarks.getPatentTrademarkStatus().getDescription());
-                row.getCell(38).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(39).setCellValue(patentsAndTrademarks.getCountryApplication().getDescription());
-                row.getCell(39).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(40).setCellValue(patentsAndTrademarks.getPatentClassification().getDescription());
-                row.getCell(40).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(41).setCellValue(patentsAndTrademarks.getPatentItem().getDescription());
-                row.getCell(41).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(42).setCellValue(patentsAndTrademarks.getApplicationNo());
-                row.getCell(42).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(43).setCellValue(patentsAndTrademarks.getInventor());
-                row.getCell(43).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(44).setCellValue(patentsAndTrademarks.getAssignee());
-                row.getCell(44).setCellStyle(cellStyle); // 스타일 적용
-                //row.createCell(42).setCellValue(patentsAndTrademarks.getR());
 
+                row.createCell(36).setCellValue(
+                        patentsAndTrademarks.getRegistrationDate() != null ? patentsAndTrademarks.getRegistrationDate().format(formatter) : ""
+                );
+                row.getCell(36).setCellStyle(cellStyle); // 스타일 적용
+
+                row.createCell(37).setCellValue(
+                        patentsAndTrademarks.getExpirationDate() != null ? patentsAndTrademarks.getExpirationDate().format(formatter) : ""
+                );
+                row.getCell(37).setCellStyle(cellStyle); // 스타일 적용
+
+                row.createCell(38).setCellValue(
+                        patentsAndTrademarks.getPatentTrademarkStatus() != null ? patentsAndTrademarks.getPatentTrademarkStatus().getDescription() : ""
+                );
+                row.getCell(38).setCellStyle(cellStyle); // 스타일 적용
+
+                row.createCell(39).setCellValue(
+                        patentsAndTrademarks.getCountryApplication() != null ? patentsAndTrademarks.getCountryApplication().getDescription() : ""
+                );
+                row.getCell(39).setCellStyle(cellStyle); // 스타일 적용
+
+                row.createCell(40).setCellValue(
+                        patentsAndTrademarks.getPatentClassification() != null ? patentsAndTrademarks.getPatentClassification().getDescription() : ""
+                );
+                row.getCell(40).setCellStyle(cellStyle); // 스타일 적용
+
+                row.createCell(41).setCellValue(
+                        patentsAndTrademarks.getPatentItem() != null ? patentsAndTrademarks.getPatentItem().getDescription() : ""
+                );
+                row.getCell(41).setCellStyle(cellStyle); // 스타일 적용
+
+                row.createCell(42).setCellValue(
+                        patentsAndTrademarks.getApplicationNo() != null ? patentsAndTrademarks.getApplicationNo() : ""
+                );
+                row.getCell(42).setCellStyle(cellStyle); // 스타일 적용
+
+                row.createCell(43).setCellValue(
+                        patentsAndTrademarks.getInventor() != null ? patentsAndTrademarks.getInventor() : ""
+                );
+                row.getCell(43).setCellStyle(cellStyle); // 스타일 적용
+
+                row.createCell(44).setCellValue(
+                        patentsAndTrademarks.getAssignee() != null ? patentsAndTrademarks.getAssignee() : ""
+                );
+                row.getCell(44).setCellStyle(cellStyle); // 스타일 적용
             }
             case ITSYSTEM_EQUIPMENT -> {
                 ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(asset);
-                row.createCell(35).setCellValue(itSystemEquipment.getEquipmentType());
+                row.createCell(35).setCellValue(
+                        itSystemEquipment.getEquipmentType() != null ? itSystemEquipment.getEquipmentType() : ""
+                );
                 row.getCell(35).setCellStyle(cellStyle); // 스타일 적용
-                //row.createCell(33).setCellValue(itSystemEquipment.get());
-                row.createCell(36).setCellValue(itSystemEquipment.getPowerSupply());
+
+                row.createCell(36).setCellValue(
+                        itSystemEquipment.getPowerSupply() != null ? itSystemEquipment.getPowerSupply() : ""
+                );
                 row.getCell(36).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(37).setCellValue(itSystemEquipment.getCoolingSystem());
+
+                row.createCell(37).setCellValue(
+                        itSystemEquipment.getCoolingSystem() != null ? itSystemEquipment.getCoolingSystem() : ""
+                );
                 row.getCell(37).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(38).setCellValue(itSystemEquipment.getInterfacePorts());
+
+                row.createCell(38).setCellValue(
+                        itSystemEquipment.getInterfacePorts() != null ? itSystemEquipment.getInterfacePorts() : ""
+                );
                 row.getCell(38).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(39).setCellValue(itSystemEquipment.getFormFactor());
+
+                row.createCell(39).setCellValue(
+                        itSystemEquipment.getFormFactor() != null ? itSystemEquipment.getFormFactor() : ""
+                );
                 row.getCell(39).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(40).setCellValue(itSystemEquipment.getExpansionSlots());
+
+                row.createCell(40).setCellValue(
+                        itSystemEquipment.getExpansionSlots() != null ? itSystemEquipment.getExpansionSlots() : 0
+                );
                 row.getCell(40).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(41).setCellValue(itSystemEquipment.getGraphicsCard());
+
+                row.createCell(41).setCellValue(
+                        itSystemEquipment.getGraphicsCard() != null ? itSystemEquipment.getGraphicsCard() : ""
+                );
                 row.getCell(41).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(42).setCellValue(itSystemEquipment.getPortConfiguration());
+
+                row.createCell(42).setCellValue(
+                        itSystemEquipment.getPortConfiguration() != null ? itSystemEquipment.getPortConfiguration() : ""
+                );
                 row.getCell(42).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(43).setCellValue(itSystemEquipment.getMonitorIncluded());
+
+                row.createCell(43).setCellValue(
+                        itSystemEquipment.getMonitorIncluded() != null ?
+                                (itSystemEquipment.getMonitorIncluded() ? "Yes" : "No") : ""
+                );
                 row.getCell(43).setCellStyle(cellStyle); // 스타일 적용
             }
             case ITNETWORK_EQUIPMENT -> {
                 ItNetworkEquipment itNetworkEquipment = itNetworkEquipmentRepository.findByAssetNo(asset);
-                row.createCell(35).setCellValue(itNetworkEquipment.getEquipmentType());
-                row.getCell(35).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(36).setCellValue(itNetworkEquipment.getNumberOfPorts());
-                row.getCell(36).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(37).setCellValue(itNetworkEquipment.getSupportedProtocols());
-                row.getCell(37).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(38).setCellValue(itNetworkEquipment.getFirmwareVersion());
-                row.getCell(38).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(39).setCellValue(itNetworkEquipment.getNetworkSpeed());
-                row.getCell(39).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(40).setCellValue(itNetworkEquipment.getServiceScope());
-                row.getCell(40).setCellStyle(cellStyle); // 스타일 적용
+                row.createCell(35).setCellValue(
+                        itNetworkEquipment.getEquipmentType() != null ? itNetworkEquipment.getEquipmentType() : ""
+                );
+                row.getCell(35).setCellStyle(cellStyle);
+                row.createCell(36).setCellValue(
+                        itNetworkEquipment.getNumberOfPorts() != null ? itNetworkEquipment.getNumberOfPorts() : 0
+                );
+                row.getCell(36).setCellStyle(cellStyle);
+                row.createCell(37).setCellValue(
+                        itNetworkEquipment.getSupportedProtocols() != null ? itNetworkEquipment.getSupportedProtocols() : ""
+                );
+                row.getCell(37).setCellStyle(cellStyle);
+                row.createCell(38).setCellValue(
+                        itNetworkEquipment.getFirmwareVersion() != null ? itNetworkEquipment.getFirmwareVersion() : ""
+                );
+                row.getCell(38).setCellStyle(cellStyle);
+                row.createCell(39).setCellValue(
+                        itNetworkEquipment.getNetworkSpeed() != null ? itNetworkEquipment.getNetworkSpeed() : 0
+                );
+                row.getCell(39).setCellStyle(cellStyle);
+                row.createCell(40).setCellValue(
+                        itNetworkEquipment.getServiceScope() != null ? itNetworkEquipment.getServiceScope() : ""
+                );
+                row.getCell(40).setCellStyle(cellStyle);
             }
             case TERMINAL -> {
                 Terminal terminal = terminalRepository.findByAssetNo(asset);
-                row.createCell(35).setCellValue(terminal.getIp());
-                row.getCell(35).setCellStyle(cellStyle); // 스타일 적용
-                //row.createCell(33).setCellValue(terminal.());
-                row.createCell(36).setCellValue(terminal.getOs());
-                row.getCell(36).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(37).setCellValue(terminal.getSecurityControl().getDescription());
-                row.getCell(37).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(38).setCellValue(terminal.getKaitsKeeper().format(formatter));
-                row.getCell(38).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(39).setCellValue(terminal.getV3OfficeSecurity().format(formatter));
-                row.getCell(39).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(40).setCellValue(terminal.getAppCheckPro().format(formatter));
-                row.getCell(40).setCellStyle(cellStyle); // 스타일 적용
-                row.createCell(41).setCellValue(terminal.getTgate().format(formatter));
-                row.getCell(41).setCellStyle(cellStyle); // 스타일 적용
+                row.createCell(35).setCellValue(
+                        terminal.getIp() != null ? terminal.getIp() : ""
+                );
+                row.getCell(35).setCellStyle(cellStyle);
+                row.createCell(36).setCellValue(
+                        terminal.getOs() != null ? terminal.getOs() : ""
+                );
+                row.getCell(36).setCellStyle(cellStyle);
+                row.createCell(37).setCellValue(
+                        terminal.getSecurityControl() != null ? terminal.getSecurityControl().getDescription() : ""
+                );
+                row.getCell(37).setCellStyle(cellStyle);
+                row.createCell(38).setCellValue(
+                        terminal.getKaitsKeeper() != null ? terminal.getKaitsKeeper().format(formatter) : ""
+                );
+                row.getCell(38).setCellStyle(cellStyle);
+                row.createCell(39).setCellValue(
+                        terminal.getV3OfficeSecurity() != null ? terminal.getV3OfficeSecurity().format(formatter) : ""
+                );
+                row.getCell(39).setCellStyle(cellStyle);
+                row.createCell(40).setCellValue(
+                        terminal.getAppCheckPro() != null ? terminal.getAppCheckPro().format(formatter) : ""
+                );
+                row.getCell(40).setCellStyle(cellStyle);
+                row.createCell(41).setCellValue(
+                        terminal.getTgate() != null ? terminal.getTgate().format(formatter) : ""
+                );
+                row.getCell(41).setCellStyle(cellStyle);
             }
             case FURNITURE -> {
                 Furniture furniture = furnitureRepository.findByAssetNo(asset);
-                row.createCell(35).setCellValue(furniture.getFurnitureSize());
+                row.createCell(35).setCellValue(furniture.getFurnitureSize() != null ? furniture.getFurnitureSize() : "");
                 row.getCell(35).setCellStyle(cellStyle);
             }
             case DEVICES -> {
                 Devices devices = devicesRepository.findByAssetNo(asset);
-                row.createCell(35).setCellValue(devices.getDeviceType());
+                row.createCell(35).setCellValue(devices.getDeviceType() != null ? devices.getDeviceType() : "");
                 row.getCell(35).setCellStyle(cellStyle);
-                row.createCell(36).setCellValue(devices.getModelNumber());
+                row.createCell(36).setCellValue(devices.getModelNumber() != null ? devices.getModelNumber() : "");
                 row.getCell(36).setCellStyle(cellStyle);
-                row.createCell(37).setCellValue(devices.getConnectionType());
+                row.createCell(37).setCellValue(devices.getConnectionType() != null ? devices.getConnectionType() : "");
                 row.getCell(37).setCellStyle(cellStyle);
-                row.createCell(38).setCellValue(devices.getPowerSpecifications());
+                row.createCell(38).setCellValue(devices.getPowerSpecifications() != null ? devices.getPowerSpecifications() : "");
                 row.getCell(38).setCellStyle(cellStyle);
             }
             case CAR -> {
                 Car car = carRepository.findByAssetNo(asset);
-                row.createCell(35).setCellValue(car.getDisplacement());
+                row.createCell(35).setCellValue(car.getDisplacement() != null ? car.getDisplacement() : 0);
                 row.getCell(35).setCellStyle(cellStyle);
-                row.createCell(36).setCellValue(car.getDoorsCount());
+                row.createCell(36).setCellValue(car.getDoorsCount() != null ? car.getDoorsCount() : 0);
                 row.getCell(36).setCellStyle(cellStyle);
-                row.createCell(37).setCellValue(car.getEngineType().getDescription());
+                row.createCell(37).setCellValue(car.getEngineType() != null ? car.getEngineType().getDescription() : "");
                 row.getCell(37).setCellStyle(cellStyle);
-                row.createCell(38).setCellValue(car.getCarType().getDescription());
+                row.createCell(38).setCellValue(car.getCarType() != null ? car.getCarType().getDescription() : "");
                 row.getCell(38).setCellStyle(cellStyle);
-                row.createCell(39).setCellValue(car.getIdentificationNo());
+                row.createCell(39).setCellValue(car.getIdentificationNo() != null ? car.getIdentificationNo() : "");
                 row.getCell(39).setCellStyle(cellStyle);
-                row.createCell(40).setCellValue(car.getCarColor());
+                row.createCell(40).setCellValue(car.getCarColor() != null ? car.getCarColor() : "");
                 row.getCell(40).setCellStyle(cellStyle);
-                row.createCell(41).setCellValue(car.getModelYear());
+                row.createCell(41).setCellValue(car.getModelYear() != null ? car.getModelYear() : 0);
                 row.getCell(41).setCellStyle(cellStyle);
             }
             case OTHERASSETS -> {
                 OtherAssets otherAssets = otherAssetsRepository.findByAssetNo(asset);
-                row.createCell(35).setCellValue(otherAssets.getOtherDescription());
+                row.createCell(35).setCellValue(otherAssets.getOtherDescription() != null ? otherAssets.getOtherDescription() : "");
                 row.getCell(35).setCellStyle(cellStyle);
-                row.createCell(36).setCellValue(otherAssets.getUsageFrequency());
+                row.createCell(36).setCellValue(otherAssets.getUsageFrequency() != null ? otherAssets.getUsageFrequency() : "");
                 row.getCell(36).setCellStyle(cellStyle);
             }
             // 나머지 분류별 처리 추가...
