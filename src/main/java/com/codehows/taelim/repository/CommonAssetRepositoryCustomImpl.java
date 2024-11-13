@@ -342,24 +342,35 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
     public List<CommonAsset> findAssetNoByAssetLocation(AssetLocation location) {
         QCommonAsset ca = QCommonAsset.commonAsset;
 
-        // 서브쿼리: 각 자산 코드별 최대 자산 번호 찾기
-        JPAQuery<Long> subQuery = new JPAQuery<Long>(entityManager);
-        QCommonAsset subCa = QCommonAsset.commonAsset;
+        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
 
-        subQuery.select(subCa.assetNo.max())
+        excludedAssetCodes.select(subCa.assetCode)
                 .from(subCa)
-                .where(subCa.approval.eq(Approval.valueOf("APPROVE"))
-                        .and(subCa.disposalStatus.isFalse())
-                        .and(subCa.assetLocation.eq(location))
+                .where(
+                        subCa.approval.eq(Approval.APPROVE)
+                                .and(subCa.disposalStatus.isTrue())
                 )
                 .groupBy(subCa.assetCode);
 
-        // 메인 쿼리: 최신 자산 정보 조회
-        JPAQuery<CommonAsset> query = new JPAQuery<CommonAsset>(entityManager);
+        // 2. 최신 assetNo를 선택하는 서브 쿼리
+        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+        subQuery.select(ca.assetNo.max())
+                .from(ca)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
+                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
+                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
+                )
+                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
 
+        // 3. 최종 쿼리: 최신 assetNo에 해당하는 자산 조회
+        JPAQuery<CommonAsset> query = new JPAQuery<>(entityManager);
         return query.select(ca)
                 .from(ca)
-                .where(ca.assetNo.in(subQuery))
+                .where(ca.assetNo.in(subQuery)
+                        .and(ca.assetLocation.eq(location))) // 서브 쿼리에서 선택된 최신 assetNo
                 .fetch();
     }
     // 수정 이력
