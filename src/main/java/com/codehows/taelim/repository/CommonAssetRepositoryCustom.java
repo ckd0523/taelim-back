@@ -69,5 +69,5 @@ public interface CommonAssetRepositoryCustom {
     //총 자산 개수 가져오기
     Long findTotalAssetAmount();
 
-    Map<Integer, Long> findAssetPurchaseSum();
+    Map<Integer, Long> findAssetPurchaseSum(int year);
 }

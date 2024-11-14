@@ -1,22 +1,14 @@
 package com.codehows.taelim.service;
 
-import com.codehows.taelim.constant.AssetClassification;
-import com.codehows.taelim.constant.Department;
-import com.codehows.taelim.constant.OperationStatus;
-import com.codehows.taelim.constant.Ownership;
+import com.codehows.taelim.constant.*;
 import com.codehows.taelim.dto.AssetClassificationAmountDto;
-import com.codehows.taelim.dto.AssetTotalAmountDto;
 import com.codehows.taelim.dto.ByDepartmentAmountDto;
-import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -140,31 +132,13 @@ public class ChartService {
     }
 
     //총액추이
-    public Map<Integer, Long> getPurchaseCost() {
+    public Map<Integer, Long> getPurchaseCost(int year) {
 
-        return commonAssetRepositoryCustom.findAssetPurchaseSum();
+        return commonAssetRepositoryCustom.findAssetPurchaseSum(year);
     }
 
     //등급별 자산 개수
     public Map<String, Long> getAssetGrades() {
-//        List<CommonAsset> assets = commonAssetRepository.findAll();
-//        Map<String, Long> gradeCount = new HashMap<>();
-//
-//        for (CommonAsset asset: assets) {
-//            int totalCount = asset.getConfidentiality() + asset.getIntegrity() + asset.getAvailability();
-//            String grade = "";
-//
-//            if(totalCount >= 7 && totalCount <=9) {
-//                grade = "A";
-//            }else if(totalCount >=5 && totalCount <=6) {
-//                grade = "B";
-//            }else if(totalCount >=3 && totalCount <=4) {
-//                grade = "C";
-//            }
-//
-//            gradeCount.put(grade, gradeCount.getOrDefault(grade, 0L) + 1);
-//
-//        }
 
         return commonAssetRepositoryCustom.getAssetGrades();
 
@@ -175,5 +149,19 @@ public class ChartService {
     public Map<AssetClassification, Long> getAssetNearEndOfLifeCount(LocalDate referenceDate) {
         return commonAssetRepositoryCustom.findAssetsNearEndOfLife(referenceDate);
     }
+
+    //위치별 자산 개수
+// Service call to fetch asset count by location
+    public Map<AssetClassification, Long> getAssetsFindByAssetLocation(String assetLocation) {
+        // Ensure assetLocation is valid before calling the method
+        try {
+            AssetLocation location = AssetLocation.valueOf(assetLocation);
+            return commonAssetRepositoryCustom.findAssetsByAssetLocation(location);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid AssetLocation: " + assetLocation);
+        }
+    }
+
+
 
 }
