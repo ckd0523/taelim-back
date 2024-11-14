@@ -176,6 +176,7 @@ public class AssetService {
                 ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(commonAsset);
                 ItSystemEquipmentDto itSystemEquipmentDto = new ItSystemEquipmentDto();
                 itSystemEquipmentDto.setEquipmentType(itSystemEquipment.getEquipmentType());
+                itSystemEquipmentDto.setRackUnit(itSystemEquipment.getRackUnit());
                 itSystemEquipmentDto.setPowerSupply(itSystemEquipment.getPowerSupply());
                 itSystemEquipmentDto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
                 itSystemEquipmentDto.setInterfacePorts(itSystemEquipment.getInterfacePorts());
@@ -494,6 +495,7 @@ public class AssetService {
                     ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(asset);
                     if (itSystemEquipment != null) {
                         dto.setEquipmentType(itSystemEquipment.getEquipmentType());
+                        dto.setRackUnit(itSystemEquipment.getRackUnit());
                         dto.setPowerSupply(itSystemEquipment.getPowerSupply());
                         dto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
                         dto.setInterfacePorts(itSystemEquipment.getInterfacePorts());
@@ -672,6 +674,7 @@ public class AssetService {
                     ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(asset);
                     if (itSystemEquipment != null) {
                         dto.setEquipmentType(itSystemEquipment.getEquipmentType());
+                        dto.setRackUnit(itSystemEquipment.getRackUnit());
                         dto.setPowerSupply(itSystemEquipment.getPowerSupply());
                         dto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
                         dto.setInterfacePorts(itSystemEquipment.getInterfacePorts());

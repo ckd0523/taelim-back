@@ -281,6 +281,7 @@ public class DataInitializerService {
                     // int를 Long으로 변환하여 설정
 
                     itSystemEquipment.setPowerSupply("Power Supply " + i);  // 더미 데이터 반영
+                    itSystemEquipment.setRackUnit(Long.valueOf(i));
                     itSystemEquipment.setCoolingSystem("Cooling System " + i);  // 더미 데이터 반영
                     itSystemEquipment.setInterfacePorts("Port " + i);  // 더미 데이터 반영
                     itSystemEquipment.setFormFactor("Form Factor " + i);  // 더미 데이터 반영

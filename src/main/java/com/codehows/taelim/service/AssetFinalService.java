@@ -220,7 +220,7 @@ public class AssetFinalService {
                     case ITSYSTEM_EQUIPMENT -> {
                         ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(commonAsset);
                         assetDto.setEquipmentType(itSystemEquipment.getEquipmentType());
-                        //assetDto.setRackUnit(itSystemEquipment.getRackUnit());
+                        assetDto.setRackUnit(itSystemEquipment.getRackUnit());
                         assetDto.setPowerSupply(itSystemEquipment.getPowerSupply());
                         assetDto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
                         assetDto.setInterfacePorts(itSystemEquipment.getInterfacePorts());
@@ -774,45 +774,50 @@ public class AssetFinalService {
                 row.getCell(35).setCellStyle(cellStyle); // 스타일 적용
 
                 row.createCell(36).setCellValue(
-                        itSystemEquipment.getPowerSupply() != null ? itSystemEquipment.getPowerSupply() : ""
+                        itSystemEquipment.getRackUnit() != null ? itSystemEquipment.getRackUnit() : 0
                 );
-                row.getCell(36).setCellStyle(cellStyle); // 스타일 적용
+                row.getCell(36).setCellStyle(cellStyle);
 
                 row.createCell(37).setCellValue(
-                        itSystemEquipment.getCoolingSystem() != null ? itSystemEquipment.getCoolingSystem() : ""
+                        itSystemEquipment.getPowerSupply() != null ? itSystemEquipment.getPowerSupply() : ""
                 );
                 row.getCell(37).setCellStyle(cellStyle); // 스타일 적용
 
                 row.createCell(38).setCellValue(
-                        itSystemEquipment.getInterfacePorts() != null ? itSystemEquipment.getInterfacePorts() : ""
+                        itSystemEquipment.getCoolingSystem() != null ? itSystemEquipment.getCoolingSystem() : ""
                 );
                 row.getCell(38).setCellStyle(cellStyle); // 스타일 적용
 
                 row.createCell(39).setCellValue(
-                        itSystemEquipment.getFormFactor() != null ? itSystemEquipment.getFormFactor() : ""
+                        itSystemEquipment.getInterfacePorts() != null ? itSystemEquipment.getInterfacePorts() : ""
                 );
                 row.getCell(39).setCellStyle(cellStyle); // 스타일 적용
 
                 row.createCell(40).setCellValue(
-                        itSystemEquipment.getExpansionSlots() != null ? itSystemEquipment.getExpansionSlots() : 0
+                        itSystemEquipment.getFormFactor() != null ? itSystemEquipment.getFormFactor() : ""
                 );
                 row.getCell(40).setCellStyle(cellStyle); // 스타일 적용
 
                 row.createCell(41).setCellValue(
-                        itSystemEquipment.getGraphicsCard() != null ? itSystemEquipment.getGraphicsCard() : ""
+                        itSystemEquipment.getExpansionSlots() != null ? itSystemEquipment.getExpansionSlots() : 0
                 );
                 row.getCell(41).setCellStyle(cellStyle); // 스타일 적용
 
                 row.createCell(42).setCellValue(
-                        itSystemEquipment.getPortConfiguration() != null ? itSystemEquipment.getPortConfiguration() : ""
+                        itSystemEquipment.getGraphicsCard() != null ? itSystemEquipment.getGraphicsCard() : ""
                 );
                 row.getCell(42).setCellStyle(cellStyle); // 스타일 적용
 
                 row.createCell(43).setCellValue(
+                        itSystemEquipment.getPortConfiguration() != null ? itSystemEquipment.getPortConfiguration() : ""
+                );
+                row.getCell(43).setCellStyle(cellStyle); // 스타일 적용
+
+                row.createCell(44).setCellValue(
                         itSystemEquipment.getMonitorIncluded() != null ?
                                 (itSystemEquipment.getMonitorIncluded() ? "Yes" : "No") : ""
                 );
-                row.getCell(43).setCellStyle(cellStyle); // 스타일 적용
+                row.getCell(44).setCellStyle(cellStyle); // 스타일 적용
             }
             case ITNETWORK_EQUIPMENT -> {
                 ItNetworkEquipment itNetworkEquipment = itNetworkEquipmentRepository.findByAssetNo(asset);
@@ -1263,6 +1268,7 @@ public class AssetFinalService {
                     ItSystemEquipment itSystemEquipment = itSystemEquipmentRepository.findByAssetNo(asset);
                     if (itSystemEquipment != null) {
                         dto.setEquipmentType(itSystemEquipment.getEquipmentType());
+                        dto.setRackUnit(itSystemEquipment.getRackUnit());
                         dto.setPowerSupply(itSystemEquipment.getPowerSupply());
                         dto.setCoolingSystem(itSystemEquipment.getCoolingSystem());
                         dto.setInterfacePorts(itSystemEquipment.getInterfacePorts());
