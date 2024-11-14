@@ -56,36 +56,22 @@ public class ChartService {
     }
 
     //자산별 자산개수
-    public AssetClassificationAmountDto getAssetClassificationAmount() {
-        return
-        AssetClassificationAmountDto.builder()
-        .informationProtectionSystemAmount(commonAssetRepository.countByAssetClassification(AssetClassification.INFORMATION_PROTECTION_SYSTEM))
-        .applicationProgramAmount(commonAssetRepository.countByAssetClassification(AssetClassification.APPLICATION_PROGRAM))
-        .softwareAmount(commonAssetRepository.countByAssetClassification(AssetClassification.SOFTWARE))
-        .electronicInformationAmount(commonAssetRepository.countByAssetClassification(AssetClassification.ELECTRONIC_INFORMATION))
-        .documentAmount(commonAssetRepository.countByAssetClassification(AssetClassification.DOCUMENT))
-        .patentsAndTrademarksAmount(commonAssetRepository.countByAssetClassification(AssetClassification.PATENTS_AND_TRADEMARKS))
-        .itSystemEquipAmount(commonAssetRepository.countByAssetClassification(AssetClassification.ITSYSTEM_EQUIPMENT))
-        .itNetworkEquipAmount(commonAssetRepository.countByAssetClassification(AssetClassification.ITNETWORK_EQUIPMENT))
-        .terminalAmount(commonAssetRepository.countByAssetClassification(AssetClassification.TERMINAL))
-        .furnitureAmount(commonAssetRepository.countByAssetClassification(AssetClassification.FURNITURE))
-        .devicesAmount(commonAssetRepository.countByAssetClassification(AssetClassification.DEVICES))
-        .carAmount(commonAssetRepository.countByAssetClassification(AssetClassification.CAR))
-        .otherAssetsAmount(commonAssetRepository.countByAssetClassification(AssetClassification.OTHERASSETS))
-                .build();
+    public Map<AssetClassification, Long> getAssetClassificationAmount() {
+        return commonAssetRepositoryCustom.assetsClassificationCounts();
     }
 
     //부서별 자산개수
-    public ByDepartmentAmountDto getByDepartmentAmount() {
-        return ByDepartmentAmountDto .builder()
-                .managementPlanningAmount(commonAssetRepository.countByDepartment(Department.MANAGEMENT_PLANNING_OFFICE))
-                .managementAmount(commonAssetRepository.countByDepartment(Department.MANAGEMENT_TEAM))
-                .salesAmount(commonAssetRepository.countByDepartment(Department.SALES_TEAM))
-                .purchaseAmount(commonAssetRepository.countByDepartment(Department.PURCHASE_TEAM))
-                .qualityAmount(commonAssetRepository.countByDepartment(Department.QUALITY_TEAM))
-        .productionAmount(commonAssetRepository.countByDepartment(Department.PRODUCTION_TEAM))
-                .technologyResearchAmount(commonAssetRepository.countByDepartment(Department.TECHNOLOGY_RESEARCH_TEAM))
-                .build();
+    public Map<Department, Long> getByDepartmentAmount() {
+//        return ByDepartmentAmountDto .builder()
+//                .managementPlanningAmount(commonAssetRepository.countByDepartment(Department.MANAGEMENT_PLANNING_OFFICE))
+//                .managementAmount(commonAssetRepository.countByDepartment(Department.MANAGEMENT_TEAM))
+//                .salesAmount(commonAssetRepository.countByDepartment(Department.SALES_TEAM))
+//                .purchaseAmount(commonAssetRepository.countByDepartment(Department.PURCHASE_TEAM))
+//                .qualityAmount(commonAssetRepository.countByDepartment(Department.QUALITY_TEAM))
+//        .productionAmount(commonAssetRepository.countByDepartment(Department.PRODUCTION_TEAM))
+//                .technologyResearchAmount(commonAssetRepository.countByDepartment(Department.TECHNOLOGY_RESEARCH_TEAM))
+//                .build();
+        return commonAssetRepositoryCustom.departmentLongMap();
     }
 
     //부서별 중 자산별 개수
@@ -121,14 +107,9 @@ public class ChartService {
 
     //소유별 자산 개수
     public Map<Ownership, Long> getOwnershipAmount() {
-        Map<Ownership, Long> ownershipAmount = new EnumMap<>(Ownership.class);
 
-        for(Ownership ownership : Ownership.values()){
-            Long count = commonAssetRepository.countByOwnership(ownership);
-            ownershipAmount.put(ownership, count);
-        }
 
-        return ownershipAmount;
+        return commonAssetRepositoryCustom.findOwnershipCounts();
     }
 
     //총액추이

@@ -25,7 +25,7 @@ public class EZioLib
 			try {
 				ClassPathResource resource = new ClassPathResource("EZio64.dll");
 				File file = resource.getFile();
-				System.load(file.getAbsolutePath());
+				//System.load(file.getAbsolutePath());
 				return (API) Native.loadLibrary("EZio64", API.class);
 			} catch (IOException | UnsatisfiedLinkError e) {
 				System.err.println("Failed to load library: " + e.getMessage());

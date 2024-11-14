@@ -49,5 +49,4 @@ public interface CommonAssetRepository extends JpaRepository<CommonAsset, Long>,
 
     Long countByOperationStatus(OperationStatus operationStatus);
 
-    Long countByOwnership(Ownership ownership);
 }

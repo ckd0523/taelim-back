@@ -47,14 +47,14 @@ public class ChartController {
 
     //분류별 자산 비율
     @GetMapping("/2")
-    public AssetClassificationAmountDto getAssetClassificationAmount() {
+    public Map<AssetClassification, Long> getAssetClassificationAmount() {
         return chartService.getAssetClassificationAmount();
 
     }
 
     //부서별 자산 현황
     @GetMapping("/3")
-    public ByDepartmentAmountDto getByDepartmentAmount() {
+    public Map<Department, Long> getByDepartmentAmount() {
         return chartService.getByDepartmentAmount();
     }
 
@@ -92,7 +92,7 @@ public class ChartController {
     //폐기에정
     @GetMapping("/9/{referenceDate}")
     public ResponseEntity<Map<AssetClassification, Long>> getAssetEndOfLife(
-            @RequestParam(value = "referenceDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate referenceDate
+            @PathVariable(value = "referenceDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate referenceDate
             ) {
         if (referenceDate == null) {
             referenceDate = LocalDate.of(2024, 12, 1); // Default date for testing
