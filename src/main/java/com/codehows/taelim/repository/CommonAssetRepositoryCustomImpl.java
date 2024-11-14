@@ -15,6 +15,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -168,33 +169,168 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .fetchOne();
     }
 
-    //자산총액추이
-    @Override
-    public Map<Integer, Long> findAssetPurchaseSum() {
+    //자산 분류별 자산 개수
+    public Map<AssetClassification, Long> assetsClassificationCounts() {
         QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
         JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
-        List<String> codesToExclude = excludedAssetCodes.select(ca.assetCode)
-                .from(ca)
-                .where(ca.approval.eq(Approval.APPROVE)
-                        .and(ca.disposalStatus.isTrue()))
-                .fetch();
+        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
+
+        excludedAssetCodes.select(subCa.assetCode)
+                .from(subCa)
+                .where(
+                        subCa.approval.eq(Approval.APPROVE)
+                                .and(subCa.disposalStatus.isTrue())
+                )
+                .groupBy(subCa.assetCode);
 
         // 2. 최신 assetNo를 선택하는 서브 쿼리
         JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
-        List<Long> latestAssetNo = subQuery.select(ca.assetNo.max())
+        subQuery.select(ca.assetNo.max())
                 .from(ca)
-                .where(ca.assetCode.notIn(codesToExclude)
-                        .and(ca.approval.eq(Approval.APPROVE))
-                        .and(ca.disposalStatus.isFalse()))
-                .groupBy(ca.assetCode)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
+                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
+                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
+                )
+                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
+
+        // 3. 각 자산 분류별 자산 개수 조회
+        JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
+        QCommonAsset ca2 = QCommonAsset.commonAsset;
+
+        List<Tuple> results = query.select(
+                        ca2.assetClassification,
+                        ca2.countDistinct()
+                )
+                .from(ca2)
+                .where(
+                        ca2.assetCode.notIn(excludedAssetCodes)
+                                .and(ca2.assetNo.in(subQuery))
+                                .and(ca2.approval.eq(Approval.APPROVE))
+                                .and(ca2.disposalStatus.isFalse())
+                )
+                .groupBy(ca2.assetClassification)
                 .fetch();
+
+        Map<AssetClassification, Long> assetClassificationCounts = new HashMap<>();
+        for (Tuple result : results) {
+            // Get the asset classification as a string (in case it's an enum, convert to string)
+            AssetClassification assetClassification = result.get(ca2.assetClassification);
+            // Get the count as Long
+            Long count = result.get(1, Long.class); // Retrieve count from the tuple
+            assetClassificationCounts.put(assetClassification, count);
+        }
+        return assetClassificationCounts;
+    }
+
+    public Map<Department, Long> departmentLongMap() {
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
+
+        excludedAssetCodes.select(subCa.assetCode)
+                .from(subCa)
+                .where(
+                        subCa.approval.eq(Approval.APPROVE)
+                                .and(subCa.disposalStatus.isTrue())
+                )
+                .groupBy(subCa.assetCode);
+
+        // 2. 최신 assetNo를 선택하는 서브 쿼리
+        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+        subQuery.select(ca.assetNo.max())
+                .from(ca)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
+                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
+                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
+                )
+                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
+
+        JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
+
+        // 3. 각 자산 분류별 자산 개수 조회
+        QCommonAsset ca2 = QCommonAsset.commonAsset;
+
+        List<Tuple> results = query.select(
+                        ca2.department,
+                        ca2.countDistinct()
+                )
+                .from(ca2)
+                .where(
+                        ca2.assetCode.notIn(excludedAssetCodes)
+                                .and(ca2.assetNo.in(subQuery))
+                                .and(ca2.approval.eq(Approval.APPROVE))
+                                .and(ca2.disposalStatus.isFalse())
+                )
+                .groupBy(ca2.department)
+                .fetch();
+
+        Map<Department, Long> departmentLongHashMap = new HashMap<>();
+        for (Tuple result : results) {
+            Department department = result.get(ca2.department);
+            Long count = result.get(1, Long.class);
+            departmentLongHashMap.put(department, count);
+        }
+        return departmentLongHashMap;
+    }
+
+    //자산총액추이
+    @Override
+    public Map<Integer, Long> findAssetPurchaseSum(int year) {
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
+
+        excludedAssetCodes.select(subCa.assetCode)
+                .from(subCa)
+                .where(
+                        subCa.approval.eq(Approval.APPROVE)
+                                .and(subCa.disposalStatus.isTrue())
+                )
+                .groupBy(subCa.assetCode);
+
+        // 2. 최신 assetNo를 선택하는 서브 쿼리
+        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+        subQuery.select(ca.assetNo.max())
+                .from(ca)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
+                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
+                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
+                )
+                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
+
+        int startYear = year - 3;
+        int endYear = year + 3;
+//        List<String> codesToExclude = excludedAssetCodes.select(ca.assetCode)
+//                .from(ca)
+//                .where(ca.approval.eq(Approval.APPROVE)
+//                        .and(ca.disposalStatus.isTrue()))
+//                .fetch();
+
+//        // 2. 최신 assetNo를 선택하는 서브 쿼리
+//        List<Long> latestAssetNo = subQuery.select(ca.assetNo.max())
+//                .from(ca)
+//                .where(ca.assetCode.notIn(codesToExclude)
+//                        .and(ca.approval.eq(Approval.APPROVE))
+//                        .and(ca.disposalStatus.isFalse()))
+//                .groupBy(ca.assetCode)
+//                .fetch();
 
 
         // 3. 최종 쿼리: 최신 assetNo에 해당하는 자산의 purchaseCost 합계 조회
        JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
        List<Tuple> results = query.select(ca.introducedDate.year(), ca.purchaseCost.sum())
                .from(ca)
-               .where(ca.assetNo.in(latestAssetNo))
+               .where(ca.introducedDate.year().between(startYear, endYear)
+                       .and(ca.assetNo.in(subQuery)))
                .groupBy(ca.introducedDate.year())
                .fetch();
 
@@ -209,6 +345,30 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
 
     //등급별 자산 개수
     public Map<String, Long> getAssetGrades() {
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
+
+        excludedAssetCodes.select(subCa.assetCode)
+                .from(subCa)
+                .where(
+                        subCa.approval.eq(Approval.APPROVE)
+                                .and(subCa.disposalStatus.isTrue())
+                )
+                .groupBy(subCa.assetCode);
+
+//        // 2. 최신 assetNo를 선택하는 서브 쿼리
+//        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+//        subQuery.select(ca.assetNo.max())
+//                .from(ca)
+//                .where(
+//                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
+//                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
+//                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
+//                )
+//                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
         QCommonAsset commonAsset = QCommonAsset.commonAsset;
 
         JPAQuery<CommonAsset> query = new JPAQuery<>(entityManager);
@@ -217,7 +377,6 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .where(commonAsset.approval.eq(Approval.APPROVE)
                         .and(commonAsset.disposalStatus.isFalse()))
                 .fetch();
-
         return filteredAssets.stream()
                 .collect(Collectors.groupingBy(
                         asset -> {
@@ -232,28 +391,149 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
 
     }
 
+    //소유권별
+    public Map<Ownership, Long> findOwnershipCounts() {
+        QCommonAsset ca = QCommonAsset.commonAsset;
+        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
+
+        excludedAssetCodes.select(subCa.assetCode)
+                .from(subCa)
+                .where(
+                        subCa.approval.eq(Approval.APPROVE)
+                                .and(subCa.disposalStatus.isTrue())
+                )
+                .groupBy(subCa.assetCode);
+
+        // 2. 최신 assetNo를 선택하는 서브 쿼리
+        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+        subQuery.select(ca.assetNo.max())
+                .from(ca)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
+                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
+                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
+                )
+                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
+
+        JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
+        List<Tuple> results = query.select(
+                ca.ownership,
+                ca.count()
+        )
+                .from(ca)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes)
+                                .and(ca.assetNo.in(subQuery))
+                                .and(ca.approval.eq(Approval.APPROVE))
+                                .and(ca.disposalStatus.isFalse())
+                )
+                .groupBy(ca.ownership)
+                .fetch();
+
+        Map<Ownership, Long> ownershipLongMap = new EnumMap<>(Ownership.class);
+        for(Tuple result : results) {
+            Ownership ownership = result.get(ca.ownership);
+            Long count = result.get(ca.count());
+            ownershipLongMap.put(ownership, count);
+        }
+
+        return ownershipLongMap;
+
+    }
+
     //폐기가 다가오는 자산의 물품
     public Map<AssetClassification, Long> findAssetsNearEndOfLife(LocalDate referenceDate) {
-        QCommonAsset asset = QCommonAsset.commonAsset;
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
+
+        excludedAssetCodes.select(subCa.assetCode)
+                .from(subCa)
+                .where(
+                        subCa.approval.eq(Approval.APPROVE)
+                                .and(subCa.disposalStatus.isTrue())
+                )
+                .groupBy(subCa.assetCode);
+
+        // 2. 최신 assetNo를 선택하는 서브 쿼리
+        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+        subQuery.select(ca.assetNo.max())
+                .from(ca)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
+                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
+                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
+                )
+                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
 
         // Calculate the end of the 3-month period
         LocalDate endOfPeriod = referenceDate.plusMonths(3);
 
         JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
-        List<Tuple> results = query.select(asset.assetClassification, asset.assetNo.count())
-                .from(asset)
+        List<Tuple> results = query.select(ca.assetClassification, ca.assetNo.count())
+                .from(ca)
                 .where(
-                        asset.purchaseDate.year().add(asset.usefulLife.intValue()).between(referenceDate.getYear(), endOfPeriod.getYear())
+                        ca.purchaseDate.year().add(ca.usefulLife.intValue()).between(referenceDate.getYear(), endOfPeriod.getYear())
                 )
-                .groupBy(asset.assetClassification)
+                .groupBy(ca.assetClassification)
                 .fetch();
 
         return results.stream().collect(Collectors.toMap(
-                tuple -> tuple.get(asset.assetClassification),
-                tuple -> tuple.get(asset.assetNo.count())
+                tuple -> tuple.get(ca.assetClassification),
+                tuple -> tuple.get(ca.assetNo.count())
         ));
     }
+    //위치별 자산 개수
+    public Map<AssetClassification, Long> findAssetsByAssetLocation(AssetLocation assetLocation) {
+        QCommonAsset ca = QCommonAsset.commonAsset;
 
+        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
+
+        excludedAssetCodes.select(subCa.assetCode)
+                .from(subCa)
+                .where(
+                        subCa.approval.eq(Approval.APPROVE)
+                                .and(subCa.disposalStatus.isTrue())
+                )
+                .groupBy(subCa.assetCode);
+
+        // 2. 최신 assetNo를 선택하는 서브 쿼리
+        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+        subQuery.select(ca.assetNo.max())
+                .from(ca)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
+                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
+                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
+                                .and(ca.assetLocation.eq(assetLocation)) // 필터링된 location만
+                )
+                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
+
+        JPAQuery<Tuple> assetCountQuery = new JPAQuery<>(entityManager);
+        List<Tuple> results = assetCountQuery.select(ca.assetClassification, ca.assetNo.count())
+                .from(ca)
+                .where(ca.assetNo.in(subQuery))
+                .groupBy(ca.assetClassification)
+                .fetch();
+
+        Map<AssetClassification, Long> assetCountByLocation = new HashMap<>();
+        for(Tuple result : results) {
+            AssetClassification assetClassification = result.get(ca.assetClassification);
+            Long count = result.get(ca.assetNo.count());
+
+            assetCountByLocation.put(assetClassification, count);
+        }
+        return assetCountByLocation;
+
+    }
+
+//    public Map
     // 자산목록 (자산 공통정보) - 조건 : 폐기여부 F and 폐기여부 T + 요청 미확인 and 폐기여부 T + 요청 거절   리스트 조회
     @Override
     public List<CommonAsset> findApprovedAndNotDisposedAssets() {
@@ -342,35 +622,24 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
     public List<CommonAsset> findAssetNoByAssetLocation(AssetLocation location) {
         QCommonAsset ca = QCommonAsset.commonAsset;
 
-        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
-        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
-        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
+        // 서브쿼리: 각 자산 코드별 최대 자산 번호 찾기
+        JPAQuery<Long> subQuery = new JPAQuery<Long>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset;
 
-        excludedAssetCodes.select(subCa.assetCode)
+        subQuery.select(subCa.assetNo.max())
                 .from(subCa)
-                .where(
-                        subCa.approval.eq(Approval.APPROVE)
-                                .and(subCa.disposalStatus.isTrue())
+                .where(subCa.approval.eq(Approval.valueOf("APPROVE"))
+                        .and(subCa.disposalStatus.isFalse())
+                        .and(subCa.assetLocation.eq(location))
                 )
                 .groupBy(subCa.assetCode);
 
-        // 2. 최신 assetNo를 선택하는 서브 쿼리
-        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
-        subQuery.select(ca.assetNo.max())
-                .from(ca)
-                .where(
-                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
-                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
-                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
-                )
-                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
+        // 메인 쿼리: 최신 자산 정보 조회
+        JPAQuery<CommonAsset> query = new JPAQuery<CommonAsset>(entityManager);
 
-        // 3. 최종 쿼리: 최신 assetNo에 해당하는 자산 조회
-        JPAQuery<CommonAsset> query = new JPAQuery<>(entityManager);
         return query.select(ca)
                 .from(ca)
-                .where(ca.assetNo.in(subQuery)
-                        .and(ca.assetLocation.eq(location))) // 서브 쿼리에서 선택된 최신 assetNo
+                .where(ca.assetNo.in(subQuery))
                 .fetch();
     }
     // 수정 이력

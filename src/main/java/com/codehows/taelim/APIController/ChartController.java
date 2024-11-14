@@ -1,9 +1,7 @@
 package com.codehows.taelim.APIController;
 
-import com.codehows.taelim.constant.AssetClassification;
-import com.codehows.taelim.constant.Department;
-import com.codehows.taelim.constant.OperationStatus;
-import com.codehows.taelim.constant.Ownership;
+import com.beust.ah.A;
+import com.codehows.taelim.constant.*;
 import com.codehows.taelim.dto.AssetClassificationAmountDto;
 import com.codehows.taelim.dto.AssetTotalAmountDto;
 import com.codehows.taelim.dto.ByDepartmentAmountDto;
@@ -11,13 +9,12 @@ import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.service.ChartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -50,14 +47,14 @@ public class ChartController {
 
     //분류별 자산 비율
     @GetMapping("/2")
-    public AssetClassificationAmountDto getAssetClassificationAmount() {
+    public Map<AssetClassification, Long> getAssetClassificationAmount() {
         return chartService.getAssetClassificationAmount();
 
     }
 
     //부서별 자산 현황
     @GetMapping("/3")
-    public ByDepartmentAmountDto getByDepartmentAmount() {
+    public Map<Department, Long> getByDepartmentAmount() {
         return chartService.getByDepartmentAmount();
     }
 
@@ -80,20 +77,22 @@ public class ChartController {
     }
 
     //자산 총액 추이
-    @GetMapping("7")
-    public Map<Integer, Long> getPurchaseCost() {
-        return chartService.getPurchaseCost();
+    @GetMapping("/7")
+    public Map<Integer, Long> getPurchaseCost(@RequestParam("year") int year) {
+        System.out.println("Received year : " + year);
+        return chartService.getPurchaseCost(year);
     }
 
     //중요성별 현황
-    @GetMapping("8")
+    @GetMapping("/8")
     public Map<String, Long> getAssetGrades() {
         return chartService.getAssetGrades();
     }
 
+    //폐기에정
     @GetMapping("/9/{referenceDate}")
     public ResponseEntity<Map<AssetClassification, Long>> getAssetEndOfLife(
-            @RequestParam(value = "referenceDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate referenceDate
+            @PathVariable(value = "referenceDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate referenceDate
             ) {
         if (referenceDate == null) {
             referenceDate = LocalDate.of(2024, 12, 1); // Default date for testing
@@ -102,5 +101,28 @@ public class ChartController {
         return ResponseEntity.ok(assetsNearEndOfLife);
     }
 
+    //위치별 자산 개수
+    @GetMapping("/10/{assetLocation}")
+    public ResponseEntity<?> getAssetsAssetLocation(@PathVariable("assetLocation") String assetLocationStr) {
+
+        System.out.println("Available AssetLocation values: " + Arrays.toString(AssetLocation.values()));
+
+        try {
+            // Convert the string to AssetLocation enum
+            AssetLocation assetLocation = AssetLocation.valueOf(assetLocationStr);
+
+            // Call the service to get the asset count data
+           Map<AssetClassification, Long> assetLocationData = chartService.getAssetsFindByAssetLocation(String.valueOf(assetLocation));
+
+            return ResponseEntity.ok(assetLocationData);
+        } catch (IllegalArgumentException e) {
+            // If the location name doesn't match, respond with a 400 Bad Request
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid location name: " + assetLocationStr);
+        } catch (Exception e) {
+            // Log the error and return a 500 Internal Server Error if something else goes wrong
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred.");
+        }
+    }
 
 }
