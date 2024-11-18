@@ -66,8 +66,12 @@ public class ChartController {
 
     //운용 현황
     @GetMapping ("/5")
+//    public Map<OperationStatus, Long> getOperationAmount() {
+//        return chartService.getOperationAmount();
+//    }
+
     public Map<OperationStatus, Long> getOperationAmount() {
-        return chartService.getOperationAmount();
+        return chartService.getOperationStatusAmount();
     }
 
     //소유권별 현황

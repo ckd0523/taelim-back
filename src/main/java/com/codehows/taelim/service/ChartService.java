@@ -93,18 +93,22 @@ public class ChartService {
         return departmentAssetClassificationAmount;
     }
 
+//    //가동별 자산 개수
+//    public Map<OperationStatus, Long> getOperationAmount() {
+//        Map<OperationStatus, Long> operationStatusAmount = new EnumMap<>(OperationStatus.class);
+//
+//        for(OperationStatus operationStatus : OperationStatus.values()) {
+//            Long count = commonAssetRepository.countByOperationStatus(operationStatus);
+//            operationStatusAmount.put(operationStatus, count);
+//        }
+//
+//        return operationStatusAmount;
+//    }
+
     //가동별 자산 개수
-    public Map<OperationStatus, Long> getOperationAmount() {
-        Map<OperationStatus, Long> operationStatusAmount = new EnumMap<>(OperationStatus.class);
-
-        for(OperationStatus operationStatus : OperationStatus.values()) {
-            Long count = commonAssetRepository.countByOperationStatus(operationStatus);
-            operationStatusAmount.put(operationStatus, count);
-        }
-
-        return operationStatusAmount;
+    public Map<OperationStatus, Long> getOperationStatusAmount() {
+        return commonAssetRepositoryCustom.findOprtationStatusCounts();
     }
-
     //소유별 자산 개수
     public Map<Ownership, Long> getOwnershipAmount() {
 
