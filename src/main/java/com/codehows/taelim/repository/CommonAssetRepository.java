@@ -42,9 +42,6 @@ public interface CommonAssetRepository extends JpaRepository<CommonAsset, Long>,
 //            @Param("introducedDate") LocalDate introducedDate,
 //            Pageable pageable);
 
-    Long countByAssetClassification(AssetClassification assetClassification);
-
-    Long countByDepartment(Department department);
     Long countByDepartmentAndAssetClassification(Department department, AssetClassification assetClassification);
 
     Long countByOperationStatus(OperationStatus operationStatus);
