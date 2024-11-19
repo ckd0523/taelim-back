@@ -22,6 +22,7 @@ public class ItSystemEquipment {
     private CommonAsset assetNo;
 
     private String equipmentType;
+    private Long rackUnit;
     private String powerSupply;
     private String coolingSystem;
     private String interfacePorts;

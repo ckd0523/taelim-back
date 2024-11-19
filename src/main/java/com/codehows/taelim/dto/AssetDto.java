@@ -243,6 +243,7 @@ public class AssetDto {
     public ItSystemEquipment toItSystemEquipment(){
         return ItSystemEquipment.builder()
                 .equipmentType(equipmentType)
+                .rackUnit(rackUnit)
                 .powerSupply(powerSupply)
                 .coolingSystem(coolingSystem)
                 .interfacePorts(interfacePorts)
