@@ -27,7 +27,7 @@ public class ChartService {
         return totalOwnedPurchaseCost;
     }
 
-    //    //임대 자산 총액 가져오기
+    //    국책 + 기타 자산 총액 가져오기
     public Long getTotalLeasedPurchaseCost() {
         Long totalLeasedPurchaseCost = commonAssetRepository.findTotalLeasedPurchaseCost();
 
@@ -62,35 +62,12 @@ public class ChartService {
 
     //부서별 자산개수
     public Map<Department, Long> getByDepartmentAmount() {
-//        return ByDepartmentAmountDto .builder()
-//                .managementPlanningAmount(commonAssetRepository.countByDepartment(Department.MANAGEMENT_PLANNING_OFFICE))
-//                .managementAmount(commonAssetRepository.countByDepartment(Department.MANAGEMENT_TEAM))
-//                .salesAmount(commonAssetRepository.countByDepartment(Department.SALES_TEAM))
-//                .purchaseAmount(commonAssetRepository.countByDepartment(Department.PURCHASE_TEAM))
-//                .qualityAmount(commonAssetRepository.countByDepartment(Department.QUALITY_TEAM))
-//        .productionAmount(commonAssetRepository.countByDepartment(Department.PRODUCTION_TEAM))
-//                .technologyResearchAmount(commonAssetRepository.countByDepartment(Department.TECHNOLOGY_RESEARCH_TEAM))
-//                .build();
         return commonAssetRepositoryCustom.departmentLongMap();
     }
 
     //부서별 중 자산별 개수
     public Map<Department, Map<AssetClassification , Long>> getDepartmentAssetClassificationAmount() {
-        Map<Department, Map<AssetClassification, Long>> departmentAssetClassificationAmount = new EnumMap<>(Department.class);
-
-
-        for (Department department : Department.values()) {
-            Map <AssetClassification, Long> assetClassificationAmount = new EnumMap<>(AssetClassification.class);
-
-            for (AssetClassification assetClassification : AssetClassification.values()) {
-                Long count = commonAssetRepository.countByDepartmentAndAssetClassification(department, assetClassification);
-                assetClassificationAmount.put(assetClassification, count);
-            }
-            departmentAssetClassificationAmount.put(department, assetClassificationAmount);
-
-        }
-
-        return departmentAssetClassificationAmount;
+        return commonAssetRepositoryCustom.getDepartmentAssetClassificationAmount();
     }
 
 //    //가동별 자산 개수
@@ -131,8 +108,8 @@ public class ChartService {
     }
 
     //폐기가 다가오는 자산의 개수
-    public Map<AssetClassification, Long> getAssetNearEndOfLifeCount(LocalDate referenceDate) {
-        return commonAssetRepositoryCustom.findAssetsNearEndOfLife(referenceDate);
+    public Map<AssetClassification, Long> getAssetNearEndOfLifeCount() {
+        return commonAssetRepositoryCustom.findAssetsNearEndOfLife();
     }
 
     //위치별 자산 개수

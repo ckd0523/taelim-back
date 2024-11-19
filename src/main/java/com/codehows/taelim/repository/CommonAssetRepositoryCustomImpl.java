@@ -96,7 +96,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .fetchOne();
     }
 
-    //국책과제 자산 총액 가져오기
+    //국책과제 + 기타 자산 총액 가져오기
     @Override
     public Long findTotalLeasedPurchaseCost() {
         QCommonAsset ca = QCommonAsset.commonAsset;
@@ -129,7 +129,11 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         return query.select(ca.purchaseCost.sum()) // purchaseCost의 합계
                 .from(ca)
                 .where(ca.assetNo.in(subQuery)
-                        .and(ca.ownership.eq(Ownership.NATIONAL_PROJECT))) // 서브 쿼리에서 선택된 최신 assetNo
+                        .and(ca.ownership.eq(Ownership.NATIONAL_PROJECT)
+                                )
+                                .or(ca.ownership.eq(Ownership.ETC))
+
+                        ) // 서브 쿼리에서 선택된 최신 assetNo
                 .fetchOne();
     }
 
@@ -225,6 +229,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         return assetClassificationCounts;
     }
 
+    //부서별 자산 개수
     public Map<Department, Long> departmentLongMap() {
         QCommonAsset ca = QCommonAsset.commonAsset;
 
@@ -279,6 +284,67 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         return departmentLongHashMap;
     }
 
+    //부서별 자산 분류별 개수
+    public Map<Department, Map<AssetClassification, Long>> getDepartmentAssetClassificationAmount(){
+        QCommonAsset ca = QCommonAsset.commonAsset;
+
+        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
+        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
+        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
+
+        excludedAssetCodes.select(subCa.assetCode)
+                .from(subCa)
+                .where(
+                        subCa.approval.eq(Approval.APPROVE)
+                                .and(subCa.disposalStatus.isTrue())
+                )
+                .groupBy(subCa.assetCode);
+
+        // 2. 최신 assetNo를 선택하는 서브 쿼리
+        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
+        subQuery.select(ca.assetNo.max())
+                .from(ca)
+                .where(
+                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
+                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
+                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
+                )
+                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
+
+        JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
+
+        // 3. 각 자산 분류별 자산 개수 조회
+        QCommonAsset ca2 = QCommonAsset.commonAsset;
+
+        List<Tuple> results = query.select(
+                        ca2.department,
+                        ca2.assetClassification,
+                        ca2.countDistinct()
+                )
+                .from(ca2)
+                .where(
+                        ca2.assetCode.notIn(excludedAssetCodes)
+                                .and(ca2.assetNo.in(subQuery))
+                                .and(ca2.approval.eq(Approval.APPROVE))
+                                .and(ca2.disposalStatus.isFalse())
+                )
+                .groupBy(ca2.department, ca2.assetClassification)
+                .fetch();
+
+        Map<Department, Map<AssetClassification, Long>> departmentMapMap = new EnumMap<>(Department.class);
+
+        for(Tuple tuple : results) {
+            Department department = tuple.get(ca2.department);
+            AssetClassification assetClassification = tuple.get(ca2.assetClassification);
+            Long count = tuple.get(ca2.countDistinct());
+
+            departmentMapMap.computeIfAbsent(department, k -> new EnumMap<>(AssetClassification.class))
+                    .put(assetClassification, count);
+        }
+
+        return departmentMapMap;
+    }
+
     //자산총액추이
     @Override
     public Map<Integer, Long> findAssetPurchaseSum(int year) {
@@ -307,40 +373,34 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 )
                 .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
 
-        int startYear = year - 3;
-        int endYear = year + 3;
-//        List<String> codesToExclude = excludedAssetCodes.select(ca.assetCode)
-//                .from(ca)
-//                .where(ca.approval.eq(Approval.APPROVE)
-//                        .and(ca.disposalStatus.isTrue()))
-//                .fetch();
-
-//        // 2. 최신 assetNo를 선택하는 서브 쿼리
-//        List<Long> latestAssetNo = subQuery.select(ca.assetNo.max())
-//                .from(ca)
-//                .where(ca.assetCode.notIn(codesToExclude)
-//                        .and(ca.approval.eq(Approval.APPROVE))
-//                        .and(ca.disposalStatus.isFalse()))
-//                .groupBy(ca.assetCode)
-//                .fetch();
-
+        int startYear = LocalDate.of(2000, 1,1).getYear();
+        int currentYear = LocalDate.now().getYear();
+        int endYear = Math.min(year + 5, currentYear);
 
         // 3. 최종 쿼리: 최신 assetNo에 해당하는 자산의 purchaseCost 합계 조회
-        JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
-        List<Tuple> results = query.select(ca.introducedDate.year(), ca.purchaseCost.sum())
-                .from(ca)
-                .where(ca.introducedDate.year().between(startYear, endYear)
-                        .and(ca.assetNo.in(subQuery)))
-                .groupBy(ca.introducedDate.year())
-                .fetch();
+       JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
+       List<Tuple> results = query.select(ca.purchaseDate.year(), ca.purchaseCost.sum())
+               .from(ca)
+               .where(ca.purchaseDate.year().between(startYear, endYear)
+                       .and(ca.assetNo.in(subQuery)))
+               .groupBy(ca.purchaseDate.year())
+               .fetch();
 
-        return results.stream()
-                .filter(tuple -> tuple.get(ca.introducedDate.year()) != null)
-                .collect(Collectors.toMap(
-                        tuple -> tuple.get(ca.introducedDate.year()),
-                        tuple -> tuple.get(ca.purchaseCost.sum()),
-                        Long::sum
-                ));
+       Map<Integer, Long> yearToCumulativeSum = new TreeMap<>();
+       long cumulativeSum = 0;
+       Map<Integer, Long> yearlySums = results.stream()
+               .filter(tuple -> tuple.get(ca.purchaseDate.year()) != null)
+               .collect(Collectors.toMap(
+                       tuple -> tuple.get(ca.purchaseDate.year()),
+                       tuple -> tuple.get(ca.purchaseCost.sum()),
+                       Long :: sum,
+                       TreeMap::new
+               ));
+       for(int currentYearIter = startYear; currentYearIter <= endYear; currentYearIter++) {
+           cumulativeSum += yearlySums.getOrDefault(currentYearIter, 0L);
+           yearToCumulativeSum.put(currentYearIter, cumulativeSum);
+       }
+       return yearToCumulativeSum;
     }
 
     //등급별 자산 개수
@@ -482,7 +542,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
 
 
     //폐기가 다가오는 자산의 물품
-    public Map<AssetClassification, Long> findAssetsNearEndOfLife(LocalDate referenceDate) {
+    public Map<AssetClassification, Long> findAssetsNearEndOfLife() {
         QCommonAsset ca = QCommonAsset.commonAsset;
 
         // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
@@ -509,6 +569,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
 
         // Calculate the end of the 3-month period
+        LocalDate referenceDate = LocalDate.now();
         LocalDate endOfPeriod = referenceDate.plusMonths(3);
 
         JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
@@ -516,6 +577,8 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .from(ca)
                 .where(
                         ca.purchaseDate.year().add(ca.usefulLife.intValue()).between(referenceDate.getYear(), endOfPeriod.getYear())
+                                .and(ca.purchaseDate.month().add(ca.usefulLife.intValue()).between(referenceDate.getMonthValue(), endOfPeriod.getMonthValue()))
+                                .and(ca.assetNo.in(subQuery))
                 )
                 .groupBy(ca.assetClassification)
                 .fetch();
