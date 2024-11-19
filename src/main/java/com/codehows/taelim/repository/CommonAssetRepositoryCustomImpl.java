@@ -542,7 +542,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
 
 
     //폐기가 다가오는 자산의 물품
-    public Map<AssetClassification, Long> findAssetsNearEndOfLife(LocalDate referenceDate) {
+    public Map<AssetClassification, Long> findAssetsNearEndOfLife() {
         QCommonAsset ca = QCommonAsset.commonAsset;
 
         // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
@@ -569,6 +569,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
 
         // Calculate the end of the 3-month period
+        LocalDate referenceDate = LocalDate.now();
         LocalDate endOfPeriod = referenceDate.plusMonths(3);
 
         JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
@@ -576,6 +577,8 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
                 .from(ca)
                 .where(
                         ca.purchaseDate.year().add(ca.usefulLife.intValue()).between(referenceDate.getYear(), endOfPeriod.getYear())
+                                .and(ca.purchaseDate.month().add(ca.usefulLife.intValue()).between(referenceDate.getMonthValue(), endOfPeriod.getMonthValue()))
+                                .and(ca.assetNo.in(subQuery))
                 )
                 .groupBy(ca.assetClassification)
                 .fetch();

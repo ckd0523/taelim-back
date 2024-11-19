@@ -94,14 +94,10 @@ public class ChartController {
     }
 
     //폐기에정
-    @GetMapping("/9/{referenceDate}")
-    public ResponseEntity<Map<AssetClassification, Long>> getAssetEndOfLife(
-            @PathVariable(value = "referenceDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate referenceDate
-            ) {
-        if (referenceDate == null) {
-            referenceDate = LocalDate.of(2024, 12, 1); // Default date for testing
-        }
-        Map<AssetClassification, Long> assetsNearEndOfLife = chartService.getAssetNearEndOfLifeCount(referenceDate);
+    @GetMapping("/9")
+    public ResponseEntity<Map<AssetClassification, Long>> getAssetEndOfLife(){
+
+        Map<AssetClassification, Long> assetsNearEndOfLife = chartService.getAssetNearEndOfLifeCount();
         return ResponseEntity.ok(assetsNearEndOfLife);
     }
 

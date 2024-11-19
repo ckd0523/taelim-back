@@ -108,8 +108,8 @@ public class ChartService {
     }
 
     //폐기가 다가오는 자산의 개수
-    public Map<AssetClassification, Long> getAssetNearEndOfLifeCount(LocalDate referenceDate) {
-        return commonAssetRepositoryCustom.findAssetsNearEndOfLife(referenceDate);
+    public Map<AssetClassification, Long> getAssetNearEndOfLifeCount() {
+        return commonAssetRepositoryCustom.findAssetsNearEndOfLife();
     }
 
     //위치별 자산 개수
