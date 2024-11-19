@@ -78,7 +78,8 @@ public class AssetController {
             if (response.getAssetNo() == null) {
                 return ResponseEntity.ok(response.getMessage());  // 메시지 2개 보냄
             }
-
+            //이메일 보낼 예정
+            //emailServcie.sendEmail("","", "" );
             // 정상적으로 자산 번호가 있으면 자산 수정 성공 메시지 반환
             return ResponseEntity.ok(response.getMessage());
         } catch (Exception e) {

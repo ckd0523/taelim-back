@@ -81,6 +81,8 @@ public class QRController {
     public ResponseEntity<CommonAsset> disposedemand1 (
             @PathVariable("assetCode") String assetCode, @RequestBody AssetUpdateDto assetUpdateDto ){
         registerService.DisposeDemand(assetCode, assetUpdateDto);
+        //이메일 보낼 예정
+        //emailServcie.sendEmail("","", "" );
         return ResponseEntity.ok().build();
     }
 
@@ -149,7 +151,7 @@ public class QRController {
                     demandService.beforeDemand(assetDto.getAssetCode(), newAssetNo);
 
                 }
-                //emailServcie.sendEmail("","", "" );
+
                 return ResponseEntity.ok("자산 수정 등록완료");
             } catch (Exception e) {
                 // 예외 메시지 로깅
@@ -171,6 +173,8 @@ public class QRController {
 //                }
 //            }
             Demand demand = registerService.UpdateDemand(updateToSend);
+            //이메일 보낼 예정
+            //emailServcie.sendEmail("","", "" );
             for (AssetUpdateDto assetDto : assetDtos) {
                 updateToSend.setAssetDto(assetDto);
                 updateToSend.setAssetNo(assetDto.getAssetNo());
@@ -199,6 +203,7 @@ public class QRController {
 //                }
 //            }
             Demand demand = registerService.DeleteDemand(disposeToSend);
+
             for (AssetUpdateDto assetDto : assetDtos) {
                 disposeToSend.setAssetDto(assetDto);
                 disposeToSend.setAssetNo(assetDto.getAssetNo());
@@ -228,6 +233,8 @@ public class QRController {
 //                }
 //            }
             Demand demand = registerService.DeleteDemand(disposeToSend);
+            //이메일 보낼 예정
+            //emailServcie.sendEmail("","", "" );
             for (AssetUpdateDto assetDto : assetDtos) {
                 disposeToSend.setAssetDto(assetDto);
                 disposeToSend.setAssetNo(assetDto.getAssetNo());

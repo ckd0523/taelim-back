@@ -28,10 +28,11 @@ public class QRService {
     private final EZioLib.API API;
 
     @Autowired
-    public QRService(CommonAssetRepository commonAssetRepository, UserService userService) {
+    public QRService(CommonAssetRepository commonAssetRepository, UserService userService, QrPrinterService qrPrinterService) {
 
         this.commonAssetRepository = commonAssetRepository;
         this.userService = userService;
+        this.qrPrinterService = qrPrinterService;
         this.API = EZioLib.API.INSTANCE;
         // ... (나머지 초기화 코드)
     }
@@ -40,7 +41,7 @@ public class QRService {
 
     private final CommonAssetRepository commonAssetRepository;
     private final UserService userService;
-
+    private final QrPrinterService qrPrinterService;
 
     // 네트워크로 프린터 연결
     public void Open(String strIP, String strPort) {
@@ -71,10 +72,11 @@ public class QRService {
         CommonAsset commonAsset = commonAssetRepository.findById(assetNo).orElseThrow();
         String url1 = QRurl + commonAsset.getAssetCode();
         String manager = userService.getUserById(commonAsset.getAssetSecurityManager()).getFullname();
-
+        String IP = qrPrinterService.getSelectedPrinter().getPrinterIp();
+        System.out.println("ip나오는가?"+IP);
         // 프린터 열기
         API.setup(60, 10, 3, 2, 5, 5);
-        Open("172.20.20.137","9100");
+        Open(IP,"9100");
         API.sendcommand("^L"); // 시작 명령
         PrintText_Unicode(25, 50, 30, "Hy중고딕", "자산명 : ");
         PrintText_Unicode(175, 50, 30, "Hy중고딕", commonAsset.getAssetName());
