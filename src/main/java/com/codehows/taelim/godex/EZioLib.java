@@ -36,14 +36,14 @@ public class EZioLib
 
 		private static API loadLibrary() {
 			try {
-<<<<<<< Updated upstream
+
 				ClassPathResource resource = new ClassPathResource("EZio64.dll");
-				File file = resource.getFile();
+				//File file = resource.getFile();
 				//System.load(file.getAbsolutePath());
-=======
+
 				String path = "C:/taelim-back/build/resources/main/EZio64.dll"; // 절대 경로로 파일 위치 지정
 				System.load(path);
->>>>>>> Stashed changes
+
 				return (API) Native.loadLibrary("EZio64", API.class);
 			} catch (UnsatisfiedLinkError e) {
 				System.err.println("Failed to load library: " + e.getMessage());
