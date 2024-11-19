@@ -326,21 +326,21 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
 
 
         // 3. 최종 쿼리: 최신 assetNo에 해당하는 자산의 purchaseCost 합계 조회
-       JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
-       List<Tuple> results = query.select(ca.introducedDate.year(), ca.purchaseCost.sum())
-               .from(ca)
-               .where(ca.introducedDate.year().between(startYear, endYear)
-                       .and(ca.assetNo.in(subQuery)))
-               .groupBy(ca.introducedDate.year())
-               .fetch();
+        JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
+        List<Tuple> results = query.select(ca.introducedDate.year(), ca.purchaseCost.sum())
+                .from(ca)
+                .where(ca.introducedDate.year().between(startYear, endYear)
+                        .and(ca.assetNo.in(subQuery)))
+                .groupBy(ca.introducedDate.year())
+                .fetch();
 
-       return results.stream()
-               .filter(tuple -> tuple.get(ca.introducedDate.year()) != null)
-               .collect(Collectors.toMap(
-                       tuple -> tuple.get(ca.introducedDate.year()),
-                       tuple -> tuple.get(ca.purchaseCost.sum()),
-                       Long::sum
-               ));
+        return results.stream()
+                .filter(tuple -> tuple.get(ca.introducedDate.year()) != null)
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(ca.introducedDate.year()),
+                        tuple -> tuple.get(ca.purchaseCost.sum()),
+                        Long::sum
+                ));
     }
 
     //등급별 자산 개수
