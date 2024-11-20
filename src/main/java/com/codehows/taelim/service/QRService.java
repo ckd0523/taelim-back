@@ -24,8 +24,6 @@ public class QRService {
     @Value("${qr.url}")
     private String QRurl;
 
-    //EZioLib.API API = EZioLib.API.INSTANCE;
-    private final EZioLib.API API;
 
     @Autowired
     public QRService(CommonAssetRepository commonAssetRepository, UserService userService, QrPrinterService qrPrinterService) {
@@ -37,8 +35,8 @@ public class QRService {
         // ... (나머지 초기화 코드)
     }
 
-
-
+    //EZioLib.API API = EZioLib.API.INSTANCE;
+    private final EZioLib.API API;
     private final CommonAssetRepository commonAssetRepository;
     private final UserService userService;
     private final QrPrinterService qrPrinterService;
