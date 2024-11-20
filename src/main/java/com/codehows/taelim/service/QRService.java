@@ -1,5 +1,6 @@
 package com.codehows.taelim.service;
 
+import com.codehows.taelim.dto.UserDto;
 import com.codehows.taelim.entity.CommonAsset;
 
 import com.codehows.taelim.godex.EZioLib;
@@ -69,7 +70,9 @@ public class QRService {
     public void PrintAssetLabel(Long assetNo) {
         CommonAsset commonAsset = commonAssetRepository.findById(assetNo).orElseThrow();
         String url1 = QRurl + commonAsset.getAssetCode();
-        String manager = userService.getUserById(commonAsset.getAssetSecurityManager()).getFullname();
+//        String manager = userService.getUserById(commonAsset.getAssetSecurityManager()).getFullname();
+        UserDto userDto = userService.getUserById(commonAsset.getAssetSecurityManager());
+        String manager = (userDto != null) ? userDto.getFullname() : "관리자 정보 없음";
         String IP = qrPrinterService.getSelectedPrinter().getPrinterIp();
         System.out.println("ip나오는가?"+IP);
         // 프린터 열기
