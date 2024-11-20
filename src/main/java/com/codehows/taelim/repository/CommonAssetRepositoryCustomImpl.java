@@ -9,6 +9,8 @@ import com.codehows.taelim.secondRepository.AspNetUserRepository;
 import com.codehows.taelim.service.UserService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Ops;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.sql.Date;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -541,51 +544,42 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
     }
 
 
-    //폐기가 다가오는 자산의 물품
+    // 폐기가 다가오는 자산의 물품
     public Map<AssetClassification, Long> findAssetsNearEndOfLife() {
-        QCommonAsset ca = QCommonAsset.commonAsset;
+        String sql = """
+            SELECT ca.asset_classification AS assetClassification, COUNT(ca.asset_no) AS assetCount
+            FROM common_asset ca
+            WHERE DATE_ADD(ca.purchase_date, INTERVAL ca.useful_life YEAR) BETWEEN :startDate AND :endDate
+              AND ca.asset_no IN (
+                  SELECT MAX(sub_ca.asset_no)
+                  FROM common_asset sub_ca
+                  WHERE sub_ca.asset_code NOT IN (
+                      SELECT excluded_ca.asset_code
+                      FROM common_asset excluded_ca
+                      WHERE excluded_ca.approval = :approved
+                        AND excluded_ca.disposal_status = TRUE
+                      GROUP BY excluded_ca.asset_code
+                  )
+                  AND sub_ca.approval = :approved
+                  AND sub_ca.disposal_status = FALSE
+                  GROUP BY sub_ca.asset_code
+              )
+            GROUP BY ca.asset_classification
+            """;
 
-        // 1. 폐기된 자산 (approval = APPROVE && disposal = TRUE)을 가진 assetCode를 필터링
-        JPAQuery<String> excludedAssetCodes = new JPAQuery<>(entityManager);
-        QCommonAsset subCa = QCommonAsset.commonAsset; // 서브 쿼리용 Q객체
+        LocalDate now = LocalDate.now();
+        Date startDate = Date.valueOf(now);
+        Date endDate = Date.valueOf(now.plusMonths(3));
 
-        excludedAssetCodes.select(subCa.assetCode)
-                .from(subCa)
-                .where(
-                        subCa.approval.eq(Approval.APPROVE)
-                                .and(subCa.disposalStatus.isTrue())
-                )
-                .groupBy(subCa.assetCode);
-
-        // 2. 최신 assetNo를 선택하는 서브 쿼리
-        JPAQuery<Long> subQuery = new JPAQuery<>(entityManager);
-        subQuery.select(ca.assetNo.max())
-                .from(ca)
-                .where(
-                        ca.assetCode.notIn(excludedAssetCodes) // 폐기된 assetCode 제외
-                                .and(ca.approval.eq(Approval.APPROVE)) // APPROVE 상태인 자산만
-                                .and(ca.disposalStatus.isFalse()) // disposal이 False인 자산만
-                )
-                .groupBy(ca.assetCode); // assetCode 기준으로 그룹화
-
-        // Calculate the end of the 3-month period
-        LocalDate referenceDate = LocalDate.now();
-        LocalDate endOfPeriod = referenceDate.plusMonths(3);
-
-        JPAQuery<Tuple> query = new JPAQuery<>(entityManager);
-        List<Tuple> results = query.select(ca.assetClassification, ca.assetNo.count())
-                .from(ca)
-                .where(
-                        ca.purchaseDate.year().add(ca.usefulLife.intValue()).between(referenceDate.getYear(), endOfPeriod.getYear())
-                                .and(ca.purchaseDate.month().add(ca.usefulLife.intValue()).between(referenceDate.getMonthValue(), endOfPeriod.getMonthValue()))
-                                .and(ca.assetNo.in(subQuery))
-                )
-                .groupBy(ca.assetClassification)
-                .fetch();
+        List<Object[]> results = entityManager.createNativeQuery(sql)
+                .setParameter("startDate", startDate)
+                .setParameter("endDate", endDate)
+                .setParameter("approved", Approval.APPROVE.toString())
+                .getResultList();
 
         return results.stream().collect(Collectors.toMap(
-                tuple -> tuple.get(ca.assetClassification),
-                tuple -> tuple.get(ca.assetNo.count())
+                row -> AssetClassification.valueOf((String) row[0]),
+                row -> ((Number) row[1]).longValue()
         ));
     }
     //위치별 자산 개수

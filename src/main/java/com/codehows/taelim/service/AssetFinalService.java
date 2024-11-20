@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.RegionUtil;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -437,7 +438,7 @@ public class AssetFinalService {
         String[] headers = {
                 "No", "자산 기준", "자산 코드", "자산명", "자산분류",
                 "목적/기능", "자산 위치", "부서", "사용자", "소유자",
-                "보안담당자", "수량", "제품시리얼번호", "소윤권", "사용상태", "가동여부", "도입일자", "비고",
+                "보안담당자", "수량", "제품시리얼번호", "소유권", "사용상태", "가동여부", "도입일자", "비고",
                 "기밀성","무결성","가용성", "중요성점수", "중요성등급",
                 "구매비용", "구매날짜", "유지기간", "내용연수", "감각상각방법",
                 "구입처", "구입처 연락처", "취득경로", "잔존가치", "현재가치"
@@ -931,37 +932,82 @@ public class AssetFinalService {
         }
     }
     private void adjustColumnWidths(Sheet sheet, int[] maxColumnLengths) {
-        for (int i = 0; i <= 44; i++) {
-            sheet.setColumnWidth(i, (maxColumnLengths[i] + 4) * 256); // +4는 여백을 위한 것
+        // 열 너비를 자동으로 조정
+        for (int i = 0; i < maxColumnLengths.length; i++) {
+            // POI의 autoSizeColumn을 사용
+            sheet.autoSizeColumn(i);
+
+            // 기본 너비가 너무 좁으면 최소값을 설정
+            int currentWidth = sheet.getColumnWidth(i);
+            int minWidth = 256 * 10; // 최소 너비 (예: 10자)
+            if (currentWidth < minWidth) {
+                sheet.setColumnWidth(i, minWidth);
+            }
         }
     }
-    
+
+
     // 일단 셀병합 부터 빼기
     private void mergeCellsAndSetTitle(Sheet sheet) {
-
         Row titleRow = sheet.createRow(7);  // 7번째 행 생성
 
-        // 기존 병합 셀들
-        Cell titleCell = titleRow.createCell(0);  // 첫 번째 셀
-        titleCell.setCellValue("필수입력사항");
+        // 첫 번째 병합 영역: A8-K8
+        CellRangeAddress mergedRegion1 = new CellRangeAddress(7, 7, 0, 17);
+        Cell titleCell1 = titleRow.createCell(0);
+        titleCell1.setCellValue("필수입력사항");
+        CellStyle style1 = sheet.getWorkbook().createCellStyle();
+        setTitleCellStyle(sheet, style1);  // 스타일 설정
+        titleCell1.setCellStyle(style1);
+        sheet.addMergedRegion(mergedRegion1);
+        applyBordersToMergedRegion(sheet, mergedRegion1);
 
-        Cell titleCell1 = titleRow.createCell(18);  // 14번째 셀
-        titleCell1.setCellValue("자산 중요성 평가항목");
+        // 두 번째 병합 영역: O8-U8
+        CellRangeAddress mergedRegion2 = new CellRangeAddress(7, 7, 18, 22);
+        Cell titleCell2 = titleRow.createCell(18);
+        titleCell2.setCellValue("자산 중요성 평가항목");
+        CellStyle style2 = sheet.getWorkbook().createCellStyle();
+        setTitleCellStyle(sheet, style2);  // 스타일 설정
+        titleCell2.setCellStyle(style2);
+        sheet.addMergedRegion(mergedRegion2);
+        applyBordersToMergedRegion(sheet, mergedRegion2);
 
-        Cell titleCell2 = titleRow.createCell(23);  // 21번째 셀
-        titleCell2.setCellValue("재무 및 구매 정보");
-
-        // 셀 병합 : A8부터 K8, O8부터 U8, V8부터 AF8까지 병합
-        sheet.addMergedRegion(new CellRangeAddress(7, 7, 0, 17));   // A8-K8 병합
-        sheet.addMergedRegion(new CellRangeAddress(7, 7, 18, 22));  // O8-U8 병합
-        sheet.addMergedRegion(new CellRangeAddress(7, 7, 23, 32));  // V8-AF8 병합
-
-        // 셀 스타일 생성
-        CellStyle titleStyle = createTitleStyle(sheet);
-        titleCell.setCellStyle(titleStyle);
-        titleCell1.setCellStyle(titleStyle);
-        titleCell2.setCellStyle(titleStyle);
+        // 세 번째 병합 영역: V8-AF8
+        CellRangeAddress mergedRegion3 = new CellRangeAddress(7, 7, 23, 32);
+        Cell titleCell3 = titleRow.createCell(23);
+        titleCell3.setCellValue("재무 및 구매 정보");
+        CellStyle style3 = sheet.getWorkbook().createCellStyle();
+        setTitleCellStyle(sheet, style3);  // 스타일 설정
+        titleCell3.setCellStyle(style3);
+        sheet.addMergedRegion(mergedRegion3);
+        applyBordersToMergedRegion(sheet, mergedRegion3);
     }
+
+    private void setTitleCellStyle(Sheet sheet, CellStyle titleStyle) {
+        // 폰트 설정
+        Font titleFont = sheet.getWorkbook().createFont();
+        titleFont.setBold(true); // 글씨를 굵게
+        titleFont.setFontHeightInPoints((short) 9); // 폰트 크기 9
+        titleFont.setFontName("맑은 고딕"); // 폰트 "맑은 고딕"
+        titleStyle.setFont(titleFont);
+
+        // 배경 색상 설정 (RGB 217, 217, 217)
+        XSSFColor backgroundColor = new XSSFColor(new java.awt.Color(217, 217, 217), null);
+        ((XSSFCellStyle) titleStyle).setFillForegroundColor(backgroundColor);
+        titleStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND); // 배경색 채우기
+
+        // 정렬 설정
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);
+        titleStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+    }
+
+    private void applyBordersToMergedRegion(Sheet sheet, CellRangeAddress region) {
+        // 병합된 셀에 테두리 적용
+        RegionUtil.setBorderTop(BorderStyle.THIN, region, sheet);
+        RegionUtil.setBorderBottom(BorderStyle.THIN, region, sheet);
+        RegionUtil.setBorderLeft(BorderStyle.THIN, region, sheet);
+        RegionUtil.setBorderRight(BorderStyle.THIN, region, sheet);
+    }
+
     private void setTitleRow(Sheet sheet) {
         // 두 번째 제목 행 처리
         Row titleRow1 = sheet.getRow(1);
@@ -977,12 +1023,20 @@ public class AssetFinalService {
         if (titleCell3 == null) {
             titleCell3 = titleRow1.createCell(3); // 3번째 셀이 없으면 생성
         }
-        titleCell3.setCellValue("정보자산 목록 및 중요성 평가"); // 텍스트 설정
-        titleCell3.setCellStyle(createTitleStyle(sheet));  // 스타일 적용
 
-        System.out.println("뭐가뜨는데 " + titleCell3.getStringCellValue());
+        // 텍스트 설정
+        titleCell3.setCellValue("정보자산 목록 및 중요성 평가");
+
+        // 셀 스타일 적용
+        CellStyle titleCellStyle = createTitleStyle(sheet);
+        titleCell3.setCellStyle(titleCellStyle);  // 스타일 적용
+
+        // 디버깅을 위해 텍스트 출력
+        System.out.println("뭐가 뜨는데: " + titleCell3.getStringCellValue());
+
         // 셀의 배경 색상 확인을 위한 디버깅
         System.out.println("Cell Background Color: " + titleCell3.getCellStyle().getFillForegroundColorColor());
+
         // 열 너비 조정
         titleRow1.setHeightInPoints(30);  // 병합된 행 높이 조정
         for (int i = 3; i <= 17; i++) {
