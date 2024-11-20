@@ -1036,7 +1036,7 @@ public class AssetFinalService {
 
         // 셀의 배경 색상 확인을 위한 디버깅
         System.out.println("Cell Background Color: " + titleCell3.getCellStyle().getFillForegroundColorColor());
-        
+
         // 열 너비 조정
         titleRow1.setHeightInPoints(30);  // 병합된 행 높이 조정
         for (int i = 3; i <= 17; i++) {
