@@ -92,6 +92,7 @@ public class WebSecurityConfig {
                             .requestMatchers("/chart/**").permitAll()
                             //QR
                             .requestMatchers("/generateQRCode").permitAll()
+                            .requestMatchers("/printers/**").permitAll()
 
                     .anyRequest().authenticated();
                 })

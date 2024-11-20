@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -104,8 +101,18 @@ public class AssetSurveyController {
         List<AssetSurveyDetailDto> a = assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo);
         for(AssetSurveyDetailDto dto : a) {
             //System.out.println("여기입니다" + dto.getAssetName());
-            dto.setAssetOwner(userService.getUserById(dto.getAssetOwner()).getFullname() != null ? userService.getUserById(dto.getAssetOwner()).getFullname() : "Unknown User");
-            dto.setAssetSecurityManager(userService.getUserById(dto.getAssetSecurityManager()).getFullname() != null ? userService.getUserById(dto.getAssetSecurityManager()).getFullname() : "Unknown User");
+            UserDto owner = userService.getUserById(dto.getAssetOwner());
+            UserDto securityManager = userService.getUserById(dto.getAssetSecurityManager());
+
+            // 자산 소유자 이름 설정
+            dto.setAssetOwner(owner != null && !Objects.equals(owner.getFullname(), "")
+                    ? owner.getFullname()
+                    : "Unknown User");
+
+            // 자산 보안 관리자 이름 설정
+            dto.setAssetSecurityManager(securityManager != null && !Objects.equals(securityManager.getFullname(), "")
+                    ? securityManager.getFullname()
+                    : "Unknown User");
         }
         System.out.println(a);
         return a;

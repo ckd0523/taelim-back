@@ -62,9 +62,12 @@ public class DataInitializerService {
         // AspNetUser 데이터를 DB에서 가져옴
         List<AspNetUser> userList = aspNetUserRepository.findAll();  // AspNetUser 엔티티를 모두 조회
 
-        // 2024년 10월 1일부터 31일까지의 날짜 범위
-        LocalDate startDate = LocalDate.of(2015, 10, 1);
-        LocalDate endDate = LocalDate.of(2025, 12, 31);
+        // 2015년 1월 1일부터 2022년 12월 31일까지의 날짜 범위 설정
+        LocalDate startDate = LocalDate.of(2015, 1, 1);
+        LocalDate endDate = LocalDate.of(2022, 12, 31);
+
+        // Random 객체 생성
+        Random random = new Random();
 
         List<CommonAsset> assets = new ArrayList<>();
         String[] assetNames = {
@@ -84,7 +87,7 @@ public class DataInitializerService {
                 "현대 스타렉스",
                 "기아 봉고",
         };
-        Random random = new Random();
+
 
         // CommonAsset 첫번째 데이터 삽입
         for (int i = 1; i <= 195; i++) {
@@ -157,8 +160,10 @@ public class DataInitializerService {
             OperationStatus operationStatus = OperationStatus.values()[i % OperationStatus.values().length];
             asset.setOperationStatus(operationStatus);
 
-            // 2024년 10월 1일부터 31일까지의 날짜 순환 설정
-            LocalDate introducedDate = startDate.plusDays((i - 1) % 31); // 0부터 30까지 순환
+            // 랜덤 날짜 생성
+            long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+            long randomDay = (long) (random.nextDouble() * daysBetween);  // 랜덤한 일수 차이
+            LocalDate introducedDate = startDate.plusDays(randomDay); // 랜덤 날짜 생성
             asset.setIntroducedDate(introducedDate);
             // 보안성 설정 (1~3 범위)
             asset.setConfidentiality(random.nextInt(3) + 1); // 1~3 랜덤 값
@@ -281,6 +286,7 @@ public class DataInitializerService {
                     // int를 Long으로 변환하여 설정
 
                     itSystemEquipment.setPowerSupply("Power Supply " + i);  // 더미 데이터 반영
+                    itSystemEquipment.setRackUnit(Long.valueOf(i));
                     itSystemEquipment.setCoolingSystem("Cooling System " + i);  // 더미 데이터 반영
                     itSystemEquipment.setInterfacePorts("Port " + i);  // 더미 데이터 반영
                     itSystemEquipment.setFormFactor("Form Factor " + i);  // 더미 데이터 반영

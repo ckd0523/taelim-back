@@ -46,6 +46,7 @@ public class RegisterService {
     private final FileRepository fileRepository;
     private final UserService userService;
     private final DemandService demandService;
+    private final EmailServcie emailServcie;
 
     @Value("${file.path}")
     private String filePath;
@@ -513,6 +514,9 @@ public class RegisterService {
         demandDtl.setAssetNo(updateAsset);
         demandDtl.setDemandNo(demand);
         demandDtlRepository.save(demandDtl);
+
+        //이메일 보낼 예정
+        //emailServcie.sendEmail(assetDto.getDemandBy(),"", "" );
 
         // 자산 수정 성공 메시지 반환
         return new AssetUpdateResponse("자산 수정 등록 완료 : " + newAssetNo, newAssetNo);
