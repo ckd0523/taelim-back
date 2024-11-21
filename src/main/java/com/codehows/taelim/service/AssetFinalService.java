@@ -437,7 +437,7 @@ public class AssetFinalService {
         Row headerRow = sheet.createRow(8);
         String[] headers = {
                 "No", "자산 기준", "자산 코드", "자산명", "자산분류",
-                "목적/기능", "자산 위치", "부서", "사용자", "소유자",
+                "제조사","목적/기능", "자산 위치", "부서", "사용자", "소유자",
                 "보안담당자", "수량", "제품시리얼번호", "소유권", "사용상태", "가동여부", "도입일자", "비고",
                 "기밀성","무결성","가용성", "중요성점수", "중요성등급",
                 "구매비용", "구매날짜", "유지기간", "내용연수", "감각상각방법",
@@ -534,39 +534,41 @@ public class AssetFinalService {
         row.getCell(3).setCellStyle(cellStyle); // 스타일 적용
         row.createCell(4).setCellValue(asset.getAssetClassification() != null ? asset.getAssetClassification().getDescription() : "");
         row.getCell(4).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(5).setCellValue(asset.getPurpose() != null ? asset.getPurpose() : "");
-        row.getCell(5).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(6).setCellValue(asset.getAssetLocation() != null ? asset.getAssetLocation().getDescription() : "");
+        row.createCell(5).setCellValue(asset.getManufacturingCompany() != null ? asset.getManufacturingCompany() : "");
+        row.getCell(5).setCellStyle(cellStyle);
+        row.createCell(6).setCellValue(asset.getPurpose() != null ? asset.getPurpose() : "");
         row.getCell(6).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(7).setCellValue(asset.getDepartment() != null ? asset.getDepartment().getDescription() : "");
+        row.createCell(7).setCellValue(asset.getAssetLocation() != null ? asset.getAssetLocation().getDescription() : "");
         row.getCell(7).setCellStyle(cellStyle); // 스타일 적용
-
-        UserDto user = userService.getUserById(asset.getAssetUser());
-        row.createCell(8).setCellValue(user != null ? user.getFullname() : ""); // String 타입
+        row.createCell(8).setCellValue(asset.getDepartment() != null ? asset.getDepartment().getDescription() : "");
         row.getCell(8).setCellStyle(cellStyle); // 스타일 적용
 
-        UserDto owner = userService.getUserById(asset.getAssetOwner());
-        row.createCell(9).setCellValue(owner != null ? owner.getFullname() : ""); // String 타입
+        UserDto user = userService.getUserById(asset.getAssetUser());
+        row.createCell(9).setCellValue(user != null ? user.getFullname() : ""); // String 타입
         row.getCell(9).setCellStyle(cellStyle); // 스타일 적용
 
-        UserDto securityManager = userService.getUserById(asset.getAssetSecurityManager());
-        row.createCell(10).setCellValue(securityManager != null ? securityManager.getFullname() : ""); // String 타입
+        UserDto owner = userService.getUserById(asset.getAssetOwner());
+        row.createCell(10).setCellValue(owner != null ? owner.getFullname() : ""); // String 타입
         row.getCell(10).setCellStyle(cellStyle); // 스타일 적용
 
-        row.createCell(11).setCellValue(asset.getQuantity() != null ? asset.getQuantity() : 0);
-        row.getCell(11).setCellStyle(cellStyle);
-        row.createCell(12).setCellValue(asset.getProductSerialNumber() != null ? asset.getProductSerialNumber() : "");
+        UserDto securityManager = userService.getUserById(asset.getAssetSecurityManager());
+        row.createCell(11).setCellValue(securityManager != null ? securityManager.getFullname() : ""); // String 타입
+        row.getCell(11).setCellStyle(cellStyle); // 스타일 적용
+
+        row.createCell(12).setCellValue(asset.getQuantity() != null ? asset.getQuantity() : 0);
         row.getCell(12).setCellStyle(cellStyle);
-        row.createCell(13).setCellValue(asset.getOwnership() != null ? asset.getOwnership().getDescription() : "");
+        row.createCell(13).setCellValue(asset.getProductSerialNumber() != null ? asset.getProductSerialNumber() : "");
         row.getCell(13).setCellStyle(cellStyle);
-        row.createCell(14).setCellValue(asset.getUseStated() != null ? asset.getUseStated().getDescription() : "");
-        row.getCell(14).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(15).setCellValue(asset.getOperationStatus() != null ? asset.getOperationStatus().getDescription() : "");
+        row.createCell(14).setCellValue(asset.getOwnership() != null ? asset.getOwnership().getDescription() : "");
+        row.getCell(14).setCellStyle(cellStyle);
+        row.createCell(15).setCellValue(asset.getUseStated() != null ? asset.getUseStated().getDescription() : "");
         row.getCell(15).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(16).setCellValue(asset.getIntroducedDate() != null ? asset.getIntroducedDate().format(formatter) : "");
+        row.createCell(16).setCellValue(asset.getOperationStatus() != null ? asset.getOperationStatus().getDescription() : "");
         row.getCell(16).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(17).setCellValue(asset.getNote() != null ? asset.getNote() : "");
+        row.createCell(17).setCellValue(asset.getIntroducedDate() != null ? asset.getIntroducedDate().format(formatter) : "");
         row.getCell(17).setCellStyle(cellStyle); // 스타일 적용
+        row.createCell(18).setCellValue(asset.getNote() != null ? asset.getNote() : "");
+        row.getCell(18).setCellStyle(cellStyle); // 스타일 적용
 
         // 기밀성, 무결성, 가용성 처리
         int confidentiality = asset.getConfidentiality();
@@ -574,41 +576,41 @@ public class AssetFinalService {
         int availability = asset.getAvailability();
         int totalScore = confidentiality + integrity + availability;
 
-        row.createCell(18).setCellValue(confidentiality);
-        row.getCell(18).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(19).setCellValue(integrity);
+        row.createCell(19).setCellValue(confidentiality);
         row.getCell(19).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(20).setCellValue(availability);
+        row.createCell(20).setCellValue(integrity);
         row.getCell(20).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(21).setCellValue(totalScore);
+        row.createCell(21).setCellValue(availability);
         row.getCell(21).setCellStyle(cellStyle); // 스타일 적용
+        row.createCell(22).setCellValue(totalScore);
+        row.getCell(22).setCellStyle(cellStyle); // 스타일 적용
 
         // 중요성 등급 계산
         String grade = calculateAssetGrade(totalScore);
-        row.createCell(22).setCellValue(grade != null ? grade : ""); // grade가 null인 경우 빈 문자열로 처리
-        row.getCell(22).setCellStyle(cellStyle); // 스타일 적용
-
-
-        row.createCell(23).setCellValue(asset.getPurchaseCost() != null ? asset.getPurchaseCost() : 0);
+        row.createCell(23).setCellValue(grade != null ? grade : ""); // grade가 null인 경우 빈 문자열로 처리
         row.getCell(23).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(24).setCellValue(asset.getPurchaseDate() != null ? asset.getPurchaseDate().format(formatter) : "");
+
+
+        row.createCell(24).setCellValue(asset.getPurchaseCost() != null ? asset.getPurchaseCost() : 0);
         row.getCell(24).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(25).setCellValue(asset.getMaintenancePeriod() != null ? asset.getMaintenancePeriod().format(formatter) : "");
+        row.createCell(25).setCellValue(asset.getPurchaseDate() != null ? asset.getPurchaseDate().format(formatter) : "");
         row.getCell(25).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(26).setCellValue(asset.getUsefulLife() != null ? asset.getUsefulLife() : 0);
+        row.createCell(26).setCellValue(asset.getMaintenancePeriod() != null ? asset.getMaintenancePeriod().format(formatter) : "");
         row.getCell(26).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(27).setCellValue(asset.getDepreciationMethod() != null ? asset.getDepreciationMethod().getDescription() : "");
+        row.createCell(27).setCellValue(asset.getUsefulLife() != null ? asset.getUsefulLife() : 0);
         row.getCell(27).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(28).setCellValue(asset.getPurchaseSource() != null ? asset.getPurchaseSource() : "");
+        row.createCell(28).setCellValue(asset.getDepreciationMethod() != null ? asset.getDepreciationMethod().getDescription() : "");
         row.getCell(28).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(29).setCellValue(asset.getContactInformation() != null ? asset.getContactInformation() : "");
+        row.createCell(29).setCellValue(asset.getPurchaseSource() != null ? asset.getPurchaseSource() : "");
         row.getCell(29).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(30).setCellValue(asset.getAcquisitionRoute() != null ? asset.getAcquisitionRoute() : "");
+        row.createCell(30).setCellValue(asset.getContactInformation() != null ? asset.getContactInformation() : "");
         row.getCell(30).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(31).setCellValue(asset.getNote() != null ? asset.getNote() : "");
+        row.createCell(31).setCellValue(asset.getAcquisitionRoute() != null ? asset.getAcquisitionRoute() : "");
         row.getCell(31).setCellStyle(cellStyle); // 스타일 적용
         row.createCell(32).setCellValue(asset.getNote() != null ? asset.getNote() : "");
         row.getCell(32).setCellStyle(cellStyle); // 스타일 적용
+        row.createCell(33).setCellValue(asset.getNote() != null ? asset.getNote() : "");
+        row.getCell(33).setCellStyle(cellStyle); // 스타일 적용
     }
 
     private String calculateAssetGrade(int totalScore) {
@@ -952,7 +954,7 @@ public class AssetFinalService {
         Row titleRow = sheet.createRow(7);  // 7번째 행 생성
 
         // 첫 번째 병합 영역: A8-K8
-        CellRangeAddress mergedRegion1 = new CellRangeAddress(7, 7, 0, 17);
+        CellRangeAddress mergedRegion1 = new CellRangeAddress(7, 7, 0, 18);
         Cell titleCell1 = titleRow.createCell(0);
         titleCell1.setCellValue("필수입력사항");
         CellStyle style1 = sheet.getWorkbook().createCellStyle();
@@ -962,8 +964,8 @@ public class AssetFinalService {
         applyBordersToMergedRegion(sheet, mergedRegion1);
 
         // 두 번째 병합 영역: O8-U8
-        CellRangeAddress mergedRegion2 = new CellRangeAddress(7, 7, 18, 22);
-        Cell titleCell2 = titleRow.createCell(18);
+        CellRangeAddress mergedRegion2 = new CellRangeAddress(7, 7, 19, 23);
+        Cell titleCell2 = titleRow.createCell(19);
         titleCell2.setCellValue("자산 중요성 평가항목");
         CellStyle style2 = sheet.getWorkbook().createCellStyle();
         setTitleCellStyle(sheet, style2);  // 스타일 설정
@@ -972,8 +974,8 @@ public class AssetFinalService {
         applyBordersToMergedRegion(sheet, mergedRegion2);
 
         // 세 번째 병합 영역: V8-AF8
-        CellRangeAddress mergedRegion3 = new CellRangeAddress(7, 7, 23, 32);
-        Cell titleCell3 = titleRow.createCell(23);
+        CellRangeAddress mergedRegion3 = new CellRangeAddress(7, 7, 24, 33);
+        Cell titleCell3 = titleRow.createCell(24);
         titleCell3.setCellValue("재무 및 구매 정보");
         CellStyle style3 = sheet.getWorkbook().createCellStyle();
         setTitleCellStyle(sheet, style3);  // 스타일 설정

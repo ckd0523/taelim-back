@@ -160,6 +160,7 @@ public class AssetDto {
                 .availability(availability)
                 .note(note)
                 .manufacturingCompany(manufacturingCompany)
+                .productSerialNumber(productSerialNumber)
                 .ownership(ownership)
                 .purchaseCost(purchaseCost)
                 .purchaseDate(purchaseDate)
