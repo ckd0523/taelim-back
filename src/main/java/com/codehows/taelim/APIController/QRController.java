@@ -282,6 +282,7 @@ public class QRController {
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) AssetClassification assetClassification,
+            @RequestParam(required = false) Long valueStandardNo,  // 새로 추가된 필드
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
@@ -290,7 +291,7 @@ public class QRController {
         PaginatedResponse<AssetDto> response = assetFinalService.getAssetSearch(
                 assetName,assetLocationEnum,
                 assetUser, departmentEnum,
-                startDate, endDate, assetClassification,page, size
+                startDate, endDate, assetClassification,valueStandardNo,page, size
         );
 
         return ResponseEntity.ok(response);

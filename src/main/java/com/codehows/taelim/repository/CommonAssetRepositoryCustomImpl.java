@@ -2,6 +2,7 @@ package com.codehows.taelim.repository;
 
 import com.codehows.taelim.constant.*;
 import com.codehows.taelim.dto.UserDto;
+import com.codehows.taelim.entity.AmountSet;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.QCommonAsset;
 import com.codehows.taelim.secondEntity.AspNetUser;
@@ -906,6 +907,7 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
             LocalDate startDate, // 검색 범위 시작 날짜
             LocalDate endDate,   // 검색 범위 종료 날짜
             AssetClassification assetClassification,
+            Long valueStandardNo, // 전달받는 AmountSet의 ID
             Pageable pageable) {
 
         QCommonAsset ca = QCommonAsset.commonAsset;
@@ -985,6 +987,30 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
         if (assetClassification != null) {
             builder.and(ca.assetClassification.eq(assetClassification));
         }
+        // AmountSet의 값 조회 후 필터링
+        if (valueStandardNo != null) {
+            AmountSet amountSet = entityManager.find(AmountSet.class, valueStandardNo);
+            if (amountSet != null) {
+                Long highValueStandard = amountSet.getHighValueStandard();
+                Long lowValueStandard = amountSet.getLowValueStandard();
+
+                // 디버깅 출력
+                System.out.println("High Value Standard: " + highValueStandard);
+                System.out.println("Low Value Standard: " + lowValueStandard);
+
+                // purchaseCost 조건 추가
+                if (highValueStandard != null && lowValueStandard != null) {
+                    builder.and(ca.purchaseCost.between(lowValueStandard, highValueStandard));
+                } else if (highValueStandard != null) {
+                    builder.and(ca.purchaseCost.loe(highValueStandard));
+                } else if (lowValueStandard != null) {
+                    builder.and(ca.purchaseCost.goe(lowValueStandard));
+                }
+            } else {
+                throw new IllegalArgumentException("Invalid valueStandardNo: " + valueStandardNo);
+            }
+        }
+
 
         // 최신 assetNo에 해당하는 자산을 필터링된 결과로 가져오기
         query.select(ca)

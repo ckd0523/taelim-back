@@ -53,6 +53,7 @@ public interface CommonAssetRepositoryCustom {
             LocalDate startDate, // 검색 범위 시작 날짜
             LocalDate endDate,   // 검색 범위 종료 날짜
             AssetClassification assetClassification,
+            Long valueStandardNo, // 전달받는 AmountSet의 ID
             Pageable pageable);
     // 요청 승인시 이전 요청들 처리하는 로직
     List<CommonAsset> findUnconfirmedAssetsWithSameCodeAndLessThanAssetNo(String assetCode, Long assetNo);
