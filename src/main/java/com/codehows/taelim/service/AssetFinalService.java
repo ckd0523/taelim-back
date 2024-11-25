@@ -69,12 +69,13 @@ public class AssetFinalService {
             LocalDate startDate, // 검색 범위 시작 날짜
             LocalDate endDate,   // 검색 범위 종료 날짜
             AssetClassification assetClassification,  // 추가된 assetClassification 파라미터
-            Long valueStandardNo, // 전달받는 AmountSet의 ID
+            AmountSetDto amountSetDto, // 전달받는 AmountSet의 ID
             int page,
             int size) {
 
         // Pageable 객체 설정 처리
         Pageable pageable = PageRequest.of(page, size);
+
 
         Page<CommonAsset> assetPage;
 
@@ -89,7 +90,7 @@ public class AssetFinalService {
                     startDate, // 검색 범위 시작 날짜
                     endDate,   // 검색 범위 종료 날짜
                     null, // assetClassification을 null로 설정
-                    valueStandardNo, // 전달받는 AmountSet의 ID
+                    amountSetDto, // 전달받는 AmountSet의 ID
                     pageable
             );
         } else {
@@ -102,7 +103,7 @@ public class AssetFinalService {
                     startDate, // 검색 범위 시작 날짜
                     endDate,   // 검색 범위 종료 날짜
                     assetClassification, // 분류 정보 전달
-                    valueStandardNo, // 전달받는 AmountSet의 ID
+                    amountSetDto, // 전달받는 AmountSet의 ID
                     pageable
             );
         }

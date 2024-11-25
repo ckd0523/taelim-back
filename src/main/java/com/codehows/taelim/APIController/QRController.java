@@ -41,6 +41,7 @@ public class QRController {
     private final AssetFinalService assetFinalService;
     private final CommonAssetRepository commonAssetRepository;
     private final DemandService demandService;
+    private final AmountSetService amountSetService;
     //private final EmailServcie emailServcie;
 
     //QR 생성하는곳
@@ -286,12 +287,28 @@ public class QRController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
+        /// 1. AmountSetDto 생성
+        AmountSetDto amountSetDto = null;
+        if (valueStandardNo != null) {
+            // AmountSetDto를 조회하거나 생성
+            amountSetDto = amountSetService.getAmountSetDto(valueStandardNo);
+            // 서비스에서 valueStandardNo로 AmountSetDto 조회
+
+            // AmountSetDto의 내용을 콘솔에 출력
+            System.out.println("AmountSetDto: " + amountSetDto);
+            // 또는 각 필드를 개별적으로 출력하려면 (예시로 'getFieldName' 사용)
+            if (amountSetDto != null) {
+                System.out.println("Field1: " + amountSetDto.getHigh_value_standard());
+                System.out.println("Field2: " + amountSetDto.getLow_value_standard());
+                // 각 필드를 필요한 만큼 출력
+            }
+        }
 
         // 검색 결과를 가져옵니다.
         PaginatedResponse<AssetDto> response = assetFinalService.getAssetSearch(
                 assetName,assetLocationEnum,
                 assetUser, departmentEnum,
-                startDate, endDate, assetClassification,valueStandardNo,page, size
+                startDate, endDate, assetClassification,amountSetDto, page, size
         );
 
         return ResponseEntity.ok(response);

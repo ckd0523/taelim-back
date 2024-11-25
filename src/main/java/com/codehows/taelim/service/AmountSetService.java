@@ -25,4 +25,13 @@ public class AmountSetService {
         return true;
     }
 
+    public AmountSetDto getAmountSetDto(Long valueStandardNo) {
+        AmountSet amountSet = amountSetRepository.findById(valueStandardNo)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid valueStandardNo: " + valueStandardNo));
+
+        return new AmountSetDto(
+                amountSet.getHighValueStandard(),
+                amountSet.getLowValueStandard()
+        );
+    }
 }
