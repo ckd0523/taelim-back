@@ -28,7 +28,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        
 
         AspNetUser aspNetUser = aspNetUserRepository.findByUsername(email).orElseThrow(() -> new UsernameNotFoundException("사용자 없음"));
 

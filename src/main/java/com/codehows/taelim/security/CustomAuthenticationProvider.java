@@ -1,7 +1,6 @@
 package com.codehows.taelim.security;
 
 import com.codehows.taelim.service.CustomUserDetailsService;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,8 +15,6 @@ import java.util.Base64;
 @RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
     private final CustomUserDetailsService customUserDetailsService;
-    //private final PasswordHasher2 passwordHasher2;
-    //private final PasswordHasher3 passwordHasher3;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -53,12 +50,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             e.printStackTrace();
             return null;
         }
-
-//        if (!passwordHasher2.verifyHashedPasswordV3(user.getPassword().getBytes(), password, iterCount, prf)) {
-//            System.out.println("커스텀 프로바이더 실패");
-//            return null;
-//            //throw new BadCredentialsException("비밀번호 불일치");
-//        }
     }
 
     @Override
