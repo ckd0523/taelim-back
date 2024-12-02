@@ -9,9 +9,7 @@ import com.codehows.taelim.entity.Member;
 import com.codehows.taelim.entity.Software;
 import com.codehows.taelim.secondEntity.AspNetUser;
 import com.codehows.taelim.secondRepository.AspNetUserRepository;
-import com.codehows.taelim.secondRepository.TestMemberRepository;
 import com.codehows.taelim.repository.*;
-import com.codehows.taelim.security.PasswordHasher2;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,8 +41,6 @@ public class DataInitializerService {
     private final InformationProtectionSystemRepository informationProtectionSystemRepository;
     private final RegisterService registerService;
     private final AmountSetRepository amountSetRepository;
-    private final TestMemberRepository testMemberRepository;
-    private final PasswordHasher2 passwordHasher2;
     private final UserService userService;
     private final AspNetUserRepository aspNetUserRepository;
 

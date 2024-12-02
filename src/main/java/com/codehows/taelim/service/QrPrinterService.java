@@ -67,5 +67,9 @@ public class QrPrinterService {
         return selectedPrinter.orElse(null);
     }
 
+    public void deletePrinter(Long printerId) {
+        qrPrinterRepository.deleteById(printerId);
+    }
+
 
 }

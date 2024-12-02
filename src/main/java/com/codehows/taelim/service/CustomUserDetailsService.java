@@ -55,6 +55,20 @@ public class CustomUserDetailsService implements UserDetailsService {
                     new SimpleGrantedAuthority("ROLE_USER"));
         }
 
+        //시스템관리자
+//        if(roles.contains("SystemAdmin")) {
+//            authorities = Collections.singletonList(
+//                    new SimpleGrantedAuthority("ROLE_ADMIN"));
+//            //자산관리 담당자, 책임자
+//        } else if(roles.contains("AssetAdmin") || roles.contains("AssetManager")) {
+//            authorities = Collections.singletonList(
+//                    new SimpleGrantedAuthority("ROLE_ASSET_MANAGER"));
+//            //나머지는 User 권한
+//        } else {
+//            authorities = Collections.singletonList(
+//                    new SimpleGrantedAuthority("ROLE_USER"));
+//        }
+
         // UserDetails 반환 (Spring Security에서 제공하는 User 객체 사용)
         return new User(
                 new String(Base64.getDecoder().decode(aspNetUser.getUsername())),

@@ -16,7 +16,8 @@ import java.util.Base64;
 @RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
     private final CustomUserDetailsService customUserDetailsService;
-    private final PasswordHasher2 passwordHasher2;
+    //private final PasswordHasher2 passwordHasher2;
+    //private final PasswordHasher3 passwordHasher3;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -35,10 +36,11 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         System.out.println("커스텀 프로바이더 DB에 있는 해싱된 비밀번호 : " + user.getPassword());
 
         try {
-            String hashedPassword = passwordHasher2.hashPasswordV3(password);
-            System.out.println("커스텀 프로바이더 받은 비밀번호 해싱 결과 : " + hashedPassword);
+            //String hashedPassword = PasswordHasher3.hashPasswordV3(password);
+            //System.out.println("커스텀 프로바이더 받은 비밀번호 해싱 결과 : " + hashedPassword);
 
-            boolean result = hashedPassword.equals(user.getPassword());
+            //boolean result = hashedPassword.equals(user.getPassword());
+            boolean result = PasswordHasher3.verifyHashedPasswordV3(user.getPassword(), password);
 
             if(result) {
                 System.out.println("커스텀 프로바이더 비밀번호 비교 성공");
