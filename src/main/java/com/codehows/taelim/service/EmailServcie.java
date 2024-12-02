@@ -13,12 +13,20 @@ public class EmailServcie {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendEmail(String to, String subject, String body) throws MessagingException {
+    private final EmailSetService emailSetService;
+
+    public EmailServcie(EmailSetService emailSetService) {
+        this.emailSetService = emailSetService;
+    }
+
+    public void sendEmail(String subject, String body) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
+        String email = emailSetService.getSelectedEmailSet().getSetEmail();
+
         helper.setFrom("태림 메일");  // 보내는 사람 설정
-        helper.setTo(to);
+        helper.setTo(email);
         helper.setSubject(subject);
         helper.setText(body, true);
 
