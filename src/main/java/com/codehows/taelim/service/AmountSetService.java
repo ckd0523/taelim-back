@@ -34,4 +34,8 @@ public class AmountSetService {
                 amountSet.getLowValueStandard()
         );
     }
+    // valueStandardNo가 1인 AmountSet 조회
+    public AmountSet getAmountSetByNo(Long valueStandardNo) {
+        return amountSetRepository.findByValueStandardNo(valueStandardNo);
+    }
 }

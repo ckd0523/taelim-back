@@ -909,6 +909,8 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
             LocalDate endDate,   // 검색 범위 종료 날짜
             AssetClassification assetClassification,
             AmountSetDto  amountSetDto, // 전달받는 AmountSet의 ID
+            Ownership ownership,
+            OperationStatus operationStatus,
             Pageable pageable) {
 
         QCommonAsset ca = QCommonAsset.commonAsset;
@@ -975,6 +977,17 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
             );
         }
 
+        if (ownership != null) {
+            builder.and(
+                    ca.ownership.eq(ownership)
+            );
+        }
+        if (operationStatus != null) {
+            builder.and(
+                    ca.operationStatus.eq(operationStatus)
+            );
+        }
+
         // 날짜 범위 조건 추가 (startDate 및 endDate가 있을 경우)
         if (startDate != null && endDate != null) {
             builder.and(ca.introducedDate.between(startDate, endDate));
@@ -993,14 +1006,25 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
             Long highValueStandard = amountSetDto.getHigh_value_standard();
             Long lowValueStandard = amountSetDto.getLow_value_standard();
 
-            if (highValueStandard != null && lowValueStandard != null) {
-                builder.and(ca.purchaseCost.between(lowValueStandard, highValueStandard));
-            } else if (highValueStandard != null) {
-                builder.and(ca.purchaseCost.loe(highValueStandard));
-            } else if (lowValueStandard != null) {
-                builder.and(ca.purchaseCost.goe(lowValueStandard));
+            // 고가치 자산: purchaseCost > highValueStandard
+            if (highValueStandard != null && lowValueStandard == null) {
+                builder.and(ca.purchaseCost.gt(highValueStandard));
+            }
+
+            // 중간 범위 자산: purchaseCost가 lowValueStandard와 highValueStandard 사이일 때
+            if (lowValueStandard != null && highValueStandard != null) {
+                builder.and(ca.purchaseCost.gt(lowValueStandard) // purchase_cost > lowValueStandard
+                        .and(ca.purchaseCost.loe(highValueStandard))); // purchase_cost <= highValueStandard
+
+                System.out.println("Filtering Medium Assets: Low = " + lowValueStandard + ", High = " + highValueStandard);
+            }
+
+            // 저가치 자산: purchaseCost <= lowValueStandard
+            if (lowValueStandard != null && highValueStandard == null) {
+                builder.and(ca.purchaseCost.loe(lowValueStandard));
             }
         }
+
 
 
         // 최신 assetNo에 해당하는 자산을 필터링된 결과로 가져오기

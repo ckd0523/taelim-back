@@ -1,10 +1,7 @@
 package com.codehows.taelim.service;
 
 
-import com.codehows.taelim.constant.Approval;
-import com.codehows.taelim.constant.AssetClassification;
-import com.codehows.taelim.constant.AssetLocation;
-import com.codehows.taelim.constant.Department;
+import com.codehows.taelim.constant.*;
 import com.codehows.taelim.dto.*;
 import com.codehows.taelim.entity.*;
 import com.codehows.taelim.repository.*;
@@ -70,6 +67,8 @@ public class AssetFinalService {
             LocalDate endDate,   // 검색 범위 종료 날짜
             AssetClassification assetClassification,  // 추가된 assetClassification 파라미터
             AmountSetDto amountSetDto, // 전달받는 AmountSet의 ID
+            Ownership ownership,
+            OperationStatus operationStatus,
             int page,
             int size) {
 
@@ -91,6 +90,8 @@ public class AssetFinalService {
                     endDate,   // 검색 범위 종료 날짜
                     null, // assetClassification을 null로 설정
                     amountSetDto, // 전달받는 AmountSet의 ID
+                    ownership,
+                    operationStatus,
                     pageable
             );
         } else {
@@ -104,6 +105,8 @@ public class AssetFinalService {
                     endDate,   // 검색 범위 종료 날짜
                     assetClassification, // 분류 정보 전달
                     amountSetDto, // 전달받는 AmountSet의 ID
+                    ownership,
+                    operationStatus,
                     pageable
             );
         }

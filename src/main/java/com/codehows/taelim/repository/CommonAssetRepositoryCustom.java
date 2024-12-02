@@ -1,9 +1,6 @@
 package com.codehows.taelim.repository;
 
-import com.codehows.taelim.constant.Approval;
-import com.codehows.taelim.constant.AssetClassification;
-import com.codehows.taelim.constant.AssetLocation;
-import com.codehows.taelim.constant.Department;
+import com.codehows.taelim.constant.*;
 import com.codehows.taelim.dto.AmountSetDto;
 import com.codehows.taelim.entity.CommonAsset;
 import org.springframework.data.domain.Page;
@@ -55,6 +52,8 @@ public interface CommonAssetRepositoryCustom {
             LocalDate endDate,   // 검색 범위 종료 날짜
             AssetClassification assetClassification,
             AmountSetDto amountSetDto, // 전달받는 AmountSet의 ID
+            Ownership ownership,
+            OperationStatus operationStatus,
             Pageable pageable);
     // 요청 승인시 이전 요청들 처리하는 로직
     List<CommonAsset> findUnconfirmedAssetsWithSameCodeAndLessThanAssetNo(String assetCode, Long assetNo);

@@ -2,6 +2,7 @@ package com.codehows.taelim.APIController;
 
 import com.codehows.taelim.constant.*;
 import com.codehows.taelim.dto.*;
+import com.codehows.taelim.entity.AmountSet;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.Demand;
 import com.codehows.taelim.repository.CommonAssetRepository;
@@ -283,32 +284,40 @@ public class QRController {
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) AssetClassification assetClassification,
-            @RequestParam(required = false) Long valueStandardNo,  // 새로 추가된 필드
+            @RequestParam(required = false) String valueStandardNo,  // 새로 추가된 필드
+            @RequestParam(required = false) Ownership ownership,
+            @RequestParam(required = false) OperationStatus operationStatus,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        /// 1. AmountSetDto 생성
         AmountSetDto amountSetDto = null;
-        if (valueStandardNo != null) {
-            // AmountSetDto를 조회하거나 생성
-            amountSetDto = amountSetService.getAmountSetDto(valueStandardNo);
-            // 서비스에서 valueStandardNo로 AmountSetDto 조회
 
-            // AmountSetDto의 내용을 콘솔에 출력
-            System.out.println("AmountSetDto: " + amountSetDto);
-            // 또는 각 필드를 개별적으로 출력하려면 (예시로 'getFieldName' 사용)
-            if (amountSetDto != null) {
-                System.out.println("Field1: " + amountSetDto.getHigh_value_standard());
-                System.out.println("Field2: " + amountSetDto.getLow_value_standard());
-                // 각 필드를 필요한 만큼 출력
+        // valueStandardNo 값 처리
+        if (valueStandardNo != null) {
+            AmountSet amountSet = amountSetService.getAmountSetByNo(1L);  // valueStandardNo는 항상 1로 처리
+
+            if (amountSet != null) {
+                // 이미 생성된 amountSetDto가 없으면 새로 생성
+                if (amountSetDto == null) {
+                    amountSetDto = new AmountSetDto();
+                }
+
+                if ("high".equals(valueStandardNo)) {
+                    amountSetDto.setHigh_value_standard(amountSet.getHighValueStandard());
+                } else if ("low".equals(valueStandardNo)) {
+                    amountSetDto.setLow_value_standard(amountSet.getLowValueStandard());
+                } else if ("medium".equals(valueStandardNo)) {
+                    amountSetDto.setHigh_value_standard(amountSet.getHighValueStandard());
+                    amountSetDto.setLow_value_standard(amountSet.getLowValueStandard());
+                    System.out.println("Medium Standard Values: Low = " + amountSetDto.getLow_value_standard() + ", High = " + amountSetDto.getHigh_value_standard());
+                }
             }
         }
-
         // 검색 결과를 가져옵니다.
         PaginatedResponse<AssetDto> response = assetFinalService.getAssetSearch(
                 assetName,assetLocationEnum,
                 assetUser, departmentEnum,
-                startDate, endDate, assetClassification,amountSetDto, page, size
+                startDate, endDate, assetClassification,amountSetDto, ownership, operationStatus, page, size
         );
 
         return ResponseEntity.ok(response);
