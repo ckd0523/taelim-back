@@ -6,6 +6,7 @@ import com.codehows.taelim.dto.RefreshResponse;
 import com.codehows.taelim.secondEntity.AspNetUser;
 import com.codehows.taelim.secondRepository.AspNetUserRepository;
 import com.codehows.taelim.security.JwtUtil;
+import com.codehows.taelim.security.PasswordHasher2;
 import com.codehows.taelim.service.CustomUserDetailsService;
 import com.codehows.taelim.service.LoginService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -35,9 +36,14 @@ public class LoginController {
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService customUserDetailsService;
     private final LoginService loginService;
+    private final PasswordHasher2 passwordHasher2;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) throws Exception {
+
+        String password = passwordHasher2.hashPasswordV3("taelim");
+        System.out.println("해싱된 비밀번호 : " + password);
+
         System.out.println("로그인 컨트롤러 1");
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
