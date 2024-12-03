@@ -67,6 +67,7 @@ public class QrPrinterService {
         return selectedPrinter.orElse(null);
     }
 
+    //선택한 프린터 삭제
     public void deletePrinter(Long printerId) {
         qrPrinterRepository.deleteById(printerId);
     }
