@@ -32,6 +32,7 @@ public class CommonAssetDto {
     private int availability;
     private String note;
     private String manufacturingCompany;
+    private String productSerialNumber;
     private Ownership ownership;
     private Long purchaseCost;
     private LocalDate purchaseDate;
@@ -72,6 +73,7 @@ public class CommonAssetDto {
                 .availability(this.availability)
                 .note(this.note)
                 .manufacturingCompany(this.manufacturingCompany)
+                .productSerialNumber(this.productSerialNumber)
                 .ownership(this.ownership)
                 .purchaseCost(this.purchaseCost)
                 .purchaseDate(this.purchaseDate)
@@ -114,6 +116,7 @@ public class CommonAssetDto {
                 entity.getAvailability(),
                 entity.getNote(),
                 entity.getManufacturingCompany(),
+                entity.getProductSerialNumber(),
                 entity.getOwnership(),
                 entity.getPurchaseCost(),
                 entity.getPurchaseDate(),

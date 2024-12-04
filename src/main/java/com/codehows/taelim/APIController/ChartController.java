@@ -37,11 +37,12 @@ public class ChartController {
         Long surveyAmount = chartService.getSurveyAmount(); //자산 조사 중인 레코드 가져오기
         Long totalAssetAmount = chartService.getTotalAssetAmount(); //자산 총 개수 가져오기
 
-        assetTotalAmountDto.setOwnCost(totalOwnedPurchaseCost);
-        assetTotalAmountDto.setLeasedCost(totalLeasedPurchaseCost);
-        assetTotalAmountDto.setRepairAmount(repairingAmount);
-        assetTotalAmountDto.setAssetSurveyAmount(surveyAmount);
-        assetTotalAmountDto.setTotalAssetAmount(totalAssetAmount);
+        // null일 경우 0으로 설정
+        assetTotalAmountDto.setOwnCost(totalOwnedPurchaseCost != null ? totalOwnedPurchaseCost : 0L);
+        assetTotalAmountDto.setLeasedCost(totalLeasedPurchaseCost != null ? totalLeasedPurchaseCost : 0L);
+        assetTotalAmountDto.setRepairAmount(repairingAmount != null ? repairingAmount : 0L);
+        assetTotalAmountDto.setAssetSurveyAmount(surveyAmount != null ? surveyAmount : 0L);
+        assetTotalAmountDto.setTotalAssetAmount(totalAssetAmount != null ? totalAssetAmount : 0L);
 
         return assetTotalAmountDto;
     }

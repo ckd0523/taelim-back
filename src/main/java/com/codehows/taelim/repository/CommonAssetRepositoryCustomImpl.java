@@ -36,7 +36,6 @@ public class CommonAssetRepositoryCustomImpl implements CommonAssetRepositoryCus
 
     private final JPAQueryFactory queryFactory;
 
-
     @PersistenceContext
     private EntityManager entityManager;
     private final AspNetUserRepository aspNetUserRepository;
