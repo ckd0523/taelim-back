@@ -126,15 +126,36 @@ public class AssetFinalService {
             assetDto.setDepartment(commonAsset.getDepartment());
             assetDto.setAssetLocation(commonAsset.getAssetLocation());
 
-            // assetUser, assetOwner, assetSecurityManager가 null일 경우 처리
-            UserDto userAsset  = userService.getUserById(commonAsset.getAssetUser());
-            assetDto.setAssetUser(userAsset  != null ? userAsset.getFullname() : "Unknown User");
+//            // assetUser, assetOwner, assetSecurityManager가 null일 경우 처리
+//            UserDto userAsset  = userService.getUserById(commonAsset.getAssetUser());
+//            assetDto.setAssetUser(userAsset  != null ? userAsset.getFullname() : "Unknown User");
+//
+//            UserDto assetOwner = userService.getUserById(commonAsset.getAssetOwner());
+//            assetDto.setAssetOwner(assetOwner != null ? assetOwner.getFullname() : "Unknown Owner");
+//
+//            UserDto assetSecurityManager = userService.getUserById(commonAsset.getAssetSecurityManager());
+//            assetDto.setAssetSecurityManager(assetSecurityManager != null ? assetSecurityManager.getFullname() : "Unknown Manager");
+            try {
+                UserDto userAsset = userService.getUserById(commonAsset.getAssetUser());
+                assetDto.setAssetUser(userAsset != null ? userAsset.getFullname() : null);
+            } catch (Exception e) {
+                assetDto.setAssetUser(null); // 오류 발생 시 null로 설정
+            }
 
-            UserDto assetOwner = userService.getUserById(commonAsset.getAssetOwner());
-            assetDto.setAssetOwner(assetOwner != null ? assetOwner.getFullname() : "Unknown Owner");
+            try {
+                UserDto assetOwner = userService.getUserById(commonAsset.getAssetOwner());
+                assetDto.setAssetOwner(assetOwner != null ? assetOwner.getFullname() : null);
+            } catch (Exception e) {
+                assetDto.setAssetOwner(null); // 오류 발생 시 null로 설정
+            }
 
-            UserDto assetSecurityManager = userService.getUserById(commonAsset.getAssetSecurityManager());
-            assetDto.setAssetSecurityManager(assetSecurityManager != null ? assetSecurityManager.getFullname() : "Unknown Manager");
+            try {
+                UserDto assetSecurityManager = userService.getUserById(commonAsset.getAssetSecurityManager());
+                assetDto.setAssetSecurityManager(assetSecurityManager != null ? assetSecurityManager.getFullname() : null);
+            } catch (Exception e) {
+                assetDto.setAssetSecurityManager(null); // 오류 발생 시 null로 설정
+            }
+
             assetDto.setAssetUserId(commonAsset.getAssetUser());  // ID 값 저장
             assetDto.setAssetOwnerId(commonAsset.getAssetOwner());  // ID 값 저장
             assetDto.setAssetSecurityManagerId(commonAsset.getAssetSecurityManager());  // ID 값 저장
