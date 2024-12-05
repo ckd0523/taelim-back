@@ -40,45 +40,45 @@ public class UserService {
 
 
     // 이름으로 검색
-//    public List<UserDto> searchUsersByFullname(String fullname) {
-//        // 입력값을 BASE64로 인코딩
-//        System.out.println("검색어 : " + fullname);
-//        String encodedFullname = encodeBase64(fullname);
-//        System.out.println("인코딩 : " + encodedFullname);
-//
-//        List<AspNetUser> users = aspNetUserRepository.findByEncodedFullname(encodedFullname);
-//
-//        System.out.println("반환값 : "+users);
-//
-//        return users.stream()
-//                .map(user -> new UserDto(
-//                        user.getId(),// GUID를 Long 타입으로 변환
-//                        new String(Base64.getDecoder().decode(user.getUsername())), // 계정명 디코딩
-//                        new String(Base64.getDecoder().decode(user.getFullname())), // 실명 디코딩
-//                        new String(Base64.getDecoder().decode(user.getDepartment())) // 부서명 디코딩
-//                ))
-//                .collect(Collectors.toList());
-//    }
-
     public List<UserDto> searchUsersByFullname(String fullname) {
+        // 입력값을 BASE64로 인코딩
         System.out.println("검색어 : " + fullname);
-        String encodedFullname = encodeBase64(fullname); // 변경된 부분
+        String encodedFullname = encodeBase64(fullname);
         System.out.println("인코딩 : " + encodedFullname);
 
-        //List<AspNetUser> users = aspNetUserRepository.findByEncodedFullname(encodedFullname);
-        List<AspNetUser> users = aspNetUserRepository.findByFullnameContaining(fullname);
+        List<AspNetUser> users = aspNetUserRepository.findByEncodedFullname(encodedFullname);
 
-        System.out.println("반환값 : " + users);
+        System.out.println("반환값 : "+users);
 
         return users.stream()
                 .map(user -> new UserDto(
-                        user.getId(),
-                        decodeBase64(user.getUsername()), // 변경된 부분
-                        decodeBase64(user.getFullname()), // 변경된 부분
-                        decodeBase64(user.getDepartment()) // 변경된 부분
+                        user.getId(),// GUID를 Long 타입으로 변환
+                        new String(Base64.getDecoder().decode(user.getUsername())), // 계정명 디코딩
+                        new String(Base64.getDecoder().decode(user.getFullname())), // 실명 디코딩
+                        new String(Base64.getDecoder().decode(user.getDepartment())) // 부서명 디코딩
                 ))
                 .collect(Collectors.toList());
     }
+
+//    public List<UserDto> searchUsersByFullname(String fullname) {
+//        System.out.println("검색어 : " + fullname);
+//        String encodedFullname = encodeBase64(fullname); // 변경된 부분
+//        System.out.println("인코딩 : " + encodedFullname);
+//
+//        //List<AspNetUser> users = aspNetUserRepository.findByEncodedFullname(encodedFullname);
+//        List<AspNetUser> users = aspNetUserRepository.findByFullnameContaining(fullname);
+//
+//        System.out.println("반환값 : " + users);
+//
+//        return users.stream()
+//                .map(user -> new UserDto(
+//                        user.getId(),
+//                        decodeBase64(user.getUsername()), // 변경된 부분
+//                        decodeBase64(user.getFullname()), // 변경된 부분
+//                        decodeBase64(user.getDepartment()) // 변경된 부분
+//                ))
+//                .collect(Collectors.toList());
+//    }
 
 //    public UserDto getUserById(String id) {
 //        if(id == null || id.isEmpty()) {
