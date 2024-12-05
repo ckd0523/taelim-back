@@ -41,7 +41,7 @@ public class PrimaryDataSourceConfig {
         Map<String, Object> properties = new HashMap<>();
         properties.put("hibernate.physical_naming_strategy",
                 "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
-        properties.put("hibernate.hbm2ddl.auto", "create");
+        properties.put("hibernate.hbm2ddl.auto", "validate");
 
         return builder
                 .dataSource(dataSource)
