@@ -91,6 +91,8 @@ public class WebSecurityConfig {
                             //QR
                             .requestMatchers("/generateQRCode").permitAll()
                             .requestMatchers("/printers/**").permitAll()
+                            .requestMatchers("/emailSets/**").permitAll()
+                            .requestMatchers("/base64Set/**").permitAll()
 
                     .anyRequest().authenticated();
                 })

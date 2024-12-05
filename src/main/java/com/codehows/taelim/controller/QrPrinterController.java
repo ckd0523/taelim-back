@@ -55,4 +55,11 @@ public class QrPrinterController {
     public void selectPrinter(@PathVariable Long printerId) {
         qrPrinterService.selectPrinter(printerId);
     }
+
+    //선택된 프린터 삭제
+    @DeleteMapping("/{printerId}/delete")
+    public void deletePrinter(@PathVariable Long printerId) {
+        //System.out.println("프린터 삭제 : " + printerId);
+        qrPrinterService.deletePrinter(printerId);
+    }
 }
