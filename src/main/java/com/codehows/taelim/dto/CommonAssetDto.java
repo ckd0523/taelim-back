@@ -32,6 +32,7 @@ public class CommonAssetDto {
     private int availability;
     private String note;
     private String manufacturingCompany;
+    private String productSerialNumber;
     private Ownership ownership;
     private Long purchaseCost;
     private LocalDate purchaseDate;
@@ -46,7 +47,7 @@ public class CommonAssetDto {
     private Approval approval;
     private Boolean demandCheck;
     private LocalDate createDate;
-    private UseState useState;
+    private UseStated useStated;
     private String acquisitionRoute;
     private LocalDate maintenancePeriod;
 
@@ -62,9 +63,9 @@ public class CommonAssetDto {
                 .quantity(this.quantity)
                 .department(this.department)
                 .assetLocation(this.assetLocation)
-//                .assetUser(assetUser)
-//                .assetOwner(assetOwner)
-//                .assetSecurityManager(assetSecurityManager)
+                .assetUser(this.assetUser)
+                .assetOwner(this.assetOwner)
+                .assetSecurityManager(this.assetSecurityManager)
                 .operationStatus(this.operationStatus)
                 .introducedDate(this.introducedDate)
                 .confidentiality(this.confidentiality)
@@ -72,6 +73,7 @@ public class CommonAssetDto {
                 .availability(this.availability)
                 .note(this.note)
                 .manufacturingCompany(this.manufacturingCompany)
+                .productSerialNumber(this.productSerialNumber)
                 .ownership(this.ownership)
                 .purchaseCost(this.purchaseCost)
                 .purchaseDate(this.purchaseDate)
@@ -86,7 +88,7 @@ public class CommonAssetDto {
                 .approval(this.approval)
                 .demandCheck(this.demandCheck)
                 .createDate(this.createDate)
-                .useState(this.useState)
+                .useStated(this.useStated)
                 .acquisitionRoute(this.acquisitionRoute)
                 .maintenancePeriod(this.maintenancePeriod)
                 .build();
@@ -104,9 +106,9 @@ public class CommonAssetDto {
                 entity.getQuantity(),
                 entity.getDepartment(),
                 entity.getAssetLocation(),
-                entity.getAssetUser() != null ? entity.getAssetUser().getEmail() : null,
-                entity.getAssetOwner() != null ? entity.getAssetOwner().getEmail() : null,
-                entity.getAssetSecurityManager() != null ? entity.getAssetSecurityManager().getEmail() : null,
+                entity.getAssetUser(),
+                entity.getAssetOwner(),
+                entity.getAssetSecurityManager(),
                 entity.getOperationStatus(),
                 entity.getIntroducedDate(),
                 entity.getConfidentiality(),
@@ -114,6 +116,7 @@ public class CommonAssetDto {
                 entity.getAvailability(),
                 entity.getNote(),
                 entity.getManufacturingCompany(),
+                entity.getProductSerialNumber(),
                 entity.getOwnership(),
                 entity.getPurchaseCost(),
                 entity.getPurchaseDate(),
@@ -128,7 +131,7 @@ public class CommonAssetDto {
                 entity.getApproval(),
                 entity.getDemandCheck(),
                 entity.getCreateDate(),
-                entity.getUseState(),
+                entity.getUseStated(),
                 entity.getAcquisitionRoute(),
                 entity.getMaintenancePeriod()
         );

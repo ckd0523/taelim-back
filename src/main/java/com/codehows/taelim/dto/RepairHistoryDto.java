@@ -19,6 +19,7 @@ public class RepairHistoryDto {
     private LocalDate repairStartDate;
     private LocalDate repairEnDate;
     private String repairResult;
+    private String repairStatus;
 
     private List<RepairFileDto> repairFileDtos; // 리스트로 변경
 }

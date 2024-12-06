@@ -8,6 +8,7 @@ import com.codehows.taelim.dto.ExcelDto;
 import com.codehows.taelim.entity.CommonAsset;
 import com.codehows.taelim.entity.File;
 import com.codehows.taelim.service.AssetService;
+import com.codehows.taelim.service.EmailServcie;
 import com.codehows.taelim.service.FileService;
 import com.codehows.taelim.service.RegisterService;
 import lombok.RequiredArgsConstructor;
@@ -28,15 +29,9 @@ public class AssetController {
 
     private final RegisterService registerService;
     private final FileService fileService;
+    private final EmailServcie emailServcie;
 
-
-    @GetMapping("/get")
-    public ResponseEntity<List<AssetDto>> getAllAssets() {
-        List<AssetDto> assets = registerService.findAll();
-        return ResponseEntity.ok(assets);
-
-    }
-
+    // assetCheck 폴더 - AssetRegister.jsx 등록 api
     @PostMapping("/register")
     public ResponseEntity<Long> registerAsset(@RequestBody AssetDto assetDto) {
 
@@ -47,7 +42,7 @@ public class AssetController {
 
     }
 
-    // 자산 수정등록
+    // Expand 폴더 - RowDetails.jsx 자산 조회  - 자산 1개 수정 동작 - ADMIN권한 (권)
     @PostMapping("/update/{assetCode}")
     public ResponseEntity<String> updateAsset(
             @PathVariable String assetCode,
@@ -71,7 +66,7 @@ public class AssetController {
         }
     }
 
-    // 자산 수정요청등록
+    // Expand 폴더 - RowDetails.jsx 자산 조회  - 자산 1개 수정 요청 동작 - AssetManager권한 (권)
     @PostMapping("/updateDemand/{assetCode}")
     public ResponseEntity<String> updateDemand(
             @PathVariable String assetCode,
@@ -85,7 +80,8 @@ public class AssetController {
             if (response.getAssetNo() == null) {
                 return ResponseEntity.ok(response.getMessage());  // 메시지 2개 보냄
             }
-
+            //이메일 보낼 예정
+            emailServcie.sendEmail("자산 수정 요청", "자산 수정요청이 있습니다. 확인해주세요" );
             // 정상적으로 자산 번호가 있으면 자산 수정 성공 메시지 반환
             return ResponseEntity.ok(response.getMessage());
         } catch (Exception e) {
@@ -114,6 +110,7 @@ public class AssetController {
         }
     }
 
+    // ExcelAssetRegister 폴더 - ExcelRegister.jsx 엑셀 등록 api
     @PostMapping("/excelRegister")
     public ResponseEntity<?> uploadExcelData(@RequestBody List<AssetDto> excelDtos) {
         try{

@@ -3,19 +3,20 @@ package com.codehows.taelim.controller;
 import com.codehows.taelim.constant.AssetLocation;
 import com.codehows.taelim.dto.*;
 import com.codehows.taelim.service.AssetSurveyService;
+import com.codehows.taelim.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
 public class AssetSurveyController {
 
     private final AssetSurveyService assetSurveyService;
+    private final UserService userService;
 
     //자산 조사 이력 보여주기
     @GetMapping("/assetSurveyHistory")
@@ -26,10 +27,8 @@ public class AssetSurveyController {
     //자산 조사 등록
     @PostMapping("/register")
     public ResponseEntity<Void> createAssetSurvey(@RequestBody AssetSurveyHistoryRegisterDto assetSurveyHistory) {
-        //postService.createPost(post);
-        //assetSurveyService.assetSurveyRegister(AssetLocation.MAIN_1F, 1L, "user10@example.com");
         System.out.println("프론트에서 넘어온 위치 : " + assetSurveyHistory.getLocation());
-        System.out.println("프론트에서 온 자산 조사자 : "+assetSurveyHistory.getEmail());
+        System.out.println("프론트에서 온 자산 조사자 : "+assetSurveyHistory.getUserId());
         Boolean result = assetSurveyService.assetSurveyRegister(assetSurveyHistory);
         System.out.println(result);
         if(result) {
@@ -70,7 +69,24 @@ public class AssetSurveyController {
     public List<AssetSurveyDetailDto> getAssetSurveyDetail(@PathVariable("assetSurveyNo") Integer assetSurveyNo) {
         //System.out.println("여기라고!!!");
         //System.out.println("얘 아무것도 없어? : " + assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo));
-        return assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo);
+        List<AssetSurveyDetailDto> a = assetSurveyService.getAssetSurveyDetail((long)assetSurveyNo);
+        for(AssetSurveyDetailDto dto : a) {
+            //System.out.println("여기입니다" + dto.getAssetName());
+            UserDto owner = userService.getUserById(dto.getAssetOwner());
+            UserDto securityManager = userService.getUserById(dto.getAssetSecurityManager());
+
+            // 자산 소유자 이름 설정
+            dto.setAssetOwner(owner != null && !Objects.equals(owner.getFullname(), "")
+                    ? owner.getFullname()
+                    : "Unknown User");
+
+            // 자산 보안 관리자 이름 설정
+            dto.setAssetSecurityManager(securityManager != null && !Objects.equals(securityManager.getFullname(), "")
+                    ? securityManager.getFullname()
+                    : "Unknown User");
+        }
+        System.out.println(a);
+        return a;
     }
 
     @GetMapping("/checkLocation/{selectedLocation}")

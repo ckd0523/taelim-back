@@ -26,9 +26,12 @@ public class AssetUpdateDto {
     private Long quantity;
     private Department department;
     private AssetLocation assetLocation;
-    private Member assetUser; // 이부분 나중에 고쳐야함
-    private Member assetOwner; // 이부분 나중에 고쳐야함
-    private Member assetSecurityManager; // 이부분 나중에 고쳐야함
+    private String assetUser;
+    private String assetOwner;
+    private String assetSecurityManager;
+    private String assetUserId;
+    private String assetOwnerId;
+    private String assetSecurityManagerId;
     private OperationStatus operationStatus;
     private LocalDate introducedDate;
     private int confidentiality;
@@ -52,7 +55,7 @@ public class AssetUpdateDto {
     private Approval approval;
     private Boolean demandCheck;
     private LocalDate createDate;
-    private UseState useState;
+    private UseStated useStated;
     private String acquisitionRoute;
     private LocalDate maintenancePeriod;
 
@@ -130,51 +133,14 @@ public class AssetUpdateDto {
     private String usageFrequency;
 
     // updateHistroyDto 관련부분
-    private String updateReason;
-    private String updateDetail;
-    private String updateBy;
-    private LocalDate updateDate;
+    private String demandBy;
+    private String demandReason;
+    private String demandDetail;
+    private String disposeLocation;
+    private String disposeMethod;
+    private LocalDate demandDate;
 
     private List<FileDto> files;
-
-//    public CommonAsset toEntity() {
-//
-//        return CommonAsset.builder()
-//                .assetNo(assetNo)
-//                .assetClassification(assetClassification)
-//                .assetBasis(assetBasis)
-//                .assetCode(assetCode)
-//                .assetName(assetName)
-//                .purpose(purpose)
-//                .quantity(quantity)
-//                .department(department)
-//                .assetLocation(assetLocation)
-//                .operationStatus(operationStatus)
-//                .introducedDate(introducedDate)
-//                .confidentiality(confidentiality)
-//                .integrity(integrity)
-//                .availability(availability)
-//                .note(note)
-//                .manufacturingCompany(manufacturingCompany)
-//                .ownership(ownership)
-//                .purchaseCost(purchaseCost)
-//                .purchaseDate(purchaseDate)
-//                .usefulLife(usefulLife)
-//                .depreciationMethod(depreciationMethod)
-//                .warrantyDetails(warrantyDetails)
-//                .attachment(attachment)
-//                .purchaseSource(purchaseSource)
-//                .contactInformation(contactInformation)
-//                .disposalStatus(disposalStatus)
-//                .demandStatus(demandStatus)
-//                .approval(approval)
-//                .demandCheck(demandCheck)
-//                .createDate(createDate)
-//                .useState(useState)
-//                .acquisitionRoute(acquisitionRoute)
-//                .maintenancePeriod(maintenancePeriod)
-//                .build();
-//    }
 
     public InformationProtectionSystem toInformationProtectionSystem() {
         return InformationProtectionSystem.builder()
@@ -239,6 +205,7 @@ public class AssetUpdateDto {
     public ItSystemEquipment toItSystemEquipment(){
         return ItSystemEquipment.builder()
                 .equipmentType(equipmentType)
+                .rackUnit(rackUnit)
                 .powerSupply(powerSupply)
                 .coolingSystem(coolingSystem)
                 .interfacePorts(interfacePorts)

@@ -17,6 +17,10 @@ public class AllUpdateDto {
     private Long assetNo;
     private String department;
     private String assetLocation;
+    private String assetOwner;
+    private String assetUser;
+    private String assetSecurityManager;
+    private String demandBy;
     private String reason;
     private String detail;
 }

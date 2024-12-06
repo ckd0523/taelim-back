@@ -38,20 +38,14 @@ public class CommonAsset {
     @Enumerated(EnumType.STRING)
     private AssetLocation assetLocation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assetUser")
-    @JsonIgnore
-    private Member assetUser;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assetOwner")
-    @JsonIgnore
-    private Member assetOwner;
+    private String assetUser;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assetSecurityManager")
-    @JsonIgnore
-    private Member assetSecurityManager;
+
+    private String assetOwner;
+
+
+    private String assetSecurityManager;
     
     @Enumerated(EnumType.STRING)
     private OperationStatus operationStatus;
@@ -77,7 +71,18 @@ public class CommonAsset {
     private String attachment;
     private String purchaseSource;
     private String contactInformation;
+
+    @Enumerated(EnumType.STRING)
+    private UseStated useStated;
+
+    private String acquisitionRoute;
+    private LocalDate maintenancePeriod;
+
+    //제품 시리얼 No. 공통으로
+    private String productSerialNumber;
+
     private Boolean disposalStatus;
+
     private Boolean demandStatus; // requestStatus 아님
 
     @Enumerated(EnumType.STRING)
@@ -85,15 +90,6 @@ public class CommonAsset {
 
     private Boolean demandCheck;
     private LocalDate createDate;
-
-    @Enumerated(EnumType.STRING)
-    private UseState useState;
-
-    private String acquisitionRoute;
-    private LocalDate maintenancePeriod;
-
-    //제품 시리얼 No. 공통으로
-    private String productSerialNumber;
 
 
 }

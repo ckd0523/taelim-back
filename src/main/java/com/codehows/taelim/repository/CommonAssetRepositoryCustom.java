@@ -1,15 +1,14 @@
 package com.codehows.taelim.repository;
 
-import com.codehows.taelim.constant.Approval;
-import com.codehows.taelim.constant.AssetClassification;
-import com.codehows.taelim.constant.AssetLocation;
-import com.codehows.taelim.constant.Department;
+import com.codehows.taelim.constant.*;
+import com.codehows.taelim.dto.AmountSetDto;
 import com.codehows.taelim.entity.CommonAsset;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -46,17 +45,30 @@ public interface CommonAssetRepositoryCustom {
     // 새로운 자산조회 - 검색쿼리, page 넣고 자산 조회하기
     Page<CommonAsset> findApprovedAndNotDisposedAssetsWithSearch(
             String assetName,
-            String assetLocationString,
             AssetLocation assetLocationEnum,
-            String assetUser,
-            String departmentString,
+            String assetUser,  // 외부 DB의 user ID
             Department departmentEnum,
-            LocalDate introducedDate,
+            LocalDate startDate, // 검색 범위 시작 날짜
+            LocalDate endDate,   // 검색 범위 종료 날짜
             AssetClassification assetClassification,
+            AmountSetDto amountSetDto, // 전달받는 AmountSet의 ID
+            Ownership ownership,
+            OperationStatus operationStatus,
             Pageable pageable);
     // 요청 승인시 이전 요청들 처리하는 로직
     List<CommonAsset> findUnconfirmedAssetsWithSameCodeAndLessThanAssetNo(String assetCode, Long assetNo);
 
     // 엑셀 출력을 위한 List 전체를 가져오는 조회(조건으로)
     List<CommonAsset> findAssetByExcel(AssetClassification assetClassification);
+
+    //소유 자산 총액 가져오기
+    Long findTotalOwnedPurchaseCost();
+
+    //임대 자산 총액 가져오기
+    Long findTotalLeasedPurchaseCost();
+
+    //총 자산 개수 가져오기
+    Long findTotalAssetAmount();
+
+    Map<Integer, Long> findAssetPurchaseSum(int year);
 }
