@@ -12,7 +12,7 @@ public enum UseStated {
 
     NEW("신규"),
     IN_USE("사용중"),
-    UNDER_MAINTENANCE("유지 관리 중 or 보수 작업 중"),
+    UNDER_MAINTENANCE("유지관리 중"),
     RESERVED("예비"),
     RETIRED_DISCARDED("퇴직/폐기");
     private String description;

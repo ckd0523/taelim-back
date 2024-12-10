@@ -554,7 +554,7 @@ public class AssetFinalService {
 
         row.createCell(0).setCellValue(asset.getAssetNo() != null ? asset.getAssetNo() : 0);
         row.getCell(0).setCellStyle(cellStyle); // 스타일 적용
-        row.createCell(1).setCellValue(asset.getAssetBasis() != null ? asset.getAssetBasis().toString() : "");
+        row.createCell(1).setCellValue(asset.getAssetBasis() != null ? asset.getAssetBasis().getDescription() : "");
         row.getCell(1).setCellStyle(cellStyle); // 스타일 적용
         row.createCell(2).setCellValue(asset.getAssetCode() != null ? asset.getAssetCode() : "");
         row.getCell(2).setCellStyle(cellStyle); // 스타일 적용
