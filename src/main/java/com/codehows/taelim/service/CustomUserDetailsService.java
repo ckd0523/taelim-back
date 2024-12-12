@@ -9,6 +9,7 @@ import com.codehows.taelim.secondRepository.AspNetUserRepository;
 //import com.codehows.taelim.secondRepository.TestMemberRepository;
 import com.codehows.taelim.secondRepository.AspNetUserRoleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -26,10 +27,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    //private final TestMemberRepository testMemberRepository;
     private final AspNetUserRepository aspNetUserRepository;
-    private final AspNetRoleRepository aspNetRoleRepository;
     private final AspNetUserRoleRepository aspNetUserRoleRepository;
+    @Value("${admin1}")
+    private String admin1;
+
+    @Value("${admin2}")
+    private String admin2;
+
+    @Value("${assetManager1}")
+    private String assetManager1;
+
+    @Value("${assetManager2}")
+    private String assetManager2;
 
     @Override
     @Transactional
@@ -51,27 +61,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         List<GrantedAuthority> authorities;
 
-
-//        authorities = Collections.singletonList(
-//                new SimpleGrantedAuthority("ROLE_ADMIN"));
-
-//        if(roles.contains("Admin") || roles.contains("GeneralAdmin")) {
-//            authorities = Collections.singletonList(
-//                    new SimpleGrantedAuthority("ROLE_ADMIN"));
-//        } else if(roles.contains("ASSET_MANAGER")) {
-//            authorities = Collections.singletonList(
-//                    new SimpleGrantedAuthority("ROLE_ASSET_MANAGER"));
-//        } else {
-//            authorities = Collections.singletonList(
-//                    new SimpleGrantedAuthority("ROLE_USER"));
-//        }
-
         //시스템관리자
-        if(roles.contains("SystemAdmin") || roles.contains("GeneralAdmin")) {
+        if(roles.contains(admin1) || roles.contains(admin2)) {
             authorities = Collections.singletonList(
                     new SimpleGrantedAuthority("ROLE_ADMIN"));
             //자산관리 담당자, 책임자
-        } else if(roles.contains("AssetAdmin") || roles.contains("AssetManager")) {
+        } else if(roles.contains(assetManager1) || roles.contains(assetManager2)) {
             authorities = Collections.singletonList(
                     new SimpleGrantedAuthority("ROLE_ASSET_MANAGER"));
             //나머지는 User 권한
