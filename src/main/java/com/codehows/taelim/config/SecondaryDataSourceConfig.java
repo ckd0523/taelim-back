@@ -20,7 +20,7 @@ import java.util.Map;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        basePackages = "com.codehows.taelim.loginRepository", // 두 번째 DB용 Repository 패키지
+        basePackages = "com.codehows.taelim.secondRepository", // 두 번째 DB용 Repository 패키지
         entityManagerFactoryRef = "secondaryEntityManagerFactory",
         transactionManagerRef = "secondaryTransactionManager"
 )
@@ -36,13 +36,14 @@ public class SecondaryDataSourceConfig {
     public LocalContainerEntityManagerFactoryBean secondaryEntityManagerFactory(EntityManagerFactoryBuilder builder,
                                                                                 @Qualifier("secondaryDataSource") DataSource dataSource) {
         Map<String, Object> properties = new HashMap<>();
-        properties.put("hibernate.physical_naming_strategy",
-                "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
-        properties.put("hibernate.hbm2ddl.auto", "create");
+        //실제 DB는 카멜케이스가 아니라서 '_'가 없기때문에 주석 처리
+        //properties.put("hibernate.physical_naming_strategy",
+        //        "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
+        properties.put("hibernate.hbm2ddl.auto", "validate"); // 무조건 validate로 유지
 
         return builder
                 .dataSource(dataSource)
-                .packages("com.codehows.taelim.loginEntity")  // 엔티티가 위치한 패키지
+                .packages("com.codehows.taelim.secondEntity")  // 엔티티가 위치한 패키지
                 .persistenceUnit("secondary")
                 .properties(properties)
                 .build();

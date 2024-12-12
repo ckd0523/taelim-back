@@ -11,14 +11,17 @@ import lombok.RequiredArgsConstructor;
 public enum Department {
 
 
-    IT_DEPARTMENT("IT부"),
-    ADMINISTRATIVE_DEPARTMENT("관리부"),
-    SALES_DEPARTMENT("영업부"),
-    MARKETING_DEPARTMENT("마케팅부"),
-    PRODUCTION_DEPARTMENT("생산부"),
-    OPERATIONS_DEPARTMENT("운영부"),
-    HUMAN_RESOURCES_DEPARTMENT("인사부"),
-    NULL("N/A");
+
+    MANAGEMENT_PLANNING_OFFICE("경영기획실"),
+    MANAGEMENT_TEAM("관리팀"),
+    SALES_TEAM("영업팀"),
+    PURCHASE_TEAM("구매팀"),
+
+    QUALITY_TEAM("품질팀"),
+    PRODUCTION_TEAM("생산팀"),
+
+    TECHNOLOGY_RESEARCH_TEAM ("기술연구소"),
+    NULL("기타");
     private String description;
 
     Department(String description) {

@@ -20,4 +20,7 @@ public interface AmountSetRepository extends JpaRepository<AmountSet, Long> {
     @Query(value = "INSERT INTO amount_set (high_value_standard, low_value_standard) VALUES (?1, ?2)", nativeQuery = true)
     void insertAmountSet(Long amount1, Long amount2);
 
+    // valueStandardNo로 AmountSet을 조회
+    AmountSet findByValueStandardNo(Long valueStandardNo);
+
 }

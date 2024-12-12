@@ -28,58 +28,28 @@ import java.util.stream.Collectors;
 public class AssetSurveyService {
 
     private final AssetSurveyHistoryRepository assetSurveyHistoryRepository;
-    private final MemberRepository memberRepository;
     private final CommonAssetRepository commonAssetRepository;
     private final AssetSurveyDetailRepository assetSurveyDetailRepository;
+    private final UserService userService;
 
     //자산 조사 등록
     public Boolean assetSurveyRegister(AssetSurveyHistoryRegisterDto registerData) {
-        System.out.println("sjdsklfjklsdfjl");
-        //프론트에서 받아온 2개 값을 추출
-        String email = registerData.getEmail();
 
-        System.out.println("여기 뭔데 : " + registerData.getLocation());
         AssetLocation location = AssetLocation.valueOf(registerData.getLocation());
         Long round = registerData.getRound();
-        //long round = 1;
-
-        //등록할 때 프론트에서 유저의 email을 가져와서 DB에 조회 후 Member를 가져와서 자산 조사자에 넣어준다.
-        //optional을 사용하여 orElseThrow로 예외 처리 가능, 원래는
-        //Optional<Member> member = memberRepository.findByEmail("test@example.com");
-        //Member foundMember = member.get();
-        //이렇게 해줘야하는데 orElseThrow를 쓰면 값이 있으면 optional을 Member로 자동 변환해줌.
-        //없으면 예외 처리
-        Member member = memberRepository.findByEmail(email);
-        //.orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        //이 부분은 자산 조사 등록 과정에서 이미 판별 완료
-        /*//해당 위치에 대해 중복 자산 조사 등록이 안되도록 하기 위해 해당 위치의 마지막 자산 조사 이력 가져옴
-        AssetSurveyHistory lastAssetSurveyHistory = assetSurveyHistoryRepository.findByAssetSurveyLocation(location);
-
-        //해당 위치에 대해 한번도 조사가 이루어지지 않았을 경우 바로 등록
-        if(lastAssetSurveyHistory == null) {
-            createAssetSurveyHistory(member, round, location); //round = 1
-        } else {
-            //해당 위치에 대한 조사가 진행 중인게 있다면 등록 불가
-            if(lastAssetSurveyHistory.getSurveyStatus()) {
-                return false;
-            }
-            //조사하려는 위치로 해당 위치의 회차가 몇인지 조회하여 +1 회차로 계산
-            round = lastAssetSurveyHistory.getRound() + 1;
-            createAssetSurveyHistory(member, round, location);
-        }*/
+        String assetSurveyBy = registerData.getUserId();
 
         try {
-            createAssetSurveyHistory(member, round, location);
+            createAssetSurveyHistory(assetSurveyBy, round, location);
             return true;
         } catch(Exception e) {
             return false;
         }
     }
 
-    public void createAssetSurveyHistory(Member member, long round, AssetLocation location) {
+    public void createAssetSurveyHistory(String assetSurveyBy, long round, AssetLocation location) {
         AssetSurveyHistory assetSurveyHistory = AssetSurveyHistory.builder()
-                .member(member)
+                .assetSurveyBy(assetSurveyBy)
                 .round(round)
                 .assetSurveyLocation(location)
                 .assetSurveyStartDate(LocalDate.now())
@@ -121,7 +91,18 @@ public class AssetSurveyService {
     //그래서 하나라도 null이 들어가면 그 레코드는 List에 들어가지 않음
     //하지만 이는 프론트와 백엔드 코드를 잘 짜 놓으면 문제 없음
     public List<AssetSurveyHistoryDto> getAssetSurveyHistory() {
-        return assetSurveyHistoryRepository.findAssetSurveyHistoryAndMemberName();
+        List<AssetSurveyHistoryDto> list = assetSurveyHistoryRepository.findAssetSurveyHistoryAndMemberName();
+
+        for(AssetSurveyHistoryDto assetSurveyHistoryDto : list){
+            if((assetSurveyHistoryDto.getAssetSurveyBy() == null)){
+                assetSurveyHistoryDto.setAssetSurveyBy("Unknown User");
+            } else {
+                assetSurveyHistoryDto.setAssetSurveyBy(userService.getUserById(assetSurveyHistoryDto.getAssetSurveyBy()).getFullname());
+            }
+
+        }
+
+        return list;
     }
 
     //자산 조사 삭제
@@ -144,42 +125,6 @@ public class AssetSurveyService {
             return false;
         }
     }
-
-    /*
-    //자산 조사를 위한 자산 조사 상세 이력
-    public List<AssetSurveyDetailDto> getAssetSurveyDetail(Long assetSurveyNo) {
-        List<AssetSurveyDetailDto> assetSurveyDetailDtoList = new ArrayList<>();
-
-        //assetSurveyDetailRepository에서 findAllByAssetSurveyNo 메서드가
-        //받을 매개변수의 예상이 assetSurveyHistory라고 해서
-        //프론트에서 넘어온 assetSurveyNo로 assetSurveyHistory를 찾아서
-        //고대로 넣어줌, 연관 매핑이 되어있어서 가능한듯
-        AssetSurveyHistory assetSurveyHistory = assetSurveyHistoryRepository.findByAssetSurveyNo(assetSurveyNo);
-
-        //일단 자산 조사 상세를 전부 가져옴
-        List<AssetSurveyDetail> assetSurveyDetailList = assetSurveyDetailRepository.findAllByAssetSurveyNo(assetSurveyHistory);
-
-        //findLatestData는 용대형이 merge를 해줘야함
-        //해당 위치에 대한 최신 자산 정보를 가져옴
-        List<CommonAsset> commonAssets = commonAssetRepository.findDetailByLocation(assetSurveyHistory.getAssetSurveyLocation());
-
-        for(AssetSurveyDetail assetSurveyDetail : assetSurveyDetailList) {
-            //자산 조사 상세의 자산 번호로 공통 정보에 있는 자산 코드, 자산명 등을 가져와야함
-            //이렇게 참조를 해서 가져오면
-            //완료된 자산 조사를 들어가서 자산 조사 상세를 보게 되면
-            //자산 조사 상세의 각 자산의 정보가 자산 조사를 했던 당시의 데이터가 아니게 됨.
-            //하지만 자산 상세에서 변경 이력을 볼 수 있으므로 추적을 가능하겠지만
-            //매우 불편한 형식이 될것으로 예상
-
-            //자산 조사 상세 정보와 최신 자산 정보를 dto로 다시 만듦
-            for(CommonAsset commonAsset : commonAssets){
-                AssetSurveyDetailDto assetSurveyDetailDto = new AssetSurveyDetailDto(commonAsset, assetSurveyDetail);
-                assetSurveyDetailDtoList.add(assetSurveyDetailDto);
-            }
-        }
-        return assetSurveyDetailDtoList;
-    }
-    */
 
     //자산 조사를 위한 자산 조사 상세 이력
     public List<AssetSurveyDetailDto> getAssetSurveyDetail(Long assetSurveyNo) {

@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 @Setter
+@ToString
 public class AssetSurveyHistory {
 
     @Id
@@ -19,9 +20,7 @@ public class AssetSurveyHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long assetSurveyNo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assetSurveyBy")
-    private Member assetSurveyBy;
+    private String assetSurveyBy;
 
     private Long round;
 
@@ -33,8 +32,8 @@ public class AssetSurveyHistory {
     private Boolean surveyStatus;
 
     @Builder
-    public AssetSurveyHistory(Member member, Long round, AssetLocation assetSurveyLocation, LocalDate assetSurveyStartDate) {
-        this.assetSurveyBy = member;
+    public AssetSurveyHistory(String assetSurveyBy, Long round, AssetLocation assetSurveyLocation, LocalDate assetSurveyStartDate) {
+        this.assetSurveyBy = assetSurveyBy;
         this.round = round;
         this.assetSurveyLocation = assetSurveyLocation;
         this.assetSurveyStartDate = assetSurveyStartDate;

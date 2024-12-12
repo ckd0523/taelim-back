@@ -10,7 +10,7 @@ public class clsPrinterConfig
 	//---------------------------------------------------------------------------
 	// Setup Function
 	//---------------------------------------------------------------------------
-	void Setup(
+	public void Setup(
 	    int LabelLength,
 	    int Darkness,
 	    int Speed,

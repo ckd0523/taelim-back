@@ -27,8 +27,11 @@ public class AssetDto {
     private Department department;
     private AssetLocation assetLocation;
     private String assetUser;
+    private String assetUserId;
     private String assetOwner;
+    private String assetOwnerId;
     private String assetSecurityManager;
+    private String assetSecurityManagerId;
     private OperationStatus operationStatus;
     private LocalDate introducedDate;
     private int confidentiality;
@@ -53,7 +56,7 @@ public class AssetDto {
     private Approval approval;
     private Boolean demandCheck;
     private LocalDate createDate;
-    private UseState usestate;
+    private UseStated useStated;
     private String acquisitionRoute;
     private LocalDate maintenancePeriod;
 
@@ -143,6 +146,9 @@ public class AssetDto {
                 .assetBasis(assetBasis)
                 .assetCode(assetCode)
                 .assetName(assetName)
+                .assetUser(assetUser)
+                .assetOwner(assetOwner)
+                .assetSecurityManager(assetSecurityManager)
                 .purpose(purpose)
                 .quantity(quantity)
                 .department(department)
@@ -168,7 +174,7 @@ public class AssetDto {
                 .approval(approval)
                 .demandCheck(demandCheck)
                 .createDate(createDate)
-                .useState(usestate)
+                .useStated(useStated)
                 .acquisitionRoute(acquisitionRoute)
                 .maintenancePeriod(maintenancePeriod)
                 .build();
@@ -237,6 +243,7 @@ public class AssetDto {
     public ItSystemEquipment toItSystemEquipment(){
         return ItSystemEquipment.builder()
                 .equipmentType(equipmentType)
+                .rackUnit(rackUnit)
                 .powerSupply(powerSupply)
                 .coolingSystem(coolingSystem)
                 .interfacePorts(interfacePorts)

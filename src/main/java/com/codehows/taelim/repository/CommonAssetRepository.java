@@ -1,8 +1,6 @@
 package com.codehows.taelim.repository;
 
-import com.codehows.taelim.constant.AssetClassification;
-import com.codehows.taelim.constant.AssetLocation;
-import com.codehows.taelim.constant.Department;
+import com.codehows.taelim.constant.*;
 import com.codehows.taelim.dto.AssetDto;
 import com.codehows.taelim.entity.CommonAsset;
 import org.springframework.data.domain.Page;
@@ -44,5 +42,8 @@ public interface CommonAssetRepository extends JpaRepository<CommonAsset, Long>,
 //            @Param("introducedDate") LocalDate introducedDate,
 //            Pageable pageable);
 
+    Long countByDepartmentAndAssetClassification(Department department, AssetClassification assetClassification);
+
+    Long countByOperationStatus(OperationStatus operationStatus);
 
 }

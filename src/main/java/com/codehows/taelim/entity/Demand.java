@@ -21,9 +21,8 @@ public class Demand {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long demandNo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "demandBy")
-    private Member demandBy;
+
+    private String demandBy;
 
     private LocalDate demandDate;
     private String demandReason;
